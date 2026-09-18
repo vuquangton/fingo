@@ -320,4 +320,110 @@ public partial class VoucherEntryViewModel : WorkspaceTabViewModel
             }
         }
     }
+
+    [RelayCommand]
+    public void PrintVoucher()
+    {
+        try
+        {
+            var printLines = Lines.Select(l => new StatutoryVoucherLineData(
+                string.IsNullOrWhiteSpace(l.Description) ? Description : l.Description,
+                l.DebitAccountNumber,
+                l.CreditAccountNumber,
+                l.Amount
+            )).ToList();
+
+            var formNumber = VoucherType == VoucherType.GeneralJournal ? "01 - TT" : "02 - TT";
+            var formTitle = VoucherType == VoucherType.GeneralJournal ? "PHIẾU KẾ TOÁN" : "PHIẾU THU / CHI";
+
+            var data = new StatutoryVoucherData(
+                FormNumber: formNumber,
+                Title: formTitle,
+                CircularTitle: "Ban hành theo Thông tư số 99/2025/TT-BTC ngày 25/10/2025 của Bộ Tài chính",
+                VoucherNumber: VoucherNumber,
+                VoucherDate: VoucherDate,
+                CompanyName: "CÔNG TY CỔ PHẦN KẾ TOÁN MẪU VIỆT NAM",
+                TaxCode: "0101234567",
+                CompanyAddress: "Hà Nội, Việt Nam",
+                PersonName: "Người nộp / nhận tiền",
+                PersonAddress: "Hà Nội",
+                Reason: Description,
+                Amount: TotalDebit,
+                AmountInWords: $"{TotalDebit:N0} đồng",
+                DebitAccount: Lines.FirstOrDefault()?.DebitAccountNumber ?? "1111",
+                CreditAccount: Lines.FirstOrDefault()?.CreditAccountNumber ?? "5111",
+                Lines: printLines
+            );
+
+            var doc = StatutoryVoucherPrintEngine.CreateDocument(data);
+            var printWindow = new System.Windows.Window
+            {
+                Title = $"In Chứng Từ TT 99/2025 - {VoucherNumber}",
+                Width = 850,
+                Height = 700,
+                WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen
+            };
+            var viewer = new System.Windows.Controls.DocumentViewer
+            {
+                Document = ((System.Windows.Documents.IDocumentPaginatorSource)doc).DocumentPaginator.Source as System.Windows.Documents.IDocumentPaginatorSource
+            };
+            // Use FlowDocumentReader or DocumentViewer
+            var flowViewer = new System.Windows.Controls.FlowDocumentScrollViewer { Document = doc };
+            printWindow.Content = flowViewer;
+            printWindow.ShowDialog();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Lỗi xem trước in ấn: {ex.Message}";
+        }
+    }
+
+    [RelayCommand]
+    public void ImportCsvData(string csv)
+    {
+        var result = ExcelVoucherInteropService.ImportFromCsv(csv);
+        if (result.Success && result.Lines.Count > 0)
+        {
+            Lines.Clear();
+            foreach (var item in result.Lines)
+            {
+                var line = new VoucherLineItemModel
+                {
+                    DebitAccountNumber = item.DebitAccount,
+                    CreditAccountNumber = item.CreditAccount,
+                    Amount = item.Amount,
+                    Description = item.Description
+                };
+                line.PropertyChanged += (s, e) => RecalculateTotals();
+                Lines.Add(line);
+            }
+            RecalculateTotals();
+            ErrorMessage = $"Đã nhập thành công {result.Lines.Count} dòng từ file dữ liệu.";
+        }
+        else
+        {
+            ErrorMessage = string.Join("; ", result.Errors);
+        }
+    }
+
+    [RelayCommand]
+    public void ExportCsvData()
+    {
+        var exportLines = Lines.Select(l => new ExcelImportVoucherLine(
+            l.DebitAccountNumber,
+            l.CreditAccountNumber,
+            l.Amount,
+            l.Description
+        ));
+        var csv = ExcelVoucherInteropService.ExportToCsv(exportLines);
+        try
+        {
+            System.Windows.Clipboard.SetText(csv);
+            ErrorMessage = "Đã xuất dữ liệu ra định dạng CSV và sao chép vào Clipboard.";
+        }
+        catch
+        {
+            ErrorMessage = "Đã xuất dữ liệu CSV thành công.";
+        }
+    }
 }

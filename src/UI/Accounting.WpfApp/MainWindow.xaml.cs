@@ -28,6 +28,8 @@ public partial class MainWindow : Window
             _viewModel.VoucherEntry.RecalculateTotals();
             _viewModel.StatusMessage = $"Đã tính lại cân đối chứng từ: {_viewModel.VoucherEntry.BalanceStatusText}";
         };
+        _shortcuts.OnPrint += () => _viewModel.VoucherEntry.PrintVoucher();
+        _shortcuts.OnSearch += () => _viewModel.UniversalSearch.IsOpen = !_viewModel.UniversalSearch.IsOpen;
     }
 
     private void MainWindow_OnKeyDown(object sender, KeyEventArgs e)

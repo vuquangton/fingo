@@ -68,6 +68,16 @@
                             <Bold Foreground="#38BDF8">F9</Bold> Tính cân đối
                         </TextBlock>
                     </Border>
+                    <Border Background="#1E293B" CornerRadius="4" Padding="8,4" Margin="4,0">
+                        <TextBlock Foreground="#E2E8F0" FontSize="11">
+                            <Bold Foreground="#38BDF8">Ctrl+P</Bold> In TT 99
+                        </TextBlock>
+                    </Border>
+                    <Border Background="#1E293B" CornerRadius="4" Padding="8,4" Margin="4,0">
+                        <TextBlock Foreground="#E2E8F0" FontSize="11">
+                            <Bold Foreground="#38BDF8">Ctrl+F</Bold> Tìm kiếm
+                        </TextBlock>
+                    </Border>
                 </StackPanel>
 
                 <!-- System & Session Info -->
@@ -376,9 +386,10 @@
                             </Grid.RowDefinitions>
 
                             <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
-                                <Button Command="{Binding AddLineCommand}" Content="➕ Thêm dòng hạch toán" Background="#0F172A" Foreground="White" FontWeight="SemiBold" Padding="12,6" Margin="0,0,8,0" Cursor="Hand"/>
-                                <Button Command="{Binding SaveVoucherCommand}" Content="💾 Lưu chứng từ (F8)" Background="#2563EB" Foreground="White" FontWeight="SemiBold" Padding="16,6" Margin="0,0,8,0" Cursor="Hand"/>
-                                <Button Command="{Binding NewVoucherCommand}" Content="📄 Tạo mới (F2)" Background="#F1F5F9" Foreground="#0F172A" FontWeight="SemiBold" Padding="12,6" Cursor="Hand"/>
+                                <Button Command="{Binding AddLineCommand}" Content="➕ Thêm dòng" Background="#0F172A" Foreground="White" FontWeight="SemiBold" Padding="10,6" Margin="0,0,6,0" Cursor="Hand"/>
+                                <Button Command="{Binding SaveVoucherCommand}" Content="💾 Lưu (F8)" Background="#2563EB" Foreground="White" FontWeight="SemiBold" Padding="14,6" Margin="0,0,6,0" Cursor="Hand"/>
+                                <Button Command="{Binding NewVoucherCommand}" Content="📄 Mới (F2)" Background="#F1F5F9" Foreground="#0F172A" FontWeight="SemiBold" Padding="10,6" Margin="0,0,6,0" Cursor="Hand"/>
+                                <Button Command="{Binding PrintVoucherCommand}" Content="🖨️ In Mẫu TT 99 (Ctrl+P)" Background="#059669" Foreground="White" FontWeight="SemiBold" Padding="12,6" Margin="0,0,6,0" Cursor="Hand"/>
                                 <TextBlock Text="{Binding ErrorMessage}" Foreground="#DC2626" FontWeight="SemiBold" Margin="16,6,0,0" VerticalAlignment="Center"/>
                             </StackPanel>
 
@@ -1582,6 +1593,66 @@
                 <TextBlock Grid.Column="0" Text="{Binding StatusMessage}" Foreground="#94A3B8" FontSize="11" VerticalAlignment="Center"/>
                 <TextBlock Grid.Column="1" Text="Lindy-Engine v10.0 • Production Ready" Foreground="#64748B" FontSize="11" VerticalAlignment="Center"/>
             </Grid>
+        </Border>
+        <!-- UNIVERSAL SEARCH MODAL OVERLAY (Ctrl+F / F3) -->
+        <Border Grid.Row="0" Grid.RowSpan="3" Background="#80000000"
+                Visibility="{Binding UniversalSearch.IsOpen, Converter={StaticResource BoolToVis}}"
+                Panel.ZIndex="999">
+            <Border Background="White" CornerRadius="8" Width="680" MaxHeight="520"
+                    VerticalAlignment="Center" HorizontalAlignment="Center"
+                    BorderBrush="#2563EB" BorderThickness="1" Padding="20">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="24" Opacity="0.3" ShadowDepth="10"/>
+                </Border.Effect>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0" Margin="0,0,0,12">
+                        <TextBlock Text="🔍 Tra Cứu Toàn Năng (Universal Search)" FontSize="16" FontWeight="Bold" Foreground="#0F172A"/>
+                        <Button Command="{Binding UniversalSearch.SelectResultCommand}" CommandParameter="{x:Null}"
+                                Content="✕" HorizontalAlignment="Right" Background="Transparent" BorderThickness="0"
+                                FontSize="14" FontWeight="Bold" Foreground="#64748B" Cursor="Hand"/>
+                    </Grid>
+
+                    <TextBox Grid.Row="1" Text="{Binding UniversalSearch.SearchQuery, UpdateSourceTrigger=PropertyChanged}"
+                             Padding="10,8" FontSize="14" BorderBrush="#2563EB" BorderThickness="1.5"
+                             Margin="0,0,0,12"/>
+
+                    <ListBox Grid.Row="2" ItemsSource="{Binding UniversalSearch.Results}"
+                             BorderBrush="#E2E8F0" BorderThickness="1" MaxHeight="320">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Button Command="{Binding DataContext.UniversalSearch.SelectResultCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                        CommandParameter="{Binding}"
+                                        Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Stretch" Cursor="Hand">
+                                    <Grid Margin="4,6">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="120"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="110"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Border Grid.Column="0" Background="#EFF6FF" CornerRadius="4" Padding="6,2" HorizontalAlignment="Left">
+                                            <TextBlock Text="{Binding RecordType}" FontSize="11" Foreground="#1D4ED8" FontWeight="SemiBold"/>
+                                        </Border>
+                                        <TextBlock Grid.Column="1" Text="{Binding Code}" FontWeight="Bold" Foreground="#0F172A" VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Column="2" Text="{Binding Title}" Foreground="#475569" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="8,0"/>
+                                        <TextBlock Grid.Column="3" Text="{Binding Amount, StringFormat='{}{0:N0} đ'}" FontWeight="SemiBold" Foreground="#16A34A" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                    </Grid>
+                                </Button>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+                    <TextBlock Grid.Row="3" Text="Nhấn vào kết quả để chuyển ngay đến phân hệ và chứng từ tương ứng."
+                               FontSize="11" Foreground="#64748B" Margin="0,10,0,0" HorizontalAlignment="Center"/>
+                </Grid>
+            </Border>
         </Border>
     </Grid>
 </Window>

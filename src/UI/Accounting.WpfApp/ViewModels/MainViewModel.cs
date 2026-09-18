@@ -83,6 +83,8 @@ public partial class MainViewModel : ObservableObject
     public PeriodClosingViewModel PeriodClosing { get; }
     public SettingsViewModel Settings { get; }
     public DocumentManagerViewModel DocumentManager { get; }
+    public UniversalSearchViewModel UniversalSearch { get; }
+    public ClosingPipelineWizardViewModel ClosingWizard { get; }
 
     public MainViewModel(
         IMediator mediator,
@@ -103,7 +105,9 @@ public partial class MainViewModel : ObservableObject
         MasterDataViewModel masterData,
         PeriodClosingViewModel periodClosing,
         SettingsViewModel settings,
-        DocumentManagerViewModel documentManager)
+        DocumentManagerViewModel documentManager,
+        UniversalSearchViewModel universalSearch,
+        ClosingPipelineWizardViewModel closingWizard)
     {
         _mediator = mediator;
         _configuration = configuration;
@@ -124,10 +128,22 @@ public partial class MainViewModel : ObservableObject
         PeriodClosing = periodClosing;
         Settings = settings;
         DocumentManager = documentManager;
+        UniversalSearch = universalSearch;
+        ClosingWizard = closingWizard;
+
+        // Wire search navigation
+        UniversalSearch.OnNavigateToTarget += item =>
+        {
+            if (Enum.TryParse<AppModule>(item.NavigationTarget, true, out var targetModule))
+            {
+                Navigate(targetModule);
+            }
+        };
 
         // Open Voucher Entry & General Ledger as default MDI documents
         DocumentManager.OpenDocument(VoucherEntry);
         DocumentManager.OpenDocument(GeneralLedger);
+        DocumentManager.OpenDocument(ClosingWizard);
 
         var provider = configuration["DatabaseProvider"] ?? "Sqlite";
         DatabaseProvider = string.Equals(provider, "PostgreSql", StringComparison.OrdinalIgnoreCase)

@@ -70,6 +70,8 @@ public partial class App : System.Windows.Application
                 services.AddSingleton<PeriodClosingViewModel>();
                 services.AddSingleton<SettingsViewModel>();
                 services.AddSingleton<DocumentManagerViewModel>();
+                services.AddSingleton<UniversalSearchViewModel>();
+                services.AddSingleton<ClosingPipelineWizardViewModel>();
                 services.AddSingleton<MainViewModel>();
                 services.AddSingleton<MainWindow>();
             })

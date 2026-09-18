@@ -12,6 +12,7 @@ public class KeyboardShortcutManager
     public event Action? OnSave;
     public event Action? OnCancel;
     public event Action? OnCalculateBalance;
+    public event Action? OnPrint;
 
     public void HandleKeyDown(KeyEventArgs e)
     {
@@ -20,7 +21,7 @@ public class KeyboardShortcutManager
             OnNewVoucher?.Invoke();
             e.Handled = true;
         }
-        else if (e.Key == Key.F3)
+        else if (e.Key == Key.F3 || (e.Key == Key.F && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control))
         {
             OnSearch?.Invoke();
             e.Handled = true;
@@ -45,6 +46,11 @@ public class KeyboardShortcutManager
         else if (e.Key == Key.F9)
         {
             OnCalculateBalance?.Invoke();
+            e.Handled = true;
+        }
+        else if (e.Key == Key.P && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
+        {
+            OnPrint?.Invoke();
             e.Handled = true;
         }
         else if (e.Key == Key.F12 || (e.Key == Key.S && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control))
