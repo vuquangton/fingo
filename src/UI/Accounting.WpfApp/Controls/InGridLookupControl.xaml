@@ -35,7 +35,6 @@
                 </Border.Effect>
                 <ListBox x:Name="ResultsListBox"
                          ItemsSource="{Binding FilteredItems, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                         DisplayMemberPath="DisplayText"
                          PreviewKeyDown="ResultsListBox_PreviewKeyDown"
                          MouseDoubleClick="ResultsListBox_MouseDoubleClick"
                          BorderThickness="0">
