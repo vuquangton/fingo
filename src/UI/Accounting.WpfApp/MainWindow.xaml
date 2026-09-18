@@ -1599,35 +1599,49 @@
                     </Grid.RowDefinitions>
 
                     <Border Grid.Row="0" Background="White" CornerRadius="8" Padding="16" Margin="0,0,0,16" BorderBrush="#CBD5E1" BorderThickness="1">
-                        <StackPanel>
-                            <TextBlock Text="Bàn Làm Việc Kế Toán Doanh Nghiệp" FontSize="18" FontWeight="Bold" Foreground="#0F172A"/>
-                            <TextBlock Text="Tổng quan số liệu thời gian thực theo Chế độ Kế toán TT 99/2025/TT-BTC &amp; TT 89/2026/TT-BTC" FontSize="12" Foreground="#64748B" Margin="0,2,0,0"/>
-                        </StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Bàn Làm Việc Kế Toán Doanh Nghiệp" FontSize="18" FontWeight="Bold" Foreground="#0F172A"/>
+                                <TextBlock Text="Tổng quan số liệu thời gian thực truy vấn trực tiếp CSDL Core (MariaDB / Sổ Cái GL)" FontSize="12" Foreground="#64748B" Margin="0,2,0,0"/>
+                            </StackPanel>
+                            <Button Grid.Column="1" Command="{Binding RefreshDataCommand}" Content="🔄 Cập Nhật Số Liệu Trực Tiếp" 
+                                    Background="#2563EB" Foreground="White" FontWeight="Bold" Padding="14,8" Cursor="Hand"/>
+                        </Grid>
                     </Border>
 
-                    <UniformGrid Grid.Row="1" Columns="2" Rows="2" VerticalAlignment="Top">
+                    <UniformGrid Grid.Row="1" Columns="3" Rows="2" VerticalAlignment="Top">
                         <Border Background="White" CornerRadius="8" Padding="20" Margin="0,0,10,10" BorderBrush="#CBD5E1" BorderThickness="1">
                             <StackPanel>
                                 <TextBlock Text="💰 Số Dư Tiền &amp; Tương Đương Tiền (111, 112)" FontSize="13" Foreground="#64748B"/>
                                 <TextBlock Text="{Binding CashBalance, StringFormat='{}{0:N0} VND'}" FontSize="24" FontWeight="Bold" Foreground="#0F172A" Margin="0,8,0,0"/>
                             </StackPanel>
                         </Border>
-                        <Border Background="White" CornerRadius="8" Padding="20" Margin="10,0,0,10" BorderBrush="#CBD5E1" BorderThickness="1">
+                        <Border Background="White" CornerRadius="8" Padding="20" Margin="5,0,5,10" BorderBrush="#CBD5E1" BorderThickness="1">
                             <StackPanel>
                                 <TextBlock Text="💼 Phải Thu Khách Hàng (131)" FontSize="13" Foreground="#64748B"/>
                                 <TextBlock Text="{Binding ReceivablesTotal, StringFormat='{}{0:N0} VND'}" FontSize="24" FontWeight="Bold" Foreground="#2563EB" Margin="0,8,0,0"/>
                             </StackPanel>
                         </Border>
-                        <Border Background="White" CornerRadius="8" Padding="20" Margin="0,10,10,0" BorderBrush="#CBD5E1" BorderThickness="1">
+                        <Border Background="White" CornerRadius="8" Padding="20" Margin="10,0,0,10" BorderBrush="#CBD5E1" BorderThickness="1">
                             <StackPanel>
                                 <TextBlock Text="🛒 Phải Trả Nhà Cung Cấp (331)" FontSize="13" Foreground="#64748B"/>
                                 <TextBlock Text="{Binding PayablesTotal, StringFormat='{}{0:N0} VND'}" FontSize="24" FontWeight="Bold" Foreground="#DC2626" Margin="0,8,0,0"/>
                             </StackPanel>
                         </Border>
-                        <Border Background="White" CornerRadius="8" Padding="20" Margin="10,10,0,0" BorderBrush="#CBD5E1" BorderThickness="1">
+                        <Border Background="White" CornerRadius="8" Padding="20" Margin="0,10,10,0" BorderBrush="#CBD5E1" BorderThickness="1">
                             <StackPanel>
                                 <TextBlock Text="📦 Giá Trị Hàng Tồn Kho (15x)" FontSize="13" Foreground="#64748B"/>
                                 <TextBlock Text="{Binding InventoryValue, StringFormat='{}{0:N0} VND'}" FontSize="24" FontWeight="Bold" Foreground="#16A34A" Margin="0,8,0,0"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Background="White" CornerRadius="8" Padding="20" Margin="5,10,5,0" BorderBrush="#CBD5E1" BorderThickness="1">
+                            <StackPanel>
+                                <TextBlock Text="📈 Doanh Thu Bán Hàng &amp; Dịch Vụ MTD (511)" FontSize="13" Foreground="#64748B"/>
+                                <TextBlock Text="{Binding NetRevenueMtd, StringFormat='{}{0:N0} VND'}" FontSize="24" FontWeight="Bold" Foreground="#8B5CF6" Margin="0,8,0,0"/>
                             </StackPanel>
                         </Border>
                     </UniformGrid>

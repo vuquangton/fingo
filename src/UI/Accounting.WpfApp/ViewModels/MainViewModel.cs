@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using Accounting.Application.Common.Interfaces;
 using Accounting.Application.Features.GeneralLedger;
+using Accounting.Application.Features.Reporting;
 using Accounting.Domain.Entities.GeneralLedger;
 using Accounting.Domain.Enums;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -145,10 +146,36 @@ public partial class MainViewModel : ObservableObject
         DocumentManager.OpenDocument(GeneralLedger);
         DocumentManager.OpenDocument(ClosingWizard);
 
-        var provider = configuration["DatabaseProvider"] ?? "Sqlite";
-        DatabaseProvider = string.Equals(provider, "PostgreSql", StringComparison.OrdinalIgnoreCase)
+        var provider = configuration.GetValue<string>("Database:Provider")
+            ?? configuration.GetValue<string>("DatabaseProvider")
+            ?? "Sqlite";
+
+        DatabaseProvider = string.Equals(provider, "MariaDB", StringComparison.OrdinalIgnoreCase) ||
+                           string.Equals(provider, "MySql", StringComparison.OrdinalIgnoreCase)
+            ? "MariaDB v12.3 (Enterprise Core)"
+            : string.Equals(provider, "PostgreSql", StringComparison.OrdinalIgnoreCase)
             ? "PostgreSQL v16 (Client-Server)"
             : "SQLite v3 (Zero-Config Embedded)";
+
+        _ = LoadDashboardAsync();
+    }
+
+    [RelayCommand]
+    public async Task LoadDashboardAsync()
+    {
+        try
+        {
+            var res = await _mediator.Send(new GetDashboardSummaryQuery(DateOnly.FromDateTime(DateTime.Today)));
+            if (res.IsSuccess && res.Value != null)
+            {
+                CashBalance = res.Value.CashBalance;
+                ReceivablesTotal = res.Value.ReceivablesTotal;
+                PayablesTotal = res.Value.PayablesTotal;
+                InventoryValue = res.Value.InventoryValue;
+                NetRevenueMtd = res.Value.NetRevenueMtd;
+            }
+        }
+        catch { }
     }
 
     [RelayCommand]
@@ -176,6 +203,7 @@ public partial class MainViewModel : ObservableObject
     public async Task RefreshDataAsync()
     {
         StatusMessage = "Refreshing system data...";
+        await LoadDashboardAsync();
         await GeneralLedger.LoadLedgerAsync();
         StatusMessage = "Data refreshed successfully.";
     }
