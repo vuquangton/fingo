@@ -71,6 +71,13 @@ public partial class MainViewModel : ObservableObject
     public CompanySettingViewModel CompanySetup { get; }
     public OpeningBalanceViewModel OpeningBalance { get; }
     public UserManagementViewModel UserManagement { get; }
+    public TreasuryViewModel Treasury { get; }
+    public PurchasingViewModel Purchasing { get; }
+    public SalesViewModel Sales { get; }
+    public InventoryViewModel Inventory { get; }
+    public FixedAssetsViewModel FixedAssets { get; }
+    public PayrollViewModel Payroll { get; }
+    public SettingsViewModel Settings { get; }
 
     public MainViewModel(
         IMediator mediator,
@@ -81,7 +88,14 @@ public partial class MainViewModel : ObservableObject
         StatutoryReportsViewModel statutoryReports,
         CompanySettingViewModel companySetup,
         OpeningBalanceViewModel openingBalance,
-        UserManagementViewModel userManagement)
+        UserManagementViewModel userManagement,
+        TreasuryViewModel treasury,
+        PurchasingViewModel purchasing,
+        SalesViewModel sales,
+        InventoryViewModel inventory,
+        FixedAssetsViewModel fixedAssets,
+        PayrollViewModel payroll,
+        SettingsViewModel settings)
     {
         _mediator = mediator;
         _configuration = configuration;
@@ -92,6 +106,13 @@ public partial class MainViewModel : ObservableObject
         CompanySetup = companySetup;
         OpeningBalance = openingBalance;
         UserManagement = userManagement;
+        Treasury = treasury;
+        Purchasing = purchasing;
+        Sales = sales;
+        Inventory = inventory;
+        FixedAssets = fixedAssets;
+        Payroll = payroll;
+        Settings = settings;
 
         var provider = configuration["DatabaseProvider"] ?? "Sqlite";
         DatabaseProvider = string.Equals(provider, "PostgreSql", StringComparison.OrdinalIgnoreCase)

@@ -60,6 +60,13 @@ public partial class App : System.Windows.Application
                 services.AddSingleton<CompanySettingViewModel>();
                 services.AddSingleton<OpeningBalanceViewModel>();
                 services.AddSingleton<UserManagementViewModel>();
+                services.AddSingleton<TreasuryViewModel>();
+                services.AddSingleton<PurchasingViewModel>();
+                services.AddSingleton<SalesViewModel>();
+                services.AddSingleton<InventoryViewModel>();
+                services.AddSingleton<FixedAssetsViewModel>();
+                services.AddSingleton<PayrollViewModel>();
+                services.AddSingleton<SettingsViewModel>();
                 services.AddSingleton<MainViewModel>();
                 services.AddSingleton<MainWindow>();
             })
