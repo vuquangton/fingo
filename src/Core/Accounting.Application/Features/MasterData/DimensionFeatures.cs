@@ -140,6 +140,75 @@ public class CreateInventoryItemCommandHandler(IAccountingDbContext context) : I
     }
 }
 
+public record GetMasterWarehousesQuery(bool IncludeInactive = false) : IRequest<Result<IReadOnlyList<WarehouseDto>>>;
+
+public class GetMasterWarehousesQueryHandler(IAccountingDbContext context) : IRequestHandler<GetMasterWarehousesQuery, Result<IReadOnlyList<WarehouseDto>>>
+{
+    public async Task<Result<IReadOnlyList<WarehouseDto>>> Handle(GetMasterWarehousesQuery request, CancellationToken cancellationToken)
+    {
+        var query = context.MasterWarehouses.AsNoTracking();
+        if (!request.IncludeInactive)
+            query = query.Where(w => w.IsActive);
+
+        var list = await query
+            .OrderBy(w => w.Id)
+            .Select(w => new WarehouseDto(w.Id.Value, w.WarehouseName, w.Address, w.IsActive))
+            .ToListAsync(cancellationToken);
+
+        return Result<IReadOnlyList<WarehouseDto>>.Success(list);
+    }
+}
+
+public record GetUnitsOfMeasureQuery(bool IncludeInactive = false) : IRequest<Result<IReadOnlyList<UnitOfMeasureDto>>>;
+
+public class GetUnitsOfMeasureQueryHandler(IAccountingDbContext context) : IRequestHandler<GetUnitsOfMeasureQuery, Result<IReadOnlyList<UnitOfMeasureDto>>>
+{
+    public async Task<Result<IReadOnlyList<UnitOfMeasureDto>>> Handle(GetUnitsOfMeasureQuery request, CancellationToken cancellationToken)
+    {
+        var query = context.UnitsOfMeasure.AsNoTracking();
+        if (!request.IncludeInactive)
+            query = query.Where(u => u.IsActive);
+
+        var list = await query
+            .OrderBy(u => u.UomCode)
+            .Select(u => new UnitOfMeasureDto(u.Id.Value, u.UomCode, u.UomName, u.Description, u.IsActive))
+            .ToListAsync(cancellationToken);
+
+        return Result<IReadOnlyList<UnitOfMeasureDto>>.Success(list);
+    }
+}
+
+public record GetInventoryItemsQuery(bool IncludeInactive = false) : IRequest<Result<IReadOnlyList<InventoryItemDto>>>;
+
+public class GetInventoryItemsQueryHandler(IAccountingDbContext context) : IRequestHandler<GetInventoryItemsQuery, Result<IReadOnlyList<InventoryItemDto>>>
+{
+    public async Task<Result<IReadOnlyList<InventoryItemDto>>> Handle(GetInventoryItemsQuery request, CancellationToken cancellationToken)
+    {
+        var query = context.InventoryItems.AsNoTracking();
+        if (!request.IncludeInactive)
+            query = query.Where(i => i.IsActive);
+
+        var list = await query
+            .OrderBy(i => i.ItemCode)
+            .Select(i => new InventoryItemDto(
+                i.Id.Value,
+                i.ItemCode,
+                i.ItemName,
+                i.ItemType,
+                i.BaseUomId.Value,
+                i.DefaultCostingMethod,
+                i.DefaultInventoryAccountId != null ? i.DefaultInventoryAccountId.Value : null,
+                i.DefaultCogsAccountId != null ? i.DefaultCogsAccountId.Value : null,
+                i.DefaultRevenueAccountId != null ? i.DefaultRevenueAccountId.Value : null,
+                i.TaxRate,
+                i.IsActive))
+            .ToListAsync(cancellationToken);
+
+        return Result<IReadOnlyList<InventoryItemDto>>.Success(list);
+    }
+}
+
 // Cost Center & Department DTOs
 public record CostCenterDto(string Id, string Name, string? ParentId, bool IsActive);
 public record DepartmentDto(string Id, string Name, string? ParentId, bool IsActive);
+

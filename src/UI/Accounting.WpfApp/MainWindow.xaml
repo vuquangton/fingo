@@ -174,6 +174,20 @@
                             </StackPanel>
                         </Button>
 
+                        <Button Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:AppModule.MasterData}" Style="{StaticResource NavButtonStyle}">
+                            <StackPanel Orientation="Horizontal">
+                                <Path Data="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z" Fill="#38BDF8" Width="16" Height="16" Stretch="Uniform" Margin="0,0,12,0"/>
+                                <TextBlock Text="Danh Mục (Master Data)" FontSize="13" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:AppModule.PeriodEnd}" Style="{StaticResource NavButtonStyle}">
+                            <StackPanel Orientation="Horizontal">
+                                <Path Data="M18 17H6v-2h12v2zm0-4H6v-2h12v2zm0-4H6V7h12v2zM3 22l1.5-1.5L6 22l1.5-1.5L9 22l1.5-1.5L12 22l1.5-1.5L15 22l1.5-1.5L18 22l1.5-1.5L21 22V2l-1.5 1.5L18 2l-1.5 1.5L15 2l-1.5 1.5L12 2l-1.5 1.5L9 2 7.5 3.5 6 2 4.5 3.5 3 2v20z" Fill="#38BDF8" Width="16" Height="16" Stretch="Uniform" Margin="0,0,12,0"/>
+                                <TextBlock Text="Khóa Sổ &amp; Quyết Toán" FontSize="13" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </Button>
+
                         <Separator Background="#334155" Margin="16,8"/>
 
                         <!-- FOUNDATION MODULES -->
@@ -1040,10 +1054,14 @@
                             </StackPanel>
                             <StackPanel Grid.Column="1" Orientation="Horizontal">
                                 <Button Command="{Binding LoadSettingsDataCommand}" Content="🔄 Làm Mới Dữ Liệu" Background="#F1F5F9" Foreground="#0F172A" FontWeight="SemiBold" Padding="12,8" Margin="0,0,8,0" Cursor="Hand"/>
-                                <Button Command="{Binding ExecuteBackupCommand}" Content="💾 Sao Lưu CSDL (Backup)" Background="#2563EB" Foreground="White" FontWeight="SemiBold" Padding="12,8" Cursor="Hand"/>
+                                <Button Command="{Binding ExecuteBackupCommand}" Content="💾 Sao Lưu CSDL (Backup)" Background="#2563EB" Foreground="White" FontWeight="SemiBold" Padding="12,8" Margin="0,0,8,0" Cursor="Hand"/>
+                                <Button Command="{Binding ExecuteRestoreCommand}" Content="📥 Phục Hồi CSDL (Restore)" Background="#D97706" Foreground="White" FontWeight="SemiBold" Padding="12,8" Cursor="Hand"/>
                             </StackPanel>
                         </Grid>
                     </Border>
+                    <!-- Restore Database Path Input -->
+                    <Border Grid.Row="0" Margin="0,0,0,16" Background="#FEF3C7" BorderBrush="#F59E0B" BorderThickness="1" CornerRadius="6" Padding="12" Visibility="Collapsed"/>
+
                     <Grid Grid.Row="1">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
@@ -1099,6 +1117,331 @@
                             </Grid>
                         </Border>
                     </Grid>
+                </Grid>
+
+                <!-- 8. MASTER DATA WORKSPACE -->
+                <Grid DataContext="{Binding MasterData}"
+                      Visibility="{Binding DataContext.CurrentModule, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource ModuleToVis}, ConverterParameter={x:Static vm:AppModule.MasterData}}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Header -->
+                    <Border Grid.Row="0" Background="White" CornerRadius="8" Padding="16" Margin="0,0,0,16" BorderBrush="#CBD5E1" BorderThickness="1">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Trung Tâm Quản Lý Danh Mục (Master Data Center)" FontSize="18" FontWeight="Bold" Foreground="#0F172A"/>
+                                <TextBlock Text="Quản trị Đối tác (Khách hàng/NCC), Vật tư hàng hóa, Đơn vị tính, Kho hàng và Tiền tệ" FontSize="12" Foreground="#64748B" Margin="0,2,0,0"/>
+                            </StackPanel>
+                            <Button Grid.Column="1" Command="{Binding LoadAllMasterDataCommand}" Content="🔄 Nạp Lại Danh Mục" Background="#2563EB" Foreground="White" FontWeight="SemiBold" Padding="14,8" Cursor="Hand"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- TabControl for Sub-domains -->
+                    <TabControl Grid.Row="1" Background="White" BorderBrush="#CBD5E1">
+                        <!-- Tab 1: Đối tác kinh doanh -->
+                        <TabItem Header="👥 Đối Tác (Khách Hàng &amp; Nhà Cung Cấp)">
+                            <Grid Margin="12">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <!-- Form Add Partner -->
+                                <Border Grid.Row="0" Background="#F8FAFC" CornerRadius="6" Padding="12" Margin="0,0,0,12" BorderBrush="#E2E8F0" BorderThickness="1">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="1.5*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Row="0" Grid.Column="0" Margin="4">
+                                            <TextBlock Text="Mã đối tác:" FontSize="11" Foreground="#64748B"/>
+                                            <TextBox Text="{Binding PartnerCode, UpdateSourceTrigger=PropertyChanged}" Padding="6,4" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Row="0" Grid.Column="1" Margin="4">
+                                            <TextBlock Text="Tên công ty / Cá nhân:" FontSize="11" Foreground="#64748B"/>
+                                            <TextBox Text="{Binding PartnerName, UpdateSourceTrigger=PropertyChanged}" Padding="6,4" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Row="0" Grid.Column="2" Margin="4">
+                                            <TextBlock Text="Mã số thuế:" FontSize="11" Foreground="#64748B"/>
+                                            <TextBox Text="{Binding PartnerTaxCode, UpdateSourceTrigger=PropertyChanged}" Padding="6,4" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Row="0" Grid.Column="3" Margin="4">
+                                            <TextBlock Text="Điện thoại:" FontSize="11" Foreground="#64748B"/>
+                                            <TextBox Text="{Binding PartnerPhone, UpdateSourceTrigger=PropertyChanged}" Padding="6,4" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                        <Button Grid.Row="0" Grid.Column="4" Grid.RowSpan="2" VerticalAlignment="Center" Margin="8,4,4,4"
+                                                Command="{Binding CreatePartnerCommand}" Content="➕ Thêm Đối Tác" Background="#16A34A" Foreground="White" FontWeight="Bold" Padding="12,12" Cursor="Hand"/>
+                                        <StackPanel Grid.Row="1" Grid.Column="0" Margin="4">
+                                            <TextBlock Text="Hạn mức nợ (VND):" FontSize="11" Foreground="#64748B"/>
+                                            <TextBox Text="{Binding PartnerCreditLimit, UpdateSourceTrigger=PropertyChanged}" Padding="6,4" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Row="1" Grid.Column="1" Margin="4">
+                                            <TextBlock Text="Địa chỉ trụ sở:" FontSize="11" Foreground="#64748B"/>
+                                            <TextBox Text="{Binding PartnerAddress, UpdateSourceTrigger=PropertyChanged}" Padding="6,4" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" Margin="4">
+                                            <TextBlock Text="Email giao dịch:" FontSize="11" Foreground="#64748B"/>
+                                            <TextBox Text="{Binding PartnerEmail, UpdateSourceTrigger=PropertyChanged}" Padding="6,4" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                                <!-- Grid Partners -->
+                                <DataGrid Grid.Row="1" ItemsSource="{Binding Partners}" AutoGenerateColumns="False" CanUserAddRows="False"
+                                          HeadersVisibility="Column" Background="White" BorderThickness="1" BorderBrush="#E2E8F0">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Mã Đối Tác" Binding="{Binding Code}" FontWeight="SemiBold" Width="110"/>
+                                        <DataGridTextColumn Header="Tên Đối Tác" Binding="{Binding Name}" Width="250"/>
+                                        <DataGridTextColumn Header="Phân Loại" Binding="{Binding PartnerType}" Width="100"/>
+                                        <DataGridTextColumn Header="Mã Số Thuế" Binding="{Binding TaxCode}" Width="110"/>
+                                        <DataGridTextColumn Header="Điện Thoại" Binding="{Binding ContactPhone}" Width="100"/>
+                                        <DataGridTextColumn Header="Hạn Mức Nợ" Binding="{Binding CreditLimit, StringFormat='{}{0:N0}'}" Width="110"/>
+                                        <DataGridTextColumn Header="Địa Chỉ" Binding="{Binding Address}" Width="*"/>
+                                        <DataGridCheckBoxColumn Header="Hoạt Động" Binding="{Binding IsActive}" Width="80"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Grid>
+                        </TabItem>
+
+                        <!-- Tab 2: Vật tư & Hàng hóa -->
+                        <TabItem Header="📦 Vật Tư &amp; Hàng Hóa">
+                            <Grid Margin="12">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <!-- Form Add Item -->
+                                <Border Grid.Row="0" Background="#F8FAFC" CornerRadius="6" Padding="12" Margin="0,0,0,12" BorderBrush="#E2E8F0" BorderThickness="1">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="1.5*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Row="0" Grid.Column="0" Margin="4">
+                                            <TextBlock Text="Mã vật tư:" FontSize="11" Foreground="#64748B"/>
+                                            <TextBox Text="{Binding ItemCode, UpdateSourceTrigger=PropertyChanged}" Padding="6,4" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Row="0" Grid.Column="1" Margin="4">
+                                            <TextBlock Text="Tên vật tư / Hàng hóa:" FontSize="11" Foreground="#64748B"/>
+                                            <TextBox Text="{Binding ItemName, UpdateSourceTrigger=PropertyChanged}" Padding="6,4" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Row="0" Grid.Column="2" Margin="4">
+                                            <TextBlock Text="Đơn vị tính (UoM):" FontSize="11" Foreground="#64748B"/>
+                                            <ComboBox ItemsSource="{Binding UnitsOfMeasure}" SelectedItem="{Binding SelectedUom}" DisplayMemberPath="Name" Padding="6,4" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Row="0" Grid.Column="3" Margin="4">
+                                            <TextBlock Text="Thuế suất VAT (%):" FontSize="11" Foreground="#64748B"/>
+                                            <TextBox Text="{Binding ItemTaxRate, UpdateSourceTrigger=PropertyChanged}" Padding="6,4" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Row="0" Grid.Column="4" Margin="4">
+                                            <TextBlock Text="TK Kho ngầm định:" FontSize="11" Foreground="#64748B"/>
+                                            <TextBox Text="{Binding ItemInventoryAccount, UpdateSourceTrigger=PropertyChanged}" Padding="6,4" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                        <Button Grid.Row="0" Grid.Column="5" Grid.RowSpan="2" VerticalAlignment="Center" Margin="8,4,4,4"
+                                                Command="{Binding CreateItemCommand}" Content="➕ Thêm Vật Tư" Background="#16A34A" Foreground="White" FontWeight="Bold" Padding="12,12" Cursor="Hand"/>
+                                        <StackPanel Grid.Row="1" Grid.Column="0" Margin="4">
+                                            <TextBlock Text="TK Giá vốn (COGS):" FontSize="11" Foreground="#64748B"/>
+                                            <TextBox Text="{Binding ItemCogsAccount, UpdateSourceTrigger=PropertyChanged}" Padding="6,4" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Row="1" Grid.Column="1" Margin="4">
+                                            <TextBlock Text="TK Doanh thu:" FontSize="11" Foreground="#64748B"/>
+                                            <TextBox Text="{Binding ItemRevenueAccount, UpdateSourceTrigger=PropertyChanged}" Padding="6,4" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                                <!-- Grid Items -->
+                                <DataGrid Grid.Row="1" ItemsSource="{Binding Items}" AutoGenerateColumns="False" CanUserAddRows="False"
+                                          HeadersVisibility="Column" Background="White" BorderThickness="1" BorderBrush="#E2E8F0">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Mã Vật Tư" Binding="{Binding Code}" FontWeight="SemiBold" Width="120"/>
+                                        <DataGridTextColumn Header="Tên Vật Tư / Hàng Hóa" Binding="{Binding Name}" Width="250"/>
+                                        <DataGridTextColumn Header="Loại" Binding="{Binding ItemType}" Width="100"/>
+                                        <DataGridTextColumn Header="Phương Pháp Giá" Binding="{Binding CostingMethod}" Width="120"/>
+                                        <DataGridTextColumn Header="TK Kho" Binding="{Binding InventoryAccountId}" Width="80"/>
+                                        <DataGridTextColumn Header="TK Giá Vốn" Binding="{Binding CogsAccountId}" Width="80"/>
+                                        <DataGridTextColumn Header="TK Doanh Thu" Binding="{Binding RevenueAccountId}" Width="90"/>
+                                        <DataGridTextColumn Header="Thuế Suất %" Binding="{Binding TaxRate}" Width="80"/>
+                                        <DataGridCheckBoxColumn Header="Hoạt Động" Binding="{Binding IsActive}" Width="80"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Grid>
+                        </TabItem>
+
+                        <!-- Tab 3: Đơn vị tính & Kho hàng & Tiền tệ -->
+                        <TabItem Header="📐 Đơn Vị Tính, Kho Hàng &amp; Tiền Tệ">
+                            <Grid Margin="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="16"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="16"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <!-- UoMs column -->
+                                <Border Grid.Column="0" Background="#F8FAFC" CornerRadius="6" Padding="12" BorderBrush="#E2E8F0" BorderThickness="1">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Grid.Row="0" Text="Đơn Vị Tính (UoM)" FontSize="14" FontWeight="Bold" Foreground="#0F172A" Margin="0,0,0,8"/>
+                                        <StackPanel Grid.Row="1" Margin="0,0,0,8">
+                                            <TextBox Text="{Binding UomCode, UpdateSourceTrigger=PropertyChanged}" Padding="4" Margin="0,2"/>
+                                            <TextBox Text="{Binding UomName, UpdateSourceTrigger=PropertyChanged}" Padding="4" Margin="0,2"/>
+                                            <Button Command="{Binding CreateUomCommand}" Content="➕ Thêm ĐVT" Background="#2563EB" Foreground="White" FontWeight="SemiBold" Padding="6,4" Margin="0,4,0,0" Cursor="Hand"/>
+                                        </StackPanel>
+                                        <DataGrid Grid.Row="2" ItemsSource="{Binding UnitsOfMeasure}" AutoGenerateColumns="False" CanUserAddRows="False" Background="White">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Mã" Binding="{Binding Code}" Width="60"/>
+                                                <DataGridTextColumn Header="Tên ĐVT" Binding="{Binding Name}" Width="*"/>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </Grid>
+                                </Border>
+                                <!-- Warehouses column -->
+                                <Border Grid.Column="2" Background="#F8FAFC" CornerRadius="6" Padding="12" BorderBrush="#E2E8F0" BorderThickness="1">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Grid.Row="0" Text="Danh Mục Kho Hàng" FontSize="14" FontWeight="Bold" Foreground="#0F172A" Margin="0,0,0,8"/>
+                                        <StackPanel Grid.Row="1" Margin="0,0,0,8">
+                                            <TextBox Text="{Binding WarehouseId, UpdateSourceTrigger=PropertyChanged}" Padding="4" Margin="0,2"/>
+                                            <TextBox Text="{Binding WarehouseName, UpdateSourceTrigger=PropertyChanged}" Padding="4" Margin="0,2"/>
+                                            <Button Command="{Binding CreateWarehouseCommand}" Content="➕ Thêm Kho Hàng" Background="#2563EB" Foreground="White" FontWeight="SemiBold" Padding="6,4" Margin="0,4,0,0" Cursor="Hand"/>
+                                        </StackPanel>
+                                        <DataGrid Grid.Row="2" ItemsSource="{Binding Warehouses}" AutoGenerateColumns="False" CanUserAddRows="False" Background="White">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Mã Kho" Binding="{Binding Id}" Width="80"/>
+                                                <DataGridTextColumn Header="Tên Kho" Binding="{Binding Name}" Width="*"/>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </Grid>
+                                </Border>
+                                <!-- Currencies column -->
+                                <Border Grid.Column="4" Background="#F8FAFC" CornerRadius="6" Padding="12" BorderBrush="#E2E8F0" BorderThickness="1">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Grid.Row="0" Text="Tiền Tệ (Currencies)" FontSize="14" FontWeight="Bold" Foreground="#0F172A" Margin="0,0,0,8"/>
+                                        <StackPanel Grid.Row="1" Margin="0,0,0,8">
+                                            <TextBox Text="{Binding CurrencyCode, UpdateSourceTrigger=PropertyChanged}" Padding="4" Margin="0,2"/>
+                                            <TextBox Text="{Binding CurrencyName, UpdateSourceTrigger=PropertyChanged}" Padding="4" Margin="0,2"/>
+                                            <Button Command="{Binding CreateCurrencyCommand}" Content="➕ Thêm Tiền Tệ" Background="#2563EB" Foreground="White" FontWeight="SemiBold" Padding="6,4" Margin="0,4,0,0" Cursor="Hand"/>
+                                        </StackPanel>
+                                        <DataGrid Grid.Row="2" ItemsSource="{Binding Currencies}" AutoGenerateColumns="False" CanUserAddRows="False" Background="White">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Mã" Binding="{Binding Code}" Width="50"/>
+                                                <DataGridTextColumn Header="Ký hiệu" Binding="{Binding Symbol}" Width="50"/>
+                                                <DataGridTextColumn Header="Tên Tiền Tệ" Binding="{Binding Name}" Width="*"/>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </Grid>
+                                </Border>
+                            </Grid>
+                        </TabItem>
+                    </TabControl>
+                </Grid>
+
+                <!-- 9. PERIOD-END CLOSING WORKSPACE -->
+                <Grid DataContext="{Binding PeriodClosing}"
+                      Visibility="{Binding DataContext.CurrentModule, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource ModuleToVis}, ConverterParameter={x:Static vm:AppModule.PeriodEnd}}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Header card -->
+                    <Border Grid.Row="0" Background="White" CornerRadius="8" Padding="16" Margin="0,0,0,16" BorderBrush="#CBD5E1" BorderThickness="1">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Khóa Sổ &amp; Quyết Toán Kỳ Kế Toán (Period-End Closing Engine)" FontSize="18" FontWeight="Bold" Foreground="#0F172A"/>
+                                <TextBlock Text="Kiểm tra toàn vẹn 10 quy tắc kế toán, Đánh giá lại tỷ giá ngoại tệ (413/515/635), và Kết chuyển KQKD sang 911/4212" FontSize="12" Foreground="#64748B" Margin="0,2,0,0"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="Kỳ thực hiện:" VerticalAlignment="Center" Foreground="#64748B" Margin="0,0,6,0"/>
+                                <TextBox Text="{Binding Month, UpdateSourceTrigger=PropertyChanged}" Width="40" Padding="4" TextAlignment="Center" Margin="0,0,4,0"/>
+                                <TextBlock Text="/" VerticalAlignment="Center" Foreground="#64748B" Margin="0,0,4,0"/>
+                                <TextBox Text="{Binding Year, UpdateSourceTrigger=PropertyChanged}" Width="60" Padding="4" TextAlignment="Center" Margin="0,0,12,0"/>
+                                <Button Command="{Binding RunPreClosingChecksCommand}" Content="🔍 Chạy Kiểm Tra Toàn Vẹn" Background="#2563EB" Foreground="White" FontWeight="SemiBold" Padding="12,8" Margin="0,0,8,0" Cursor="Hand"/>
+                                <Button Command="{Binding ExecutePnLClosingCommand}" Content="⚡ Kết Chuyển KQKD (911/4212)" Background="#16A34A" Foreground="White" FontWeight="SemiBold" Padding="12,8" Cursor="Hand"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- FX Revaluation Control Bar -->
+                    <Border Grid.Row="1" Background="#EFF6FF" CornerRadius="8" Padding="12" Margin="0,0,0,16" BorderBrush="#BFDBFE" BorderThickness="1">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="Đánh giá lại ngoại tệ cuối kỳ:" FontWeight="Bold" Foreground="#1E40AF" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                                <TextBlock Text="Ngoại tệ:" Foreground="#64748B" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                <TextBox Text="{Binding FxCurrency, UpdateSourceTrigger=PropertyChanged}" Width="50" Padding="4" TextAlignment="Center" Margin="0,0,12,0"/>
+                                <TextBlock Text="Tỷ giá chốt cuối kỳ:" Foreground="#64748B" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                <TextBox Text="{Binding FxClosingRate, UpdateSourceTrigger=PropertyChanged}" Width="90" Padding="4" TextAlignment="Right" Margin="0,0,12,0"/>
+                            </StackPanel>
+                            <Button Grid.Column="1" Command="{Binding ExecuteFxRevaluationCommand}" Content="💱 Thực Thi Đánh Giá Lại Tỷ Giá" Background="#0284C7" Foreground="White" FontWeight="SemiBold" Padding="12,6" Cursor="Hand"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- Health Check Report List -->
+                    <Border Grid.Row="2" Background="White" CornerRadius="8" Padding="16" BorderBrush="#CBD5E1" BorderThickness="1">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,12">
+                                <TextBlock Text="Báo Cáo Kiểm Tra Toàn Vẹn Trước Khóa Sổ (Pre-Closing Health Check)" FontSize="15" FontWeight="Bold" Foreground="#0F172A"/>
+                                <TextBlock Text="{Binding ErrorCount, StringFormat='{} | Lỗi: {0}'}" FontWeight="Bold" Foreground="#DC2626" Margin="12,0,0,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding WarningCount, StringFormat='{} | Cảnh báo: {0}'}" FontWeight="Bold" Foreground="#D97706" Margin="6,0,0,0" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <DataGrid Grid.Row="1" ItemsSource="{Binding HealthChecks}" AutoGenerateColumns="False" CanUserAddRows="False"
+                                      HeadersVisibility="Column" Background="White" BorderThickness="1" BorderBrush="#E2E8F0">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Mã Quy Tắc" Binding="{Binding RuleCode}" FontWeight="SemiBold" Width="180"/>
+                                    <DataGridTextColumn Header="Tên Quy Tắc Kiểm Tra" Binding="{Binding RuleTitle}" Width="280"/>
+                                    <DataGridTextColumn Header="Mức Độ" Binding="{Binding Severity}" Width="90"/>
+                                    <DataGridCheckBoxColumn Header="Đạt" Binding="{Binding Passed}" Width="60"/>
+                                    <DataGridTextColumn Header="Chi Tiết / Đánh Giá" Binding="{Binding Details}" Width="*"/>
+                                    <DataGridTextColumn Header="Số Bản Ghi Lỗi" Binding="{Binding OffendingRecordsCount}" Width="110"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+                    </Border>
                 </Grid>
 
                 <!-- DASHBOARD WORKSPACE -->

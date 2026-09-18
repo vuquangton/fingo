@@ -22,6 +22,8 @@ public enum AppModule
     FixedAssets,
     Payroll,
     StatutoryReports,
+    MasterData,
+    PeriodEnd,
     CompanySetup,
     OpeningBalance,
     UserManagement,
@@ -77,6 +79,8 @@ public partial class MainViewModel : ObservableObject
     public InventoryViewModel Inventory { get; }
     public FixedAssetsViewModel FixedAssets { get; }
     public PayrollViewModel Payroll { get; }
+    public MasterDataViewModel MasterData { get; }
+    public PeriodClosingViewModel PeriodClosing { get; }
     public SettingsViewModel Settings { get; }
 
     public MainViewModel(
@@ -95,6 +99,8 @@ public partial class MainViewModel : ObservableObject
         InventoryViewModel inventory,
         FixedAssetsViewModel fixedAssets,
         PayrollViewModel payroll,
+        MasterDataViewModel masterData,
+        PeriodClosingViewModel periodClosing,
         SettingsViewModel settings)
     {
         _mediator = mediator;
@@ -112,6 +118,8 @@ public partial class MainViewModel : ObservableObject
         Inventory = inventory;
         FixedAssets = fixedAssets;
         Payroll = payroll;
+        MasterData = masterData;
+        PeriodClosing = periodClosing;
         Settings = settings;
 
         var provider = configuration["DatabaseProvider"] ?? "Sqlite";

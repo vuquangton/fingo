@@ -66,6 +66,8 @@ public partial class App : System.Windows.Application
                 services.AddSingleton<InventoryViewModel>();
                 services.AddSingleton<FixedAssetsViewModel>();
                 services.AddSingleton<PayrollViewModel>();
+                services.AddSingleton<MasterDataViewModel>();
+                services.AddSingleton<PeriodClosingViewModel>();
                 services.AddSingleton<SettingsViewModel>();
                 services.AddSingleton<MainViewModel>();
                 services.AddSingleton<MainWindow>();

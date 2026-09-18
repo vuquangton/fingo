@@ -575,6 +575,12 @@ public partial class SettingsViewModel : ObservableObject
     private string _backupDestination = "D:\\accounting\\backups";
 
     [ObservableProperty]
+    private string _restoreFilePath = string.Empty;
+
+    [ObservableProperty]
+    private string _targetDatabasePath = "D:\\accounting\\accounting.db";
+
+    [ObservableProperty]
     private string _statusMessage = string.Empty;
 
     public ObservableCollection<Accounting.Application.Features.GeneralLedger.AccountDto> Accounts { get; } = [];
@@ -656,4 +662,44 @@ public partial class SettingsViewModel : ObservableObject
             StatusMessage = $"Lỗi ngoại lệ: {ex.Message}";
         }
     }
+
+    [RelayCommand]
+    public async Task ExecuteRestoreAsync()
+    {
+        if (string.IsNullOrWhiteSpace(RestoreFilePath))
+        {
+            StatusMessage = "Vui lòng chỉ định đường dẫn tệp sao lưu (.db hoặc .enc) để phục hồi!";
+            return;
+        }
+
+        if (!System.IO.File.Exists(RestoreFilePath))
+        {
+            StatusMessage = $"Không tìm thấy tệp sao lưu tại '{RestoreFilePath}'!";
+            return;
+        }
+
+        StatusMessage = "Đang tiến hành phục hồi CSDL từ bản sao lưu...";
+        try
+        {
+            var res = await _mediator.Send(new Accounting.Application.Features.Ops.RestoreDatabaseBackupCommand(
+                RestoreFilePath,
+                null,
+                TargetDatabasePath));
+
+            if (res.IsSuccess)
+            {
+                StatusMessage = "Phục hồi CSDL thành công! Vui lòng làm mới dữ liệu hoặc khởi động lại ứng dụng.";
+                await LoadSettingsDataAsync();
+            }
+            else
+            {
+                StatusMessage = $"Lỗi phục hồi: {res.ErrorMessage}";
+            }
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"Lỗi ngoại lệ phục hồi: {ex.Message}";
+        }
+    }
 }
+
