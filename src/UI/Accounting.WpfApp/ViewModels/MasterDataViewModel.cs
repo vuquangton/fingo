@@ -1,7 +1,7 @@
 using System.Collections.ObjectModel;
 using Accounting.Application.Features.MasterData;
+using Accounting.Application.Features.MasterData.Services;
 using Accounting.Domain.MasterData.Common;
-using Accounting.Domain.MasterData.Partners;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediatR;
@@ -17,10 +17,18 @@ public partial class MasterDataViewModel : ObservableObject
 
     // Sub-collections
     public ObservableCollection<BusinessPartnerDto> Partners { get; } = [];
+    public ObservableCollection<BusinessPartnerDto> FilteredPartners { get; } = [];
     public ObservableCollection<InventoryItemDto> Items { get; } = [];
     public ObservableCollection<UnitOfMeasureDto> UnitsOfMeasure { get; } = [];
     public ObservableCollection<WarehouseDto> Warehouses { get; } = [];
     public ObservableCollection<CurrencyDto> Currencies { get; } = [];
+
+    // Partner Fast Filter (0=All, 1=Customer, 2=Vendor, 3=Dual)
+    [ObservableProperty]
+    private int _partnerFilterIndex = 0;
+
+    [ObservableProperty]
+    private string _partnerSearchText = string.Empty;
 
     // Partner Form Properties
     [ObservableProperty]
@@ -33,7 +41,13 @@ public partial class MasterDataViewModel : ObservableObject
     private PartnerType _partnerType = PartnerType.Customer;
 
     [ObservableProperty]
+    private LegalEntityType _partnerLegalEntityType = LegalEntityType.Corporate;
+
+    [ObservableProperty]
     private string _partnerTaxCode = "0101234567";
+
+    [ObservableProperty]
+    private string _partnerTaxAuthority = "Chi cục Thuế Cầu Giấy";
 
     [ObservableProperty]
     private string _partnerAddress = "123 Đường Cầu Giấy, Hà Nội";
@@ -45,10 +59,23 @@ public partial class MasterDataViewModel : ObservableObject
     private string _partnerEmail = "contact@newtech.vn";
 
     [ObservableProperty]
+    private string _partnerInvoiceReceivingEmail = "einvoice@newtech.vn";
+
+    [ObservableProperty]
     private decimal _partnerCreditLimit = 200_000_000m;
 
     [ObservableProperty]
     private int _partnerPaymentTermDays = 30;
+
+    [ObservableProperty]
+    private decimal _partnerDiscountRate = 0m;
+
+    // Bank Account Form
+    [ObservableProperty]
+    private string _bankName = "Ngân hàng TMCP Ngoại Thương VN (Vietcombank)";
+
+    [ObservableProperty]
+    private string _bankAccountNumber = "0011001234567";
 
     // Item Form Properties
     [ObservableProperty]
@@ -86,24 +113,24 @@ public partial class MasterDataViewModel : ObservableObject
     private string _uomName = "Gói";
 
     [ObservableProperty]
-    private string _uomDescription = "Gói giải pháp bản quyền phần mềm";
+    private string _uomDescription = "Gói dịch vụ / License bản quyền";
 
     // Warehouse Form Properties
     [ObservableProperty]
-    private string _warehouseId = "KHO-HCM-02";
+    private string _warehouseId = "KHO-HN-02";
 
     [ObservableProperty]
-    private string _warehouseName = "Kho Chi Nhánh Quận 7";
+    private string _warehouseName = "Kho Chi Nhánh Cầu Giấy";
 
     [ObservableProperty]
-    private string _warehouseAddress = "Khu Chế Xuất Tân Thuận, Q.7, TP. HCM";
+    private string _warehouseAddress = "Phường Dịch Vọng Hậu, Quận Cầu Giấy, Hà Nội";
 
     // Currency Form Properties
     [ObservableProperty]
     private string _currencyCode = "JPY";
 
     [ObservableProperty]
-    private string _currencyName = "Yên Nhật Bản";
+    private string _currencyName = "Yên Nhật";
 
     [ObservableProperty]
     private string _currencySymbol = "¥";
@@ -127,6 +154,7 @@ public partial class MasterDataViewModel : ObservableObject
         {
             Partners.Clear();
             foreach (var p in pRes.Value) Partners.Add(p);
+            ApplyPartnerFilter();
         }
 
         // 2. UoMs
@@ -146,7 +174,7 @@ public partial class MasterDataViewModel : ObservableObject
         if (itemRes.IsSuccess && itemRes.Value != null)
         {
             Items.Clear();
-            foreach (var item in itemRes.Value) Items.Add(item);
+            foreach (var i in itemRes.Value) Items.Add(i);
         }
 
         // 4. Warehouses
@@ -168,10 +196,81 @@ public partial class MasterDataViewModel : ObservableObject
         StatusMessage = $"Đã nạp danh mục: {Partners.Count} đối tác, {Items.Count} vật tư/hàng hóa, {UnitsOfMeasure.Count} ĐVT, {Warehouses.Count} kho, {Currencies.Count} tiền tệ.";
     }
 
+    partial void OnPartnerFilterIndexChanged(int value) => ApplyPartnerFilter();
+    partial void OnPartnerSearchTextChanged(string value) => ApplyPartnerFilter();
+
+    private void ApplyPartnerFilter()
+    {
+        FilteredPartners.Clear();
+        var search = PartnerSearchText?.Trim().ToLowerInvariant() ?? string.Empty;
+
+        foreach (var p in Partners)
+        {
+            bool typeMatch = PartnerFilterIndex switch
+            {
+                1 => (p.PartnerType & PartnerType.Customer) != 0,
+                2 => (p.PartnerType & PartnerType.Vendor) != 0,
+                3 => (p.PartnerType & (PartnerType.Customer | PartnerType.Vendor)) == (PartnerType.Customer | PartnerType.Vendor),
+                _ => true
+            };
+
+            if (!typeMatch) continue;
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                bool textMatch = p.Code.ToLowerInvariant().Contains(search) ||
+                                 p.Name.ToLowerInvariant().Contains(search) ||
+                                 (p.TaxCode != null && p.TaxCode.Contains(search)) ||
+                                 (p.ContactPhone != null && p.ContactPhone.Contains(search));
+                if (!textMatch) continue;
+            }
+
+            FilteredPartners.Add(p);
+        }
+    }
+
+    [RelayCommand]
+    public async Task AutoLookupTaxCodeAsync()
+    {
+        if (string.IsNullOrWhiteSpace(PartnerTaxCode))
+        {
+            StatusMessage = "Vui lòng nhập Mã số thuế để tra cứu.";
+            return;
+        }
+
+        StatusMessage = $"Đang tra cứu MST '{PartnerTaxCode}' từ CSDL Thuế Quốc Gia...";
+        var res = await _mediator.Send(new LookupVietnamTaxCodeQuery(PartnerTaxCode.Trim()));
+        if (res.IsSuccess && res.Value != null)
+        {
+            var info = res.Value;
+            PartnerName = info.LegalName;
+            PartnerAddress = info.RegisteredAddress;
+            PartnerTaxAuthority = info.TaxAuthorityName;
+            PartnerLegalEntityType = LegalEntityType.Corporate;
+            StatusMessage = $"Tra cứu thành công: {info.LegalName} ({info.TaxAuthorityName})";
+        }
+        else
+        {
+            StatusMessage = $"Không tìm thấy thông tin thuế: {res.ErrorMessage}";
+        }
+    }
+
     [RelayCommand]
     public async Task CreatePartnerAsync()
     {
-        StatusMessage = "Đang tạo đối tác kinh doanh...";
+        StatusMessage = "Đang kiểm tra trùng lặp & tạo đối tác...";
+
+        // Deduplication Check
+        var dupRes = await _mediator.Send(new CheckPartnerDuplicateQuery(PartnerName, PartnerTaxCode, PartnerPhone));
+        if (dupRes.IsSuccess && dupRes.Value != null && dupRes.Value.Count > 0)
+        {
+            var bestMatch = dupRes.Value[0];
+            if (bestMatch.SimilarityScore >= 0.95)
+            {
+                StatusMessage = $"Cảnh báo trùng lặp: {bestMatch.MatchReason} (Đối tác hiện tại: {bestMatch.PartnerCode} - {bestMatch.PartnerName}).";
+            }
+        }
+
         var cmd = new CreateBusinessPartnerCommand(
             PartnerCode,
             PartnerName,
@@ -181,12 +280,16 @@ public partial class MasterDataViewModel : ObservableObject
             string.IsNullOrWhiteSpace(PartnerEmail) ? null : PartnerEmail,
             string.IsNullOrWhiteSpace(PartnerPhone) ? null : PartnerPhone,
             PartnerCreditLimit,
-            PartnerPaymentTermDays);
+            PartnerPaymentTermDays,
+            PartnerLegalEntityType,
+            string.IsNullOrWhiteSpace(PartnerInvoiceReceivingEmail) ? null : PartnerInvoiceReceivingEmail,
+            string.IsNullOrWhiteSpace(PartnerTaxAuthority) ? null : PartnerTaxAuthority,
+            PartnerDiscountRate);
 
         var res = await _mediator.Send(cmd);
         if (res.IsSuccess)
         {
-            StatusMessage = $"Thêm đối tác '{PartnerCode}' thành công!";
+            StatusMessage = $"Thêm đối tác '{PartnerCode}' ({PartnerName}) thành công!";
             PartnerCode = $"KH-TEST-{DateTime.Now:ss}";
             await LoadAllMasterDataAsync();
         }

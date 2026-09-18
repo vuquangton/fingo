@@ -31,6 +31,21 @@ public enum PartnerType
     Other = 8
 }
 
+public enum LegalEntityType
+{
+    Corporate = 1,     // Doanh nghiệp / Tổ chức (có MST)
+    Individual = 2,    // Cá nhân / Hộ kinh doanh (CCCD / MST cá nhân)
+    Foreign = 3        // Nhà thầu / Khách hàng nước ngoài
+}
+
+public enum PartnerRiskTier
+{
+    Low = 1,
+    Medium = 2,
+    High = 3,
+    Critical = 4
+}
+
 public enum CostingMethod
 {
     FIFO = 1,

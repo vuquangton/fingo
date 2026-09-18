@@ -1,9 +1,8 @@
 ﻿using Accounting.Application.Common.Interfaces;
 using Accounting.Application.Common.Models;
 using Accounting.Domain.Entities.Inventory;
-using Accounting.Domain.Entities.Purchasing;
-using Accounting.Domain.Entities.Sales;
 using Accounting.Domain.Entities.Treasury;
+using Accounting.Domain.MasterData.Common;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,10 +15,10 @@ public class GetVendorsQueryHandler(IAccountingDbContext context) : IRequestHand
 {
     public async Task<Result<List<VendorItemDto>>> Handle(GetVendorsQuery request, CancellationToken cancellationToken)
     {
-        var list = await context.Vendors.AsNoTracking()
-            .Where(v => v.IsActive)
-            .OrderBy(v => v.Code)
-            .Select(v => new VendorItemDto(v.Id, v.Code, v.Name, v.TaxCode, v.Phone, v.CurrentPayableBalance))
+        var list = await context.BusinessPartners.AsNoTracking()
+            .Where(p => p.IsActive && (p.PartnerType & PartnerType.Vendor) != 0)
+            .OrderBy(p => p.PartnerCode)
+            .Select(p => new VendorItemDto(p.Id.Value, p.PartnerCode, p.Name, p.TaxCode ?? string.Empty, p.ContactPhone, p.CurrentPayableBalance))
             .ToListAsync(cancellationToken);
         return Result<List<VendorItemDto>>.Success(list);
     }
@@ -32,10 +31,10 @@ public class GetCustomersQueryHandler(IAccountingDbContext context) : IRequestHa
 {
     public async Task<Result<List<CustomerItemDto>>> Handle(GetCustomersQuery request, CancellationToken cancellationToken)
     {
-        var list = await context.Customers.AsNoTracking()
-            .Where(c => c.IsActive)
-            .OrderBy(c => c.Code)
-            .Select(c => new CustomerItemDto(c.Id, c.Code, c.Name, c.TaxCode, c.Phone, c.CreditLimit, c.CurrentReceivableBalance))
+        var list = await context.BusinessPartners.AsNoTracking()
+            .Where(p => p.IsActive && (p.PartnerType & PartnerType.Customer) != 0)
+            .OrderBy(p => p.PartnerCode)
+            .Select(p => new CustomerItemDto(p.Id.Value, p.PartnerCode, p.Name, p.TaxCode ?? string.Empty, p.ContactPhone, p.CreditLimit, p.CurrentReceivableBalance))
             .ToListAsync(cancellationToken);
         return Result<List<CustomerItemDto>>.Success(list);
     }

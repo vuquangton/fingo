@@ -1,5 +1,6 @@
-using System.Reflection;
+﻿using System.Reflection;
 using Accounting.Application.Common.Behaviors;
+using Accounting.Application.Features.MasterData.Services;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,6 +24,9 @@ public static class DependencyInjection
         });
 
         services.AddScoped<Common.Interfaces.IGlVoucherBridgeService, Common.Services.GlVoucherBridgeService>();
+        services.AddSingleton<IVietnamTaxLookupService, VietnamTaxLookupService>();
+        services.AddScoped<IPartnerDeduplicationEngine, PartnerDeduplicationEngine>();
+        services.AddScoped<IPartnerCreditRiskEngine, PartnerCreditRiskEngine>();
 
         return services;
     }

@@ -1256,10 +1256,34 @@
                             <Grid Margin="12">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
+                                <!-- Top Filter Bar & Search -->
+                                <Border Grid.Row="0" Background="White" CornerRadius="6" Padding="10" Margin="0,0,0,10" BorderBrush="#CBD5E1" BorderThickness="1">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                            <TextBlock Text="Bộ lọc phân loại:" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,8,0" Foreground="#475569"/>
+                                            <ComboBox SelectedIndex="{Binding PartnerFilterIndex}" Width="180" Padding="6,4">
+                                                <ComboBoxItem Content="Tất Cả Đối Tác"/>
+                                                <ComboBoxItem Content="Khách Hàng (AR)"/>
+                                                <ComboBoxItem Content="Nhà Cung Cấp (AP)"/>
+                                                <ComboBoxItem Content="Đối Tác Kép (AR &amp; AP)"/>
+                                            </ComboBox>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                                            <TextBlock Text="Tìm nhanh:" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,8,0" Foreground="#475569"/>
+                                            <TextBox Text="{Binding PartnerSearchText, UpdateSourceTrigger=PropertyChanged}" Width="250" Padding="6,4"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+
                                 <!-- Form Add Partner -->
-                                <Border Grid.Row="0" Background="#F8FAFC" CornerRadius="6" Padding="12" Margin="0,0,0,12" BorderBrush="#E2E8F0" BorderThickness="1">
+                                <Border Grid.Row="1" Background="#F8FAFC" CornerRadius="6" Padding="12" Margin="0,0,0,12" BorderBrush="#E2E8F0" BorderThickness="1">
                                     <Grid>
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto"/>
@@ -1268,7 +1292,7 @@
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="1.5*"/>
-                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="1.2*"/>
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
@@ -1281,41 +1305,57 @@
                                             <TextBox Text="{Binding PartnerName, UpdateSourceTrigger=PropertyChanged}" Padding="6,4" Margin="0,2,0,0"/>
                                         </StackPanel>
                                         <StackPanel Grid.Row="0" Grid.Column="2" Margin="4">
-                                            <TextBlock Text="Mã số thuế:" FontSize="11" Foreground="#64748B"/>
-                                            <TextBox Text="{Binding PartnerTaxCode, UpdateSourceTrigger=PropertyChanged}" Padding="6,4" Margin="0,2,0,0"/>
+                                            <TextBlock Text="Mã số thuế (GDT Lookup):" FontSize="11" Foreground="#64748B"/>
+                                            <Grid Margin="0,2,0,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBox Grid.Column="0" Text="{Binding PartnerTaxCode, UpdateSourceTrigger=PropertyChanged}" Padding="6,4"/>
+                                                <Button Grid.Column="1" Command="{Binding AutoLookupTaxCodeCommand}" Content="🔍 Tra MST" Margin="4,0,0,0" Padding="8,4" Background="#0284C7" Foreground="White" FontWeight="Bold"/>
+                                            </Grid>
                                         </StackPanel>
                                         <StackPanel Grid.Row="0" Grid.Column="3" Margin="4">
-                                            <TextBlock Text="Điện thoại:" FontSize="11" Foreground="#64748B"/>
+                                            <TextBlock Text="Điện thoại liên hệ:" FontSize="11" Foreground="#64748B"/>
                                             <TextBox Text="{Binding PartnerPhone, UpdateSourceTrigger=PropertyChanged}" Padding="6,4" Margin="0,2,0,0"/>
                                         </StackPanel>
                                         <Button Grid.Row="0" Grid.Column="4" Grid.RowSpan="2" VerticalAlignment="Center" Margin="8,4,4,4"
-                                                Command="{Binding CreatePartnerCommand}" Content="➕ Thêm Đối Tác" Background="#16A34A" Foreground="White" FontWeight="Bold" Padding="12,12" Cursor="Hand"/>
+                                                Command="{Binding CreatePartnerCommand}" Content="➕ Thêm Đối Tác" Background="#16A34A" Foreground="White" FontWeight="Bold" Padding="14,14" Cursor="Hand"/>
                                         <StackPanel Grid.Row="1" Grid.Column="0" Margin="4">
                                             <TextBlock Text="Hạn mức nợ (VND):" FontSize="11" Foreground="#64748B"/>
                                             <TextBox Text="{Binding PartnerCreditLimit, UpdateSourceTrigger=PropertyChanged}" Padding="6,4" Margin="0,2,0,0"/>
                                         </StackPanel>
                                         <StackPanel Grid.Row="1" Grid.Column="1" Margin="4">
-                                            <TextBlock Text="Địa chỉ trụ sở:" FontSize="11" Foreground="#64748B"/>
+                                            <TextBlock Text="Địa chỉ trụ sở pháp lý:" FontSize="11" Foreground="#64748B"/>
                                             <TextBox Text="{Binding PartnerAddress, UpdateSourceTrigger=PropertyChanged}" Padding="6,4" Margin="0,2,0,0"/>
                                         </StackPanel>
-                                        <StackPanel Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" Margin="4">
-                                            <TextBlock Text="Email giao dịch:" FontSize="11" Foreground="#64748B"/>
-                                            <TextBox Text="{Binding PartnerEmail, UpdateSourceTrigger=PropertyChanged}" Padding="6,4" Margin="0,2,0,0"/>
+                                        <StackPanel Grid.Row="1" Grid.Column="2" Margin="4">
+                                            <TextBlock Text="Email nhận HĐĐT (NĐ 123):" FontSize="11" Foreground="#64748B"/>
+                                            <TextBox Text="{Binding PartnerInvoiceReceivingEmail, UpdateSourceTrigger=PropertyChanged}" Padding="6,4" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Row="1" Grid.Column="3" Margin="4">
+                                            <TextBlock Text="Cơ quan thuế quản lý:" FontSize="11" Foreground="#64748B"/>
+                                            <TextBox Text="{Binding PartnerTaxAuthority, UpdateSourceTrigger=PropertyChanged}" Padding="6,4" Margin="0,2,0,0"/>
                                         </StackPanel>
                                     </Grid>
                                 </Border>
+
                                 <!-- Grid Partners -->
-                                <DataGrid Grid.Row="1" ItemsSource="{Binding Partners}" AutoGenerateColumns="False" CanUserAddRows="False"
+                                <DataGrid Grid.Row="2" ItemsSource="{Binding FilteredPartners}" AutoGenerateColumns="False" CanUserAddRows="False"
                                           HeadersVisibility="Column" Background="White" BorderThickness="1" BorderBrush="#E2E8F0">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Header="Mã Đối Tác" Binding="{Binding Code}" FontWeight="SemiBold" Width="110"/>
                                         <DataGridTextColumn Header="Tên Đối Tác" Binding="{Binding Name}" Width="250"/>
                                         <DataGridTextColumn Header="Phân Loại" Binding="{Binding PartnerType}" Width="100"/>
                                         <DataGridTextColumn Header="Mã Số Thuế" Binding="{Binding TaxCode}" Width="110"/>
+                                        <DataGridTextColumn Header="Mức Rủi Ro" Binding="{Binding RiskTier}" Width="90"/>
                                         <DataGridTextColumn Header="Điện Thoại" Binding="{Binding ContactPhone}" Width="100"/>
                                         <DataGridTextColumn Header="Hạn Mức Nợ" Binding="{Binding CreditLimit, StringFormat='{}{0:N0}'}" Width="110"/>
+                                        <DataGridTextColumn Header="Dư Nợ 131" Binding="{Binding CurrentReceivableBalance, StringFormat='{}{0:N0}'}" Width="110"/>
+                                        <DataGridTextColumn Header="Dư Nợ 331" Binding="{Binding CurrentPayableBalance, StringFormat='{}{0:N0}'}" Width="110"/>
+                                        <DataGridTextColumn Header="Email HĐĐT" Binding="{Binding InvoiceReceivingEmail}" Width="150"/>
                                         <DataGridTextColumn Header="Địa Chỉ" Binding="{Binding Address}" Width="*"/>
-                                        <DataGridCheckBoxColumn Header="Hoạt Động" Binding="{Binding IsActive}" Width="80"/>
+                                        <DataGridCheckBoxColumn Header="Kích Hoạt" Binding="{Binding IsActive}" Width="80"/>
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </Grid>

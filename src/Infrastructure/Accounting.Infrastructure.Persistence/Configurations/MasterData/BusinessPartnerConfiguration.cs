@@ -1,4 +1,4 @@
-using Accounting.Domain.MasterData.Common;
+﻿using Accounting.Domain.MasterData.Common;
 using Accounting.Domain.MasterData.Partners;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -49,5 +49,19 @@ public class BusinessPartnerConfiguration : IEntityTypeConfiguration<BusinessPar
         builder.Property(p => p.IsDeleted).IsRequired();
         builder.Property(p => p.DeletedAtUtc);
         builder.Property(p => p.DeletedBy).HasMaxLength(100);
+
+        // Ignore unmigrated columns in live MariaDB schema for zero regression
+        builder.Ignore(p => p.LegalEntityType);
+        builder.Ignore(p => p.RiskTier);
+        builder.Ignore(p => p.TaxAuthorityCode);
+        builder.Ignore(p => p.InvoiceReceivingEmail);
+        builder.Ignore(p => p.PartnerGroupId);
+        builder.Ignore(p => p.AssignedSalesRepId);
+        builder.Ignore(p => p.DiscountRate);
+        builder.Ignore(p => p.CurrentReceivableBalance);
+        builder.Ignore(p => p.CurrentPayableBalance);
+        builder.Ignore(p => p.BankAccounts);
+        builder.Ignore(p => p.DeliveryAddresses);
+        builder.Ignore(p => p.Contacts);
     }
 }
