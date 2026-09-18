@@ -9,7 +9,7 @@ using MediatR;
 
 namespace Accounting.WpfApp.ViewModels;
 
-public partial class GeneralLedgerViewModel : ObservableObject
+public partial class GeneralLedgerViewModel : WorkspaceTabViewModel
 {
     private readonly IMediator _mediator;
 
@@ -28,6 +28,9 @@ public partial class GeneralLedgerViewModel : ObservableObject
     public GeneralLedgerViewModel(IMediator mediator)
     {
         _mediator = mediator;
+        TabId = "GENERAL_LEDGER";
+        Title = "Sổ Cái & Cân Đối (GL)";
+        Icon = "📊";
     }
 
     [RelayCommand]

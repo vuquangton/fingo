@@ -69,6 +69,7 @@ public partial class App : System.Windows.Application
                 services.AddSingleton<MasterDataViewModel>();
                 services.AddSingleton<PeriodClosingViewModel>();
                 services.AddSingleton<SettingsViewModel>();
+                services.AddSingleton<DocumentManagerViewModel>();
                 services.AddSingleton<MainViewModel>();
                 services.AddSingleton<MainWindow>();
             })

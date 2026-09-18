@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using Accounting.Application.Features.GeneralLedger;
 using Accounting.Domain.Enums;
+using Accounting.WpfApp.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MediatR;
@@ -28,9 +29,12 @@ public partial class VoucherLineItemModel : ObservableObject
     private string _description = string.Empty;
 }
 
-public partial class VoucherEntryViewModel : ObservableObject
+public partial class VoucherEntryViewModel : WorkspaceTabViewModel
 {
     private readonly IMediator _mediator;
+
+    public FuzzyLookupEngine AccountLookup { get; } = new();
+    public FuzzyLookupEngine PartnerLookup { get; } = new();
 
     [ObservableProperty]
     private Guid? _voucherId;
@@ -80,6 +84,9 @@ public partial class VoucherEntryViewModel : ObservableObject
     public VoucherEntryViewModel(IMediator mediator)
     {
         _mediator = mediator;
+        TabId = "VOUCHER_ENTRY";
+        Title = "Chứng Từ Kế Toán (F2)";
+        Icon = "📝";
         Lines.CollectionChanged += (s, e) => RecalculateTotals();
         InitializeSampleLine();
         _ = LoadAccountsAsync();
@@ -93,10 +100,13 @@ public partial class VoucherEntryViewModel : ObservableObject
             if (res.IsSuccess && res.Value != null)
             {
                 AvailableAccounts.Clear();
+                var lookupItems = new List<LookupItem>();
                 foreach (var acc in res.Value)
                 {
                     AvailableAccounts.Add(acc);
+                    lookupItems.Add(new LookupItem(acc.AccountNumber, acc.Name, acc.Category.ToString(), "Tài khoản"));
                 }
+                AccountLookup.LoadData(lookupItems);
             }
         }
         catch

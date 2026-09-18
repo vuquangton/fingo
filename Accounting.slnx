@@ -13,5 +13,6 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Accounting.Domain.Tests/Accounting.Domain.Tests.csproj" />
+    <Project Path="tests/Accounting.WpfApp.Tests/Accounting.WpfApp.Tests.csproj" />
   </Folder>
 </Solution>

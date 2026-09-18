@@ -1,4 +1,4 @@
-﻿using System.Windows.Input;
+using System.Windows.Input;
 
 namespace Accounting.WpfApp.Services;
 
@@ -11,6 +11,7 @@ public class KeyboardShortcutManager
     public event Action? OnUnpostVoucher;
     public event Action? OnSave;
     public event Action? OnCancel;
+    public event Action? OnCalculateBalance;
 
     public void HandleKeyDown(KeyEventArgs e)
     {
@@ -31,12 +32,19 @@ public class KeyboardShortcutManager
         }
         else if (e.Key == Key.F8)
         {
-            OnPostVoucher?.Invoke();
+            if ((Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift)
+            {
+                OnUnpostVoucher?.Invoke();
+            }
+            else
+            {
+                OnPostVoucher?.Invoke();
+            }
             e.Handled = true;
         }
         else if (e.Key == Key.F9)
         {
-            OnUnpostVoucher?.Invoke();
+            OnCalculateBalance?.Invoke();
             e.Handled = true;
         }
         else if (e.Key == Key.F12 || (e.Key == Key.S && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control))

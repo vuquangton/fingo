@@ -82,6 +82,7 @@ public partial class MainViewModel : ObservableObject
     public MasterDataViewModel MasterData { get; }
     public PeriodClosingViewModel PeriodClosing { get; }
     public SettingsViewModel Settings { get; }
+    public DocumentManagerViewModel DocumentManager { get; }
 
     public MainViewModel(
         IMediator mediator,
@@ -101,7 +102,8 @@ public partial class MainViewModel : ObservableObject
         PayrollViewModel payroll,
         MasterDataViewModel masterData,
         PeriodClosingViewModel periodClosing,
-        SettingsViewModel settings)
+        SettingsViewModel settings,
+        DocumentManagerViewModel documentManager)
     {
         _mediator = mediator;
         _configuration = configuration;
@@ -121,6 +123,11 @@ public partial class MainViewModel : ObservableObject
         MasterData = masterData;
         PeriodClosing = periodClosing;
         Settings = settings;
+        DocumentManager = documentManager;
+
+        // Open Voucher Entry & General Ledger as default MDI documents
+        DocumentManager.OpenDocument(VoucherEntry);
+        DocumentManager.OpenDocument(GeneralLedger);
 
         var provider = configuration["DatabaseProvider"] ?? "Sqlite";
         DatabaseProvider = string.Equals(provider, "PostgreSql", StringComparison.OrdinalIgnoreCase)
@@ -133,6 +140,16 @@ public partial class MainViewModel : ObservableObject
     {
         CurrentModule = module;
         StatusMessage = $"Navigated to {module}. Press F1 for Help.";
+
+        // Also route MDI tabs if applicable
+        if (module == AppModule.Vouchers)
+        {
+            DocumentManager.OpenDocument(VoucherEntry);
+        }
+        else if (module == AppModule.GeneralLedger)
+        {
+            DocumentManager.OpenDocument(GeneralLedger);
+        }
     }
 
     [RelayCommand]
