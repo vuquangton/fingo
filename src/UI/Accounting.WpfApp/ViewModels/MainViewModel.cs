@@ -166,6 +166,10 @@ public partial class MainViewModel : ObservableObject
         {
             DocumentManager.OpenDocument(GeneralLedger);
         }
+        else if (module == AppModule.PeriodEnd)
+        {
+            DocumentManager.OpenDocument(ClosingWizard);
+        }
     }
 
     [RelayCommand]

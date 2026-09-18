@@ -117,7 +117,8 @@
             <Border Grid.Column="0" Background="#1E293B" BorderBrush="#334155" BorderThickness="0,0,1,0">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="0,16">
-                        <TextBlock Text="ĐIỀU HƯỚNG CHÍNH" Foreground="#64748B" FontWeight="Bold" FontSize="10" Margin="20,4,20,8"/>
+                        <!-- TIER 1: TỔNG QUAN & HÀNG NGÀY -->
+                        <TextBlock Text="1. TỔNG QUAN &amp; HÀNG NGÀY" Foreground="#64748B" FontWeight="Bold" FontSize="10" Margin="20,4,20,8"/>
 
                         <Button Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:AppModule.Dashboard}" Style="{StaticResource NavButtonStyle}">
                             <StackPanel Orientation="Horizontal">
@@ -133,33 +134,15 @@
                             </StackPanel>
                         </Button>
 
-                        <Button Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:AppModule.GeneralLedger}" Style="{StaticResource NavButtonStyle}">
-                            <StackPanel Orientation="Horizontal">
-                                <Path Data="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z" Fill="#38BDF8" Width="16" Height="16" Stretch="Uniform" Margin="0,0,12,0"/>
-                                <TextBlock Text="Sổ Cái &amp; Cân Đối (GL)" FontSize="13" FontWeight="SemiBold"/>
-                            </StackPanel>
-                        </Button>
+                        <Separator Background="#334155" Margin="16,8"/>
 
-                        <TextBlock Text="PHÂN HỆ NGHIỆP VỤ" Foreground="#64748B" FontWeight="Bold" FontSize="10" Margin="20,16,20,8"/>
-
-                        <Button Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:AppModule.Treasury}" Style="{StaticResource NavButtonStyle}">
-                            <StackPanel Orientation="Horizontal">
-                                <Path Data="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z" Fill="#38BDF8" Width="16" Height="16" Stretch="Uniform" Margin="0,0,12,0"/>
-                                <TextBlock Text="Tiền Mặt &amp; Ngân Hàng" FontSize="13" FontWeight="SemiBold"/>
-                            </StackPanel>
-                        </Button>
+                        <!-- TIER 2: CHU TRÌNH NGHIỆP VỤ PHÁT SINH -->
+                        <TextBlock Text="2. CHU TRÌNH NGHIỆP VỤ" Foreground="#64748B" FontWeight="Bold" FontSize="10" Margin="20,8,20,8"/>
 
                         <Button Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:AppModule.Purchasing}" Style="{StaticResource NavButtonStyle}">
                             <StackPanel Orientation="Horizontal">
                                 <Path Data="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z" Fill="#38BDF8" Width="16" Height="16" Stretch="Uniform" Margin="0,0,12,0"/>
-                                <TextBlock Text="Mua Hàng &amp; Phải Trả" FontSize="13" FontWeight="SemiBold"/>
-                            </StackPanel>
-                        </Button>
-
-                        <Button Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:AppModule.Sales}" Style="{StaticResource NavButtonStyle}">
-                            <StackPanel Orientation="Horizontal">
-                                <Path Data="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z" Fill="#38BDF8" Width="16" Height="16" Stretch="Uniform" Margin="0,0,12,0"/>
-                                <TextBlock Text="Bán Hàng &amp; Phải Thu" FontSize="13" FontWeight="SemiBold"/>
+                                <TextBlock Text="Mua Hàng &amp; Phải Trả (AP)" FontSize="13" FontWeight="SemiBold"/>
                             </StackPanel>
                         </Button>
 
@@ -167,6 +150,20 @@
                             <StackPanel Orientation="Horizontal">
                                 <Path Data="M20 2H4c-1 0-2 .9-2 2v3.01c0 .72.43 1.34 1 1.69V20c0 1.1 1.1 2 2 2h14c.9 0 2-.9 2-2V8.7c.57-.35 1-.97 1-1.69V4c0-1.1-1-2-2-2zm-5 12H9v-2h6v2zm5-7H4V4h16v3z" Fill="#38BDF8" Width="16" Height="16" Stretch="Uniform" Margin="0,0,12,0"/>
                                 <TextBlock Text="Kho &amp; Tính Giá Vốn" FontSize="13" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:AppModule.Sales}" Style="{StaticResource NavButtonStyle}">
+                            <StackPanel Orientation="Horizontal">
+                                <Path Data="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z" Fill="#38BDF8" Width="16" Height="16" Stretch="Uniform" Margin="0,0,12,0"/>
+                                <TextBlock Text="Bán Hàng &amp; Phải Thu (AR)" FontSize="13" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:AppModule.Treasury}" Style="{StaticResource NavButtonStyle}">
+                            <StackPanel Orientation="Horizontal">
+                                <Path Data="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z" Fill="#10B981" Width="16" Height="16" Stretch="Uniform" Margin="0,0,12,0"/>
+                                <TextBlock Text="Tiền Mặt &amp; Ngân Hàng" FontSize="13" FontWeight="SemiBold"/>
                             </StackPanel>
                         </Button>
 
@@ -180,7 +177,26 @@
                         <Button Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:AppModule.Payroll}" Style="{StaticResource NavButtonStyle}">
                             <StackPanel Orientation="Horizontal">
                                 <Path Data="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" Fill="#38BDF8" Width="16" Height="16" Stretch="Uniform" Margin="0,0,12,0"/>
-                                <TextBlock Text="Lương &amp; Bảo Hiểm" FontSize="13" FontWeight="SemiBold"/>
+                                <TextBlock Text="Lương &amp; Bảo Hiểm (HR)" FontSize="13" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Separator Background="#334155" Margin="16,8"/>
+
+                        <!-- TIER 3: TỔNG HỢP & BÁO CÁO -->
+                        <TextBlock Text="3. TỔNG HỢP &amp; BÁO CÁO" Foreground="#64748B" FontWeight="Bold" FontSize="10" Margin="20,8,20,8"/>
+
+                        <Button Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:AppModule.GeneralLedger}" Style="{StaticResource NavButtonStyle}">
+                            <StackPanel Orientation="Horizontal">
+                                <Path Data="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z" Fill="#38BDF8" Width="16" Height="16" Stretch="Uniform" Margin="0,0,12,0"/>
+                                <TextBlock Text="Sổ Cái &amp; Cân Đối (GL)" FontSize="13" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:AppModule.PeriodEnd}" Style="{StaticResource NavButtonStyle}">
+                            <StackPanel Orientation="Horizontal">
+                                <Path Data="M18 17H6v-2h12v2zm0-4H6v-2h12v2zm0-4H6V7h12v2zM3 22l1.5-1.5L6 22l1.5-1.5L9 22l1.5-1.5L12 22l1.5-1.5L15 22l1.5-1.5L18 22l1.5-1.5L21 22V2l-1.5 1.5L18 2l-1.5 1.5L15 2l-1.5 1.5L12 2l-1.5 1.5L9 2 7.5 3.5 6 2 4.5 3.5 3 2v20z" Fill="#F59E0B" Width="16" Height="16" Stretch="Uniform" Margin="0,0,12,0"/>
+                                <TextBlock Text="Khóa Sổ &amp; Quyết Toán" FontSize="13" FontWeight="SemiBold"/>
                             </StackPanel>
                         </Button>
 
@@ -191,23 +207,23 @@
                             </StackPanel>
                         </Button>
 
+                        <Separator Background="#334155" Margin="16,8"/>
+
+                        <!-- TIER 4: DANH MỤC DÙNG CHUNG -->
+                        <TextBlock Text="4. DANH MỤC DÙNG CHUNG" Foreground="#64748B" FontWeight="Bold" FontSize="10" Margin="20,8,20,8"/>
+
                         <Button Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:AppModule.MasterData}" Style="{StaticResource NavButtonStyle}">
                             <StackPanel Orientation="Horizontal">
-                                <Path Data="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z" Fill="#38BDF8" Width="16" Height="16" Stretch="Uniform" Margin="0,0,12,0"/>
+                                <Path Data="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z" Fill="#F59E0B" Width="16" Height="16" Stretch="Uniform" Margin="0,0,12,0"/>
                                 <TextBlock Text="Danh Mục (Master Data)" FontSize="13" FontWeight="SemiBold"/>
-                            </StackPanel>
-                        </Button>
-
-                        <Button Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:AppModule.PeriodEnd}" Style="{StaticResource NavButtonStyle}">
-                            <StackPanel Orientation="Horizontal">
-                                <Path Data="M18 17H6v-2h12v2zm0-4H6v-2h12v2zm0-4H6V7h12v2zM3 22l1.5-1.5L6 22l1.5-1.5L9 22l1.5-1.5L12 22l1.5-1.5L15 22l1.5-1.5L18 22l1.5-1.5L21 22V2l-1.5 1.5L18 2l-1.5 1.5L15 2l-1.5 1.5L12 2l-1.5 1.5L9 2 7.5 3.5 6 2 4.5 3.5 3 2v20z" Fill="#38BDF8" Width="16" Height="16" Stretch="Uniform" Margin="0,0,12,0"/>
-                                <TextBlock Text="Khóa Sổ &amp; Quyết Toán" FontSize="13" FontWeight="SemiBold"/>
                             </StackPanel>
                         </Button>
 
                         <Separator Background="#334155" Margin="16,8"/>
 
-                        <!-- FOUNDATION MODULES -->
+                        <!-- TIER 5: HỆ THỐNG & CẤU HÌNH -->
+                        <TextBlock Text="5. HỆ THỐNG &amp; CẤU HÌNH" Foreground="#64748B" FontWeight="Bold" FontSize="10" Margin="20,8,20,8"/>
+
                         <Button Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:AppModule.CompanySetup}" Style="{StaticResource NavButtonStyle}">
                             <StackPanel Orientation="Horizontal">
                                 <Path Data="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z" Fill="#A855F7" Width="16" Height="16" Stretch="Uniform" Margin="0,0,12,0"/>
@@ -228,8 +244,6 @@
                                 <TextBlock Text="Quản Lý Người Dùng &amp; Quyền" FontSize="13" FontWeight="SemiBold"/>
                             </StackPanel>
                         </Button>
-
-                        <Separator Background="#334155" Margin="16,8"/>
 
                         <Button Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:AppModule.Settings}" Style="{StaticResource NavButtonStyle}">
                             <StackPanel Orientation="Horizontal">
