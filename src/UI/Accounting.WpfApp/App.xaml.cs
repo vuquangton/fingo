@@ -87,9 +87,16 @@ public partial class App : System.Windows.Application
             await DbInitializer.SeedAsync(dbContext);
             await SecuritySeeder.SeedSecurityAsync(dbContext, passwordHasher);
         }
-
-        var mainWindow = _host.Services.GetRequiredService<MainWindow>();
-        mainWindow.Show();
+        var setupWizard = new Accounting.WpfApp.Views.SetupWizardWindow();
+        if (setupWizard.ShowDialog() == true)
+        {
+            var mainWindow = _host.Services.GetRequiredService<MainWindow>();
+            mainWindow.Show();
+        }
+        else
+        {
+            Shutdown();
+        }
     }
 
     protected override async void OnExit(ExitEventArgs e)
