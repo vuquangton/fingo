@@ -74,6 +74,8 @@ public partial class App : System.Windows.Application
                 services.AddSingleton<ClosingPipelineWizardViewModel>();
                 services.AddSingleton<MainViewModel>();
                 services.AddSingleton<MainWindow>();
+                services.AddSingleton<SetupWizardViewModel>();
+                services.AddSingleton<Accounting.WpfApp.Views.SetupWizardWindow>();
             })
             .Build();
 
@@ -87,7 +89,7 @@ public partial class App : System.Windows.Application
             await DbInitializer.SeedAsync(dbContext);
             await SecuritySeeder.SeedSecurityAsync(dbContext, passwordHasher);
         }
-        var setupWizard = new Accounting.WpfApp.Views.SetupWizardWindow();
+        var setupWizard = _host.Services.GetRequiredService<Accounting.WpfApp.Views.SetupWizardWindow>();
         if (setupWizard.ShowDialog() == true)
         {
             var mainWindow = _host.Services.GetRequiredService<MainWindow>();

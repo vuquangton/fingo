@@ -6,14 +6,11 @@ namespace Accounting.WpfApp.Views
 {
     public partial class SetupWizardWindow : Window
     {
-        public SetupWizardWindow()
+        public SetupWizardWindow(SetupWizardViewModel viewModel)
         {
             InitializeComponent();
-            
-            if (DataContext is SetupWizardViewModel vm)
-            {
-                vm.WizardCompleted += OnWizardCompleted;
-            }
+            DataContext = viewModel;
+            viewModel.WizardCompleted += OnWizardCompleted;
         }
 
         private void OnWizardCompleted(object? sender, EventArgs e)
