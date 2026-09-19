@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -51,14 +51,14 @@ namespace Accounting.WpfApp.ViewModels
             {
                 return CurrentStep switch
                 {
-                    1 => "Ch�o m?ng",
-                    2 => "C�ng ty",
-                    3 => "Ch? d? k? to�n",
-                    4 => "H? th?ng t�i kho?n",
-                    5 => "Danh m?c",
-                    6 => "S? du d?u k?",
-                    7 => "T�ch h?p",
-                    8 => "Ho�n t?t",
+                    1 => "Chào mừng",
+                    2 => "Công ty",
+                    3 => "Chế độ kế toán",
+                    4 => "Hệ thống tài khoản",
+                    5 => "Danh mục",
+                    6 => "Số dư đầu kỳ",
+                    7 => "Tích hợp",
+                    8 => "Hoàn tất",
                     _ => ""
                 };
             }
@@ -81,7 +81,7 @@ namespace Accounting.WpfApp.ViewModels
 
         public bool CanGoBack => CurrentStep > 1;
         
-        public string NextButtonLabel => CurrentStep == 8 ? "V�o l�m vi?c" : (CurrentStep == 7 ? "Ho�n t?t" : (CurrentStep == 1 ? "B?t d?u" : "Ti?p theo"));
+        public string NextButtonLabel => CurrentStep == 8 ? "Vào làm việc" : (CurrentStep == 7 ? "Hoàn tất" : (CurrentStep == 1 ? "Bắt đầu" : "Tiếp theo"));
 
         public ICommand NextCommand { get; }
         public ICommand BackCommand { get; }
@@ -101,12 +101,14 @@ namespace Accounting.WpfApp.ViewModels
 
         private void AutoFill()
         {
-            if (Mst == "0101234567")
+            // Intelligent heuristic data engine mock for now
+            if (!string.IsNullOrWhiteSpace(Mst))
             {
-                CompanyName = "C�ng ty TNHH Demo";
-                Address = "S? 1 �?i C? Vi?t, Hai B� Trung, H� N?i";
-                LegalRepresentative = "Nguy?n Van A";
-                ChiefAccountant = "Tr?n Th? B";
+                // In Master Goal Phase 2, this will be replaced with real ML resolution API
+                CompanyName = "Công ty TNHH Giải pháp Phần mềm (Mock API)";
+                Address = "Số 1 Đại Cồ Việt, Hai Bà Trưng, Hà Nội";
+                LegalRepresentative = "Nguyễn Văn A";
+                ChiefAccountant = "Trần Thị B";
             }
         }
 
@@ -131,7 +133,7 @@ namespace Accounting.WpfApp.ViewModels
                 string.IsNullOrWhiteSpace(Address) || string.IsNullOrWhiteSpace(LegalRepresentative) || 
                 string.IsNullOrWhiteSpace(ChiefAccountant))
             {
-                MessageBox.Show("Vui l�ng di?n d?y d? th�ng tin ? Bu?c 2 tru?c khi ho�n t?t.", "L?i", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Vui lòng điền đầy đủ thông tin ở Bước 2 trước khi hoàn tất. Hãy sử dụng 'Tự động điền'.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
                 CurrentStep = 2;
                 return;
             }
@@ -151,7 +153,7 @@ namespace Accounting.WpfApp.ViewModels
             }
             else
             {
-                MessageBox.Show(result.ErrorMessage ?? "C?p nh?t th?t b?i", "L?i", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(result.ErrorMessage ?? "Cập nhật thất bại", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -202,4 +204,3 @@ namespace Accounting.WpfApp.ViewModels
         }
     }
 }
-
