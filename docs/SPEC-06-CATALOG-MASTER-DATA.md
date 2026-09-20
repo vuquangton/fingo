@@ -42,8 +42,8 @@
 2. **Circular 105/2020/TT-BTC & Circular 86/2024/TT-BTC (Taxpayer Identification Number - MST)**:
    - Standard 10-digit MST format: $D_1 D_2 D_3 D_4 D_5 D_6 D_7 D_8 D_9 D_{10}$.
    - Checksum formula for $D_{10}$:
-     $$D_{10} \equiv 11 - \left( \sum_{i=1}^{9} D_i \times W_i \pmod{11} \right)$$
-     Weights $W = [31, 29, 23, 19, 17, 13, 7, 5, 3]$. If remainder is 10, $D_{10} = 0$.
+     $$D_{10} \equiv 10 - \left( \sum_{i=1}^{9} D_i \times W_i \pmod{11} \right)$$
+     Weights $W = [31, 29, 23, 19, 17, 13, 7, 5, 3]$. If $10 - \text{Remainder} == 10$, $D_{10} = 0$.
    - Branch 13-digit format: $D_1 \dots D_{10}\text{-}D_{11}D_{12}D_{13}$ where $D_{11}D_{12}D_{13}$ ranges `001` to `999`.
 3. **Decree 123/2020/NĐ-CP & Circular 32/2025/TT-BTC (E-Invoicing)**:
    - Mandatory catalog attributes for buyer/seller invoice generation: Legal Name (*Tên pháp lý theo ĐKKD*), Valid MST, Registered Address (*Địa chỉ trụ sở*), Delivery Contact, Unit Price, and Standard UOM matching General Department of Taxation code list.
@@ -314,9 +314,8 @@ Input: taxCode string
    - Each character must be ASCII digit '0'-'9'.
    - Sum = D1*31 + D2*29 + D3*23 + D4*19 + D5*17 + D6*13 + D7*7 + D8*5 + D9*3.
    - Remainder = Sum % 11.
-   - Diff = 11 - Remainder.
+   - Diff = 10 - Remainder.
    - If Diff == 10 -> Expected D10 = 0.
-   - Else if Diff == 11 -> Expected D10 = 0 (or invalid depending on Circular 105 edge case; standard is 0).
    - Else Expected D10 = Diff.
    - Match D10 against expected digit. Return true if equal, else false.
 3. If len == 13 (Branch / Dependent Unit):

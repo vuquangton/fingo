@@ -537,6 +537,93 @@ func (ns NullFiscalYearsStatus) Value() (driver.Value, error) {
 	return string(ns.FiscalYearsStatus), nil
 }
 
+type ItemsItemType string
+
+const (
+	ItemsItemTypeMATERIAL     ItemsItemType = "MATERIAL"
+	ItemsItemTypeTOOL         ItemsItemType = "TOOL"
+	ItemsItemTypeFINISHEDGOOD ItemsItemType = "FINISHED_GOOD"
+	ItemsItemTypeMERCHANDISE  ItemsItemType = "MERCHANDISE"
+	ItemsItemTypeSERVICE      ItemsItemType = "SERVICE"
+)
+
+func (e *ItemsItemType) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = ItemsItemType(s)
+	case string:
+		*e = ItemsItemType(s)
+	default:
+		return fmt.Errorf("unsupported scan type for ItemsItemType: %T", src)
+	}
+	return nil
+}
+
+type NullItemsItemType struct {
+	ItemsItemType ItemsItemType `json:"items_item_type"`
+	Valid         bool          `json:"valid"` // Valid is true if ItemsItemType is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullItemsItemType) Scan(value interface{}) error {
+	if value == nil {
+		ns.ItemsItemType, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.ItemsItemType.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullItemsItemType) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.ItemsItemType), nil
+}
+
+type UomConversionsConversionType string
+
+const (
+	UomConversionsConversionTypeMULTIPLY UomConversionsConversionType = "MULTIPLY"
+	UomConversionsConversionTypeDIVIDE   UomConversionsConversionType = "DIVIDE"
+)
+
+func (e *UomConversionsConversionType) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = UomConversionsConversionType(s)
+	case string:
+		*e = UomConversionsConversionType(s)
+	default:
+		return fmt.Errorf("unsupported scan type for UomConversionsConversionType: %T", src)
+	}
+	return nil
+}
+
+type NullUomConversionsConversionType struct {
+	UomConversionsConversionType UomConversionsConversionType `json:"uom_conversions_conversion_type"`
+	Valid                        bool                         `json:"valid"` // Valid is true if UomConversionsConversionType is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullUomConversionsConversionType) Scan(value interface{}) error {
+	if value == nil {
+		ns.UomConversionsConversionType, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.UomConversionsConversionType.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullUomConversionsConversionType) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.UomConversionsConversionType), nil
+}
+
 type UsersStatus string
 
 const (
@@ -705,6 +792,21 @@ type AccountingPeriod struct {
 	UpdatedAt        time.Time               `json:"updated_at"`
 }
 
+type BankAccount struct {
+	ID               string         `json:"id"`
+	CompanyProfileID string         `json:"company_profile_id"`
+	BranchID         sql.NullString `json:"branch_id"`
+	AccountNumber    string         `json:"account_number"`
+	BankName         string         `json:"bank_name"`
+	BankCode         string         `json:"bank_code"`
+	BranchName       sql.NullString `json:"branch_name"`
+	CurrencyCode     string         `json:"currency_code"`
+	GlAccountID      string         `json:"gl_account_id"`
+	IsActive         bool           `json:"is_active"`
+	CreatedAt        time.Time      `json:"created_at"`
+	UpdatedAt        time.Time      `json:"updated_at"`
+}
+
 type BranchOrgUnit struct {
 	ID                        string                             `json:"id"`
 	ParentID                  sql.NullString                     `json:"parent_id"`
@@ -786,6 +888,47 @@ type Currency struct {
 	UpdatedAt        time.Time `json:"updated_at"`
 }
 
+type Customer struct {
+	ID                 string         `json:"id"`
+	CompanyProfileID   string         `json:"company_profile_id"`
+	Code               string         `json:"code"`
+	Name               string         `json:"name"`
+	TaxCode            sql.NullString `json:"tax_code"`
+	Address            sql.NullString `json:"address"`
+	Phone              sql.NullString `json:"phone"`
+	Email              sql.NullString `json:"email"`
+	ContactPerson      sql.NullString `json:"contact_person"`
+	PaymentTermDays    int32          `json:"payment_term_days"`
+	CreditLimit        string         `json:"credit_limit"`
+	EnforceCreditLimit bool           `json:"enforce_credit_limit"`
+	DefaultArAccountID string         `json:"default_ar_account_id"`
+	IsActive           bool           `json:"is_active"`
+	CreatedAt          time.Time      `json:"created_at"`
+	UpdatedAt          time.Time      `json:"updated_at"`
+}
+
+type Employee struct {
+	ID                string         `json:"id"`
+	CompanyProfileID  string         `json:"company_profile_id"`
+	BranchID          sql.NullString `json:"branch_id"`
+	Code              string         `json:"code"`
+	FullName          string         `json:"full_name"`
+	Department        string         `json:"department"`
+	Position          string         `json:"position"`
+	CitizenID         string         `json:"citizen_id"`
+	TaxCode           sql.NullString `json:"tax_code"`
+	SocialInsuranceNo string         `json:"social_insurance_no"`
+	BaseSalary        string         `json:"base_salary"`
+	SalaryCoefficient string         `json:"salary_coefficient"`
+	BankAccountNumber sql.NullString `json:"bank_account_number"`
+	BankName          sql.NullString `json:"bank_name"`
+	DefaultAdvanceAcc string         `json:"default_advance_acc"`
+	DefaultPayrollAcc string         `json:"default_payroll_acc"`
+	IsActive          bool           `json:"is_active"`
+	CreatedAt         time.Time      `json:"created_at"`
+	UpdatedAt         time.Time      `json:"updated_at"`
+}
+
 type ExchangeRate struct {
 	ID               string                `json:"id"`
 	CompanyProfileID string                `json:"company_profile_id"`
@@ -820,6 +963,26 @@ type FiscalYear struct {
 	Status           FiscalYearsStatus `json:"status"`
 	CreatedAt        time.Time         `json:"created_at"`
 	UpdatedAt        time.Time         `json:"updated_at"`
+}
+
+type Item struct {
+	ID                 string         `json:"id"`
+	CompanyProfileID   string         `json:"company_profile_id"`
+	Code               string         `json:"code"`
+	Name               string         `json:"name"`
+	Barcode            sql.NullString `json:"barcode"`
+	ItemType           ItemsItemType  `json:"item_type"`
+	BaseUomID          string         `json:"base_uom_id"`
+	DefaultWarehouseID sql.NullString `json:"default_warehouse_id"`
+	InventoryAccountID sql.NullString `json:"inventory_account_id"`
+	CogsAccountID      string         `json:"cogs_account_id"`
+	RevenueAccountID   string         `json:"revenue_account_id"`
+	DefaultVatRate     string         `json:"default_vat_rate"`
+	StandardCostPrice  string         `json:"standard_cost_price"`
+	StandardSalePrice  string         `json:"standard_sale_price"`
+	IsActive           bool           `json:"is_active"`
+	CreatedAt          time.Time      `json:"created_at"`
+	UpdatedAt          time.Time      `json:"updated_at"`
 }
 
 type Permission struct {
@@ -885,6 +1048,30 @@ type SystemOption struct {
 	BranchScopeID    sql.NullString `json:"branch_scope_id"`
 }
 
+type UnitOfMeasure struct {
+	ID               string         `json:"id"`
+	CompanyProfileID string         `json:"company_profile_id"`
+	Code             string         `json:"code"`
+	Name             string         `json:"name"`
+	Description      sql.NullString `json:"description"`
+	IsActive         bool           `json:"is_active"`
+	CreatedAt        time.Time      `json:"created_at"`
+	UpdatedAt        time.Time      `json:"updated_at"`
+}
+
+type UomConversion struct {
+	ID               string                       `json:"id"`
+	CompanyProfileID string                       `json:"company_profile_id"`
+	ItemID           sql.NullString               `json:"item_id"`
+	FromUomID        string                       `json:"from_uom_id"`
+	ToUomID          string                       `json:"to_uom_id"`
+	Multiplier       string                       `json:"multiplier"`
+	ConversionType   UomConversionsConversionType `json:"conversion_type"`
+	IsActive         bool                         `json:"is_active"`
+	CreatedAt        time.Time                    `json:"created_at"`
+	UpdatedAt        time.Time                    `json:"updated_at"`
+}
+
 type User struct {
 	ID                     string         `json:"id"`
 	CompanyProfileID       string         `json:"company_profile_id"`
@@ -925,6 +1112,26 @@ type UserRole struct {
 	AssignedBy sql.NullString `json:"assigned_by"`
 }
 
+type Vendor struct {
+	ID                 string         `json:"id"`
+	CompanyProfileID   string         `json:"company_profile_id"`
+	Code               string         `json:"code"`
+	Name               string         `json:"name"`
+	TaxCode            sql.NullString `json:"tax_code"`
+	Address            sql.NullString `json:"address"`
+	Phone              sql.NullString `json:"phone"`
+	Email              sql.NullString `json:"email"`
+	ContactPerson      sql.NullString `json:"contact_person"`
+	BankAccountNumber  sql.NullString `json:"bank_account_number"`
+	BankName           sql.NullString `json:"bank_name"`
+	BankBranch         sql.NullString `json:"bank_branch"`
+	PaymentTermDays    int32          `json:"payment_term_days"`
+	DefaultApAccountID string         `json:"default_ap_account_id"`
+	IsActive           bool           `json:"is_active"`
+	CreatedAt          time.Time      `json:"created_at"`
+	UpdatedAt          time.Time      `json:"updated_at"`
+}
+
 type Voucher struct {
 	ID          string              `json:"id"`
 	VoucherNo   string              `json:"voucher_no"`
@@ -959,4 +1166,17 @@ type VoucherNumberingConfig struct {
 	CreatedAt        time.Time                             `json:"created_at"`
 	UpdatedAt        time.Time                             `json:"updated_at"`
 	BranchScopeID    sql.NullString                        `json:"branch_scope_id"`
+}
+
+type Warehouse struct {
+	ID               string         `json:"id"`
+	CompanyProfileID string         `json:"company_profile_id"`
+	BranchID         sql.NullString `json:"branch_id"`
+	Code             string         `json:"code"`
+	Name             string         `json:"name"`
+	Address          sql.NullString `json:"address"`
+	DefaultAccountID string         `json:"default_account_id"`
+	IsActive         bool           `json:"is_active"`
+	CreatedAt        time.Time      `json:"created_at"`
+	UpdatedAt        time.Time      `json:"updated_at"`
 }

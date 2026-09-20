@@ -1,101 +1,20 @@
 package catalog
 
 import (
-	"context"
-
-	"github.com/shopspring/decimal"
+	"errors"
 )
 
-type ItemType string
-
-const (
-	ItemTypeMaterial ItemType = "MATERIAL" // Nguyên vật liệu (152)
-	ItemTypeTool     ItemType = "TOOL"     // Công cụ dụng cụ (153)
-	ItemTypeGood     ItemType = "GOOD"     // Hàng hóa (156)
-	ItemTypeProduct  ItemType = "PRODUCT"  // Thành phẩm (155)
-	ItemTypeService  ItemType = "SERVICE"  // Dịch vụ
+var (
+	ErrInvalidTaxCode              = errors.New("tax code (MST) is invalid: must satisfy Circular 105 Modulo-11 checksum (10 digits or 13 digits with branch suffix)")
+	ErrInvalidConversionMultiplier = errors.New("UOM conversion multiplier must be a strictly positive decimal (> 0)")
+	ErrZeroUOMQuantity             = errors.New("quantity must be non-zero for UOM conversion")
+	ErrIncompatibleWarehouseAccount= errors.New("warehouse default inventory account must belong to asset group 15 (151, 152, 153, 155, 156, 157, 158)")
+	ErrInvalidCurrencyGLAlignment  = errors.New("bank account currency and GL account mismatch: VND requires sub-account of 1121, foreign currency requires sub-account of 1122")
+	ErrCreditLimitExceeded         = errors.New("credit limit exceeded: outstanding AR exceeds customer authorized credit ceiling")
+	ErrInvalidCitizenID            = errors.New("invalid citizen ID (CCCD): must be exactly 12 numeric digits")
+	ErrInvalidSocialInsuranceNo    = errors.New("invalid social insurance number (BHXH): must be exactly 10 numeric digits")
+	ErrInvalidCode                 = errors.New("code must be between 2 and 50 alphanumeric characters")
+	ErrMissingBaseUOM              = errors.New("item requires a valid base unit of measure (BaseUOM)")
+	ErrMissingAccount              = errors.New("mandatory default accounting account is missing")
+	ErrIncompatibleItemTypeAccount = errors.New("item type is incompatible with inventory asset account")
 )
-
-type Customer struct {
-	ID          string
-	Code        string
-	Name        string
-	TaxCode     string
-	Address     string
-	Phone       string
-	Email       string
-	CreditLimit decimal.Decimal
-	IsActive    bool
-}
-
-type Vendor struct {
-	ID          string
-	Code        string
-	Name        string
-	TaxCode     string
-	Address     string
-	BankAccount string
-	BankName    string
-	IsActive    bool
-}
-
-type BankAccount struct {
-	ID            string
-	AccountNumber string
-	BankName      string
-	BranchName    string
-	GLAccountCode string // e.g. 1121
-	IsActive      bool
-}
-
-type Item struct {
-	ID               string
-	Code             string
-	Name             string
-	Barcode          string
-	ItemType         ItemType
-	BaseUOM          string
-	InventoryAccount string          // 152, 156, etc.
-	COGSAccount      string          // 632
-	RevenueAccount   string          // 511
-	DefaultVATRate   decimal.Decimal // 0, 5, 8, 10
-	IsActive         bool
-}
-
-type Warehouse struct {
-	ID       string
-	Code     string
-	Name     string
-	Address  string
-	IsActive bool
-}
-
-func NewCustomerStub(id, code, name, taxCode string) *Customer {
-	return &Customer{
-		ID:          id,
-		Code:        code,
-		Name:        name,
-		TaxCode:     taxCode,
-		CreditLimit: decimal.Zero,
-		IsActive:    true,
-	}
-}
-
-func NewItemStub(id, code, name, uom string) *Item {
-	return &Item{
-		ID:             id,
-		Code:           code,
-		Name:           name,
-		ItemType:       ItemTypeGood,
-		BaseUOM:        uom,
-		DefaultVATRate: decimal.NewFromInt(10),
-		IsActive:       true,
-	}
-}
-
-type CatalogRepositoryStub interface {
-	GetCustomer(ctx context.Context, id string) (*Customer, error)
-	GetVendor(ctx context.Context, id string) (*Vendor, error)
-	GetItem(ctx context.Context, id string) (*Item, error)
-	GetWarehouse(ctx context.Context, id string) (*Warehouse, error)
-}

@@ -12,52 +12,110 @@ import (
 type Querier interface {
 	AssignUserOrgUnitScope(ctx context.Context, arg AssignUserOrgUnitScopeParams) error
 	AssignUserRole(ctx context.Context, arg AssignUserRoleParams) error
+	// ============================================================================
+	// BankAccount Queries
+	// ============================================================================
+	CreateBankAccount(ctx context.Context, arg CreateBankAccountParams) error
 	CreateBranchOrgUnit(ctx context.Context, arg CreateBranchOrgUnitParams) error
+	// ============================================================================
+	// Customer Queries
+	// ============================================================================
+	CreateCustomer(ctx context.Context, arg CreateCustomerParams) error
+	// ============================================================================
+	// Employee Queries
+	// ============================================================================
+	CreateEmployee(ctx context.Context, arg CreateEmployeeParams) error
+	// ============================================================================
+	// Item Queries
+	// ============================================================================
+	CreateItem(ctx context.Context, arg CreateItemParams) error
+	// ============================================================================
+	// UnitOfMeasure Queries
+	// ============================================================================
+	CreateUOM(ctx context.Context, arg CreateUOMParams) error
+	// ============================================================================
+	// UOMConversion Queries
+	// ============================================================================
+	CreateUOMConversion(ctx context.Context, arg CreateUOMConversionParams) error
 	CreateUser(ctx context.Context, arg CreateUserParams) error
+	// ============================================================================
+	// Vendor Queries
+	// ============================================================================
+	CreateVendor(ctx context.Context, arg CreateVendorParams) error
 	// General Ledger Voucher Queries
 	CreateVoucher(ctx context.Context, arg CreateVoucherParams) error
 	CreateVoucherLine(ctx context.Context, arg CreateVoucherLineParams) error
+	// ============================================================================
+	// Warehouse Queries
+	// ============================================================================
+	CreateWarehouse(ctx context.Context, arg CreateWarehouseParams) error
 	GetAccountByCode(ctx context.Context, arg GetAccountByCodeParams) (Account, error)
 	GetAccountByID(ctx context.Context, id string) (Account, error)
 	GetActiveCompanyProfile(ctx context.Context) (CompanyProfile, error)
+	GetBankAccountByID(ctx context.Context, id string) (BankAccount, error)
+	GetBankAccountByNumber(ctx context.Context, arg GetBankAccountByNumberParams) (BankAccount, error)
 	GetBaseCurrency(ctx context.Context, companyProfileID string) (Currency, error)
 	GetBranchOrgUnitByCode(ctx context.Context, arg GetBranchOrgUnitByCodeParams) (BranchOrgUnit, error)
 	GetBranchOrgUnitByID(ctx context.Context, id string) (BranchOrgUnit, error)
 	GetCompanyProfileByTaxCode(ctx context.Context, taxCode string) (CompanyProfile, error)
 	GetCostCenterByCode(ctx context.Context, arg GetCostCenterByCodeParams) (CostCenter, error)
 	GetCurrencyByCode(ctx context.Context, arg GetCurrencyByCodeParams) (Currency, error)
+	GetCustomerByCode(ctx context.Context, arg GetCustomerByCodeParams) (Customer, error)
+	GetCustomerByID(ctx context.Context, id string) (Customer, error)
+	GetCustomerByTaxCode(ctx context.Context, arg GetCustomerByTaxCodeParams) (Customer, error)
 	GetEffectiveExchangeRate(ctx context.Context, arg GetEffectiveExchangeRateParams) (ExchangeRate, error)
 	GetEffectiveSystemOption(ctx context.Context, arg GetEffectiveSystemOptionParams) (GetEffectiveSystemOptionRow, error)
 	GetEffectiveVoucherNumberingConfig(ctx context.Context, arg GetEffectiveVoucherNumberingConfigParams) (GetEffectiveVoucherNumberingConfigRow, error)
 	GetEffectiveVoucherNumberingConfigForUpdate(ctx context.Context, arg GetEffectiveVoucherNumberingConfigForUpdateParams) (GetEffectiveVoucherNumberingConfigForUpdateRow, error)
+	GetEmployeeByCitizenID(ctx context.Context, arg GetEmployeeByCitizenIDParams) (Employee, error)
+	GetEmployeeByCode(ctx context.Context, arg GetEmployeeByCodeParams) (Employee, error)
+	GetEmployeeByID(ctx context.Context, id string) (Employee, error)
 	GetExpenseItemByCode(ctx context.Context, arg GetExpenseItemByCodeParams) (ExpenseItem, error)
 	GetFiscalYearByYear(ctx context.Context, arg GetFiscalYearByYearParams) (FiscalYear, error)
+	GetItemByCode(ctx context.Context, arg GetItemByCodeParams) (Item, error)
+	GetItemByID(ctx context.Context, id string) (Item, error)
 	GetPeriodByDate(ctx context.Context, arg GetPeriodByDateParams) (AccountingPeriod, error)
 	GetRoleByCode(ctx context.Context, code string) (Role, error)
 	GetSystemOption(ctx context.Context, arg GetSystemOptionParams) (GetSystemOptionRow, error)
+	GetUOMByCode(ctx context.Context, arg GetUOMByCodeParams) (UnitOfMeasure, error)
+	GetUOMByID(ctx context.Context, id string) (UnitOfMeasure, error)
+	GetUOMConversion(ctx context.Context, arg GetUOMConversionParams) (UomConversion, error)
 	GetUserByEmail(ctx context.Context, arg GetUserByEmailParams) (User, error)
 	GetUserByID(ctx context.Context, id string) (User, error)
 	GetUserByUsername(ctx context.Context, arg GetUserByUsernameParams) (User, error)
 	GetUserOrgUnitScopes(ctx context.Context, userID string) ([]GetUserOrgUnitScopesRow, error)
 	GetUserRoles(ctx context.Context, userID string) ([]Role, error)
+	GetVendorByCode(ctx context.Context, arg GetVendorByCodeParams) (Vendor, error)
+	GetVendorByID(ctx context.Context, id string) (Vendor, error)
+	GetVendorByTaxCode(ctx context.Context, arg GetVendorByTaxCodeParams) (Vendor, error)
 	GetVoucherNumberingConfigByID(ctx context.Context, id string) (GetVoucherNumberingConfigByIDRow, error)
+	GetWarehouseByCode(ctx context.Context, arg GetWarehouseByCodeParams) (Warehouse, error)
+	GetWarehouseByID(ctx context.Context, id string) (Warehouse, error)
 	ListAccountsByCompany(ctx context.Context, companyProfileID string) ([]Account, error)
+	ListBankAccounts(ctx context.Context, companyProfileID string) ([]BankAccount, error)
 	ListBranchOrgUnitsByCompany(ctx context.Context, companyProfileID string) ([]BranchOrgUnit, error)
 	ListChildAccounts(ctx context.Context, parentID sql.NullString) ([]Account, error)
 	ListConfigHistory(ctx context.Context, arg ListConfigHistoryParams) ([]SystemConfigHistory, error)
 	ListCostCentersByCompany(ctx context.Context, companyProfileID string) ([]CostCenter, error)
 	ListCurrenciesByCompany(ctx context.Context, companyProfileID string) ([]Currency, error)
+	ListCustomers(ctx context.Context, companyProfileID string) ([]Customer, error)
+	ListEmployees(ctx context.Context, companyProfileID string) ([]Employee, error)
 	ListExchangeRatesByDate(ctx context.Context, arg ListExchangeRatesByDateParams) ([]ExchangeRate, error)
 	ListExpenseItemsByCompany(ctx context.Context, companyProfileID string) ([]ExpenseItem, error)
 	ListFiscalYearsByCompany(ctx context.Context, companyProfileID string) ([]FiscalYear, error)
+	ListItems(ctx context.Context, companyProfileID string) ([]Item, error)
 	ListPeriodsByFiscalYear(ctx context.Context, fiscalYearID string) ([]AccountingPeriod, error)
 	ListRoles(ctx context.Context) ([]Role, error)
 	ListSoDConflictRules(ctx context.Context) ([]SodConflictRule, error)
 	ListSystemOptionsByCategory(ctx context.Context, arg ListSystemOptionsByCategoryParams) ([]ListSystemOptionsByCategoryRow, error)
 	ListSystemOptionsByCompany(ctx context.Context, companyProfileID string) ([]ListSystemOptionsByCompanyRow, error)
+	ListUOMConversionsByItem(ctx context.Context, arg ListUOMConversionsByItemParams) ([]UomConversion, error)
+	ListUOMs(ctx context.Context, companyProfileID string) ([]UnitOfMeasure, error)
 	ListUsersByCompany(ctx context.Context, companyProfileID string) ([]User, error)
+	ListVendors(ctx context.Context, companyProfileID string) ([]Vendor, error)
 	ListVoucherLinesByVoucherID(ctx context.Context, voucherID string) ([]VoucherLine, error)
 	ListVoucherNumberingConfigs(ctx context.Context, companyProfileID string) ([]ListVoucherNumberingConfigsRow, error)
+	ListWarehouses(ctx context.Context, companyProfileID string) ([]Warehouse, error)
 	RecordConfigHistory(ctx context.Context, arg RecordConfigHistoryParams) error
 	RemoveUserOrgUnitScope(ctx context.Context, arg RemoveUserOrgUnitScopeParams) error
 	RemoveUserRole(ctx context.Context, arg RemoveUserRoleParams) error
