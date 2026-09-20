@@ -39,6 +39,9 @@
 - **Run Migrations**: `goose -dir db/migrations mysql "dev:123456@tcp(127.0.0.1:3306)/fingo?parseTime=true" up`
 - **Create Migration**: `goose -dir db/migrations create <migration_name> sql`
 - **Run Domain Tests**: `go test -v ./internal/domain/...`
+- **Run All Tests (Race & Cover)**: `go test -v -race -cover ./...`
+- **Run Microbenchmarks**: `go test -run=^$ -bench=. -benchmem ./...`
+- **Run Vulnerability Scan**: `govulncheck ./...`
 - **Run Logger Tests**: `go test -v ./pkg/logger/...`
 - **CodeGraph Sync**: `codegraph sync` (run from `d:\accounting`)
 
@@ -60,6 +63,34 @@
 - **`internal/domain/payroll`**: `Employee`, `PayrollItem` (Statutory BHXH 10.5% / 21.5% calculation), `PayrollRepositoryStub`.
 - **`internal/domain/costing`**: `ProductionCostCard` (WIP + 621/622/627 allocation, unit cost), `CostingRepositoryStub`.
 
+# QA & Testing Strategy Standards (Normative: `docs/TESTING_STRATEGY.md`)
+
+- **Standard Authority**: `FINGO-QA-STRATEGY-2026-V1` (RFC 2119 Normative).
+- **Test Pyramid Ratio**:
+  - Unit Tests: **≥ 80%** (pure domain logic, state machines, math precision).
+  - Integration Tests: **15%** (MariaDB 12.3 via `testcontainers-go`, SQLC, transactions, lock contention).
+  - E2E / Acceptance: **≤ 5%** (Golden 7 accounting lifecycles, Wails desktop UI).
+- **Coverage Thresholds**:
+  - `internal/domain`: **≥ 95.0%** line coverage.
+  - `internal/usecase`: **≥ 85.0%** line coverage.
+  - Diff Coverage: **100.0%** on new domain code in PRs.
+- **Core Accounting Invariants**:
+  - **Zero-Float Policy**: `shopspring/decimal` strictly enforced across all domain and service layers. Zero float types.
+  - **Double-Entry Equilibrium**: Every voucher MUST mathematically balance: $\sum \text{Debits} - \sum \text{Credits} \equiv 0$.
+  - **Period Date Locking**: Disallow posting, modifying, or deleting transactions with date $\le$ Lock Date (`ErrPeriodLocked`).
+  - **Idempotency**: All transaction mutations must accept idempotency key; duplicate submission produces identical response with zero double-posting.
+  - **Byte-Identical Reproducibility**: Financial reports (Trial Balance, VAT 01/GTGT, P&L) generated from identical inputs MUST produce identical SHA-256 byte hashes.
+- **Statutory Compliance Verifications**:
+  - **Circular 99/2025/TT-BTC** (mandatory from 2026-01-01) & **Circular 133/2016/TT-BTC**: COA structure & internal control balance rules.
+  - **Decree 123/2020/NĐ-CP & Circular 32/2025/TT-BTC**: Electronic invoice XML XSD schema validation, continuous invoice numbering without gaps.
+  - **Resolution 204/2025/QH15 & Decree 174/2025/NĐ-CP**: 8% VAT rate strictly active 2025-07-01 to 2026-12-31; automated rejection after 2026-12-31.
+  - **Law 91/2025/QH15 (PDPL)**: Strict zero-real-PII mandate in non-production. Synthetic data generator only.
+  - **Law on Accounting No. 88/2015/QH13**: 10-year immutable audit log retention.
+- **Defect SLAs & Release Gates**:
+  - P1 (Critical - Misstatement/Corruption): Fix < 4h, Verify < 4h.
+  - P2 (High - Major Feature/Tax Filing): Fix < 24h, Verify < 12h.
+  - Release Gate: 0 P1/P2 defects, 100% compliance test pass rate, UAT sign-off by Kế toán trưởng and QA Leader.
+  - Gate Override: Strictly CTO approval with mandatory QA Leader counter-signature.
 
 # Skill Selection Decision Table (5W1H Framework)
 
