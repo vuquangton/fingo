@@ -9,7 +9,7 @@ import (
 
 func TestUser_StubInvariants(t *testing.T) {
 	u := system.NewUserStub("u-01", "admin", "admin@fingo.local")
-	if u.ID != "u-01" || u.Username != "admin" || !u.IsActive {
+	if u.ID != "u-01" || u.Username != "admin" || u.Status != system.UserStatusActive {
 		t.Fatalf("unexpected user stub state: %+v", u)
 	}
 }

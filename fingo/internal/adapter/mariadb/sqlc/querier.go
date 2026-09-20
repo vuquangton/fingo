@@ -9,8 +9,11 @@ import (
 )
 
 type Querier interface {
+	AssignUserOrgUnitScope(ctx context.Context, arg AssignUserOrgUnitScopeParams) error
+	AssignUserRole(ctx context.Context, arg AssignUserRoleParams) error
 	CreateAccount(ctx context.Context, arg CreateAccountParams) error
 	CreateBranchOrgUnit(ctx context.Context, arg CreateBranchOrgUnitParams) error
+	CreateUser(ctx context.Context, arg CreateUserParams) error
 	CreateVoucher(ctx context.Context, arg CreateVoucherParams) error
 	CreateVoucherLine(ctx context.Context, arg CreateVoucherLineParams) error
 	GetAccountByCode(ctx context.Context, code string) (Account, error)
@@ -18,11 +21,26 @@ type Querier interface {
 	GetBranchOrgUnitByCode(ctx context.Context, arg GetBranchOrgUnitByCodeParams) (BranchOrgUnit, error)
 	GetBranchOrgUnitByID(ctx context.Context, id string) (BranchOrgUnit, error)
 	GetCompanyProfileByTaxCode(ctx context.Context, taxCode string) (CompanyProfile, error)
+	GetRoleByCode(ctx context.Context, code string) (Role, error)
+	GetUserByEmail(ctx context.Context, arg GetUserByEmailParams) (User, error)
+	GetUserByID(ctx context.Context, id string) (User, error)
+	GetUserByUsername(ctx context.Context, arg GetUserByUsernameParams) (User, error)
+	GetUserOrgUnitScopes(ctx context.Context, userID string) ([]GetUserOrgUnitScopesRow, error)
+	GetUserRoles(ctx context.Context, userID string) ([]Role, error)
 	ListActiveAccounts(ctx context.Context) ([]Account, error)
 	ListBranchOrgUnitsByCompany(ctx context.Context, companyProfileID string) ([]BranchOrgUnit, error)
+	ListRoles(ctx context.Context) ([]Role, error)
+	ListSoDConflictRules(ctx context.Context) ([]SodConflictRule, error)
+	ListUsersByCompany(ctx context.Context, companyProfileID string) ([]User, error)
 	ListVoucherLinesByVoucherID(ctx context.Context, voucherID string) ([]VoucherLine, error)
+	RemoveUserOrgUnitScope(ctx context.Context, arg RemoveUserOrgUnitScopeParams) error
+	RemoveUserRole(ctx context.Context, arg RemoveUserRoleParams) error
 	UpdateBranchOrgUnit(ctx context.Context, arg UpdateBranchOrgUnitParams) error
 	UpdateLockDate(ctx context.Context, arg UpdateLockDateParams) error
+	UpdateUserFailedLogin(ctx context.Context, arg UpdateUserFailedLoginParams) error
+	UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) error
+	UpdateUserStatus(ctx context.Context, arg UpdateUserStatusParams) error
+	UpdateUserSuccessfulLogin(ctx context.Context, arg UpdateUserSuccessfulLoginParams) error
 	UpsertCompanyProfile(ctx context.Context, arg UpsertCompanyProfileParams) error
 }
 

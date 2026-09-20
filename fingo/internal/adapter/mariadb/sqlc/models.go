@@ -402,6 +402,51 @@ func (ns NullCompanyProfileVatMethod) Value() (driver.Value, error) {
 	return string(ns.CompanyProfileVatMethod), nil
 }
 
+type UsersStatus string
+
+const (
+	UsersStatusPENDINGACTIVATION UsersStatus = "PENDING_ACTIVATION"
+	UsersStatusACTIVE            UsersStatus = "ACTIVE"
+	UsersStatusSUSPENDED         UsersStatus = "SUSPENDED"
+	UsersStatusLOCKED            UsersStatus = "LOCKED"
+	UsersStatusTERMINATED        UsersStatus = "TERMINATED"
+)
+
+func (e *UsersStatus) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = UsersStatus(s)
+	case string:
+		*e = UsersStatus(s)
+	default:
+		return fmt.Errorf("unsupported scan type for UsersStatus: %T", src)
+	}
+	return nil
+}
+
+type NullUsersStatus struct {
+	UsersStatus UsersStatus `json:"users_status"`
+	Valid       bool        `json:"valid"` // Valid is true if UsersStatus is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullUsersStatus) Scan(value interface{}) error {
+	if value == nil {
+		ns.UsersStatus, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.UsersStatus.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullUsersStatus) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.UsersStatus), nil
+}
+
 type VouchersVoucherType string
 
 const (
@@ -522,6 +567,78 @@ type CompanyProfile struct {
 	LockDate               sql.NullTime                `json:"lock_date"`
 	CreatedAt              time.Time                   `json:"created_at"`
 	UpdatedAt              time.Time                   `json:"updated_at"`
+}
+
+type Permission struct {
+	ID          string         `json:"id"`
+	Code        string         `json:"code"`
+	Module      string         `json:"module"`
+	Resource    string         `json:"resource"`
+	Action      string         `json:"action"`
+	Description sql.NullString `json:"description"`
+}
+
+type Role struct {
+	ID          string         `json:"id"`
+	Code        string         `json:"code"`
+	Name        string         `json:"name"`
+	Description sql.NullString `json:"description"`
+	IsSystem    bool           `json:"is_system"`
+	CreatedAt   time.Time      `json:"created_at"`
+	UpdatedAt   time.Time      `json:"updated_at"`
+}
+
+type RolePermission struct {
+	RoleID       string `json:"role_id"`
+	PermissionID string `json:"permission_id"`
+}
+
+type SodConflictRule struct {
+	ID          string `json:"id"`
+	RoleCodeA   string `json:"role_code_a"`
+	RoleCodeB   string `json:"role_code_b"`
+	LegalBasis  string `json:"legal_basis"`
+	Description string `json:"description"`
+}
+
+type User struct {
+	ID                     string         `json:"id"`
+	CompanyProfileID       string         `json:"company_profile_id"`
+	Username               string         `json:"username"`
+	Email                  string         `json:"email"`
+	PasswordHash           string         `json:"password_hash"`
+	FullName               string         `json:"full_name"`
+	Title                  sql.NullString `json:"title"`
+	EmployeeCode           sql.NullString `json:"employee_code"`
+	Status                 UsersStatus    `json:"status"`
+	FailedLoginAttempts    int32          `json:"failed_login_attempts"`
+	LockoutUntil           sql.NullTime   `json:"lockout_until"`
+	PasswordChangedAt      time.Time      `json:"password_changed_at"`
+	MustChangePasswordNext bool           `json:"must_change_password_next"`
+	MfaSecret              sql.NullString `json:"mfa_secret"`
+	IsMfaEnabled           bool           `json:"is_mfa_enabled"`
+	DigitalCertSubject     sql.NullString `json:"digital_cert_subject"`
+	DigitalCertSerial      sql.NullString `json:"digital_cert_serial"`
+	LastLoginAt            sql.NullTime   `json:"last_login_at"`
+	LastLoginIp            sql.NullString `json:"last_login_ip"`
+	CreatedAt              time.Time      `json:"created_at"`
+	UpdatedAt              time.Time      `json:"updated_at"`
+}
+
+type UserOrgUnitScope struct {
+	ID              string    `json:"id"`
+	UserID          string    `json:"user_id"`
+	OrgUnitID       string    `json:"org_unit_id"`
+	IsDefault       bool      `json:"is_default"`
+	IncludeChildren bool      `json:"include_children"`
+	CreatedAt       time.Time `json:"created_at"`
+}
+
+type UserRole struct {
+	UserID     string         `json:"user_id"`
+	RoleID     string         `json:"role_id"`
+	AssignedAt time.Time      `json:"assigned_at"`
+	AssignedBy sql.NullString `json:"assigned_by"`
 }
 
 type Voucher struct {
