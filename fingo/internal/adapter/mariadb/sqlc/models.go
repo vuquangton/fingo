@@ -7,6 +7,7 @@ package mariadb
 import (
 	"database/sql"
 	"database/sql/driver"
+	"encoding/json"
 	"fmt"
 	"time"
 )
@@ -99,6 +100,177 @@ func (ns NullAccountsNature) Value() (driver.Value, error) {
 	return string(ns.AccountsNature), nil
 }
 
+type CompanyProfileBusinessType string
+
+const (
+	CompanyProfileBusinessTypeTRADING    CompanyProfileBusinessType = "TRADING"
+	CompanyProfileBusinessTypeSERVICE    CompanyProfileBusinessType = "SERVICE"
+	CompanyProfileBusinessTypePRODUCTION CompanyProfileBusinessType = "PRODUCTION"
+	CompanyProfileBusinessTypeMIXED      CompanyProfileBusinessType = "MIXED"
+)
+
+func (e *CompanyProfileBusinessType) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = CompanyProfileBusinessType(s)
+	case string:
+		*e = CompanyProfileBusinessType(s)
+	default:
+		return fmt.Errorf("unsupported scan type for CompanyProfileBusinessType: %T", src)
+	}
+	return nil
+}
+
+type NullCompanyProfileBusinessType struct {
+	CompanyProfileBusinessType CompanyProfileBusinessType `json:"company_profile_business_type"`
+	Valid                      bool                       `json:"valid"` // Valid is true if CompanyProfileBusinessType is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullCompanyProfileBusinessType) Scan(value interface{}) error {
+	if value == nil {
+		ns.CompanyProfileBusinessType, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.CompanyProfileBusinessType.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullCompanyProfileBusinessType) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.CompanyProfileBusinessType), nil
+}
+
+type CompanyProfileCostingMethod string
+
+const (
+	CompanyProfileCostingMethodFIFO              CompanyProfileCostingMethod = "FIFO"
+	CompanyProfileCostingMethodMOVINGWEIGHTEDAVG CompanyProfileCostingMethod = "MOVING_WEIGHTED_AVG"
+	CompanyProfileCostingMethodPERIODICAVG       CompanyProfileCostingMethod = "PERIODIC_AVG"
+)
+
+func (e *CompanyProfileCostingMethod) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = CompanyProfileCostingMethod(s)
+	case string:
+		*e = CompanyProfileCostingMethod(s)
+	default:
+		return fmt.Errorf("unsupported scan type for CompanyProfileCostingMethod: %T", src)
+	}
+	return nil
+}
+
+type NullCompanyProfileCostingMethod struct {
+	CompanyProfileCostingMethod CompanyProfileCostingMethod `json:"company_profile_costing_method"`
+	Valid                       bool                        `json:"valid"` // Valid is true if CompanyProfileCostingMethod is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullCompanyProfileCostingMethod) Scan(value interface{}) error {
+	if value == nil {
+		ns.CompanyProfileCostingMethod, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.CompanyProfileCostingMethod.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullCompanyProfileCostingMethod) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.CompanyProfileCostingMethod), nil
+}
+
+type CompanyProfileRegime string
+
+const (
+	CompanyProfileRegimeTT1332016 CompanyProfileRegime = "TT133_2016"
+	CompanyProfileRegimeTT992025  CompanyProfileRegime = "TT99_2025"
+)
+
+func (e *CompanyProfileRegime) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = CompanyProfileRegime(s)
+	case string:
+		*e = CompanyProfileRegime(s)
+	default:
+		return fmt.Errorf("unsupported scan type for CompanyProfileRegime: %T", src)
+	}
+	return nil
+}
+
+type NullCompanyProfileRegime struct {
+	CompanyProfileRegime CompanyProfileRegime `json:"company_profile_regime"`
+	Valid                bool                 `json:"valid"` // Valid is true if CompanyProfileRegime is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullCompanyProfileRegime) Scan(value interface{}) error {
+	if value == nil {
+		ns.CompanyProfileRegime, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.CompanyProfileRegime.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullCompanyProfileRegime) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.CompanyProfileRegime), nil
+}
+
+type CompanyProfileVatMethod string
+
+const (
+	CompanyProfileVatMethodDEDUCTION CompanyProfileVatMethod = "DEDUCTION"
+	CompanyProfileVatMethodDIRECT    CompanyProfileVatMethod = "DIRECT"
+)
+
+func (e *CompanyProfileVatMethod) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = CompanyProfileVatMethod(s)
+	case string:
+		*e = CompanyProfileVatMethod(s)
+	default:
+		return fmt.Errorf("unsupported scan type for CompanyProfileVatMethod: %T", src)
+	}
+	return nil
+}
+
+type NullCompanyProfileVatMethod struct {
+	CompanyProfileVatMethod CompanyProfileVatMethod `json:"company_profile_vat_method"`
+	Valid                   bool                    `json:"valid"` // Valid is true if CompanyProfileVatMethod is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullCompanyProfileVatMethod) Scan(value interface{}) error {
+	if value == nil {
+		ns.CompanyProfileVatMethod, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.CompanyProfileVatMethod.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullCompanyProfileVatMethod) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.CompanyProfileVatMethod), nil
+}
+
 type VouchersVoucherType string
 
 const (
@@ -163,6 +335,38 @@ type AccountingPeriod struct {
 	EndDate   time.Time `json:"end_date"`
 	IsClosed  bool      `json:"is_closed"`
 	CreatedAt time.Time `json:"created_at"`
+}
+
+type CompanyProfile struct {
+	ID                     string                      `json:"id"`
+	TaxCode                string                      `json:"tax_code"`
+	LegalName              string                      `json:"legal_name"`
+	TradeName              sql.NullString              `json:"trade_name"`
+	EnglishName            sql.NullString              `json:"english_name"`
+	Address                string                      `json:"address"`
+	ProvinceCity           sql.NullString              `json:"province_city"`
+	DistrictWard           sql.NullString              `json:"district_ward"`
+	Phone                  sql.NullString              `json:"phone"`
+	Email                  sql.NullString              `json:"email"`
+	Website                sql.NullString              `json:"website"`
+	LegalRepresentative    string                      `json:"legal_representative"`
+	RepresentativePosition sql.NullString              `json:"representative_position"`
+	ChiefAccountant        string                      `json:"chief_accountant"`
+	TaxAuthorityCode       string                      `json:"tax_authority_code"`
+	TaxAuthorityName       string                      `json:"tax_authority_name"`
+	StateBudgetChapter     sql.NullString              `json:"state_budget_chapter"`
+	Regime                 CompanyProfileRegime        `json:"regime"`
+	BaseCurrency           string                      `json:"base_currency"`
+	FiscalYearStartMonth   int8                        `json:"fiscal_year_start_month"`
+	VatMethod              CompanyProfileVatMethod     `json:"vat_method"`
+	CostingMethod          CompanyProfileCostingMethod `json:"costing_method"`
+	BusinessType           CompanyProfileBusinessType  `json:"business_type"`
+	RegisteredBanks        json.RawMessage             `json:"registered_banks"`
+	EinvoiceConfig         json.RawMessage             `json:"einvoice_config"`
+	IsActive               bool                        `json:"is_active"`
+	LockDate               sql.NullTime                `json:"lock_date"`
+	CreatedAt              time.Time                   `json:"created_at"`
+	UpdatedAt              time.Time                   `json:"updated_at"`
 }
 
 type Voucher struct {

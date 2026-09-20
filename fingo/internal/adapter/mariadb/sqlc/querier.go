@@ -13,8 +13,12 @@ type Querier interface {
 	CreateVoucher(ctx context.Context, arg CreateVoucherParams) error
 	CreateVoucherLine(ctx context.Context, arg CreateVoucherLineParams) error
 	GetAccountByCode(ctx context.Context, code string) (Account, error)
+	GetActiveCompanyProfile(ctx context.Context) (CompanyProfile, error)
+	GetCompanyProfileByTaxCode(ctx context.Context, taxCode string) (CompanyProfile, error)
 	ListActiveAccounts(ctx context.Context) ([]Account, error)
 	ListVoucherLinesByVoucherID(ctx context.Context, voucherID string) ([]VoucherLine, error)
+	UpdateLockDate(ctx context.Context, arg UpdateLockDateParams) error
+	UpsertCompanyProfile(ctx context.Context, arg UpsertCompanyProfileParams) error
 }
 
 var _ Querier = (*Queries)(nil)
