@@ -447,6 +447,49 @@ func (ns NullUsersStatus) Value() (driver.Value, error) {
 	return string(ns.UsersStatus), nil
 }
 
+type VoucherNumberingConfigsResetFrequency string
+
+const (
+	VoucherNumberingConfigsResetFrequencyMONTHLY    VoucherNumberingConfigsResetFrequency = "MONTHLY"
+	VoucherNumberingConfigsResetFrequencyYEARLY     VoucherNumberingConfigsResetFrequency = "YEARLY"
+	VoucherNumberingConfigsResetFrequencyCONTINUOUS VoucherNumberingConfigsResetFrequency = "CONTINUOUS"
+)
+
+func (e *VoucherNumberingConfigsResetFrequency) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = VoucherNumberingConfigsResetFrequency(s)
+	case string:
+		*e = VoucherNumberingConfigsResetFrequency(s)
+	default:
+		return fmt.Errorf("unsupported scan type for VoucherNumberingConfigsResetFrequency: %T", src)
+	}
+	return nil
+}
+
+type NullVoucherNumberingConfigsResetFrequency struct {
+	VoucherNumberingConfigsResetFrequency VoucherNumberingConfigsResetFrequency `json:"voucher_numbering_configs_reset_frequency"`
+	Valid                                 bool                                  `json:"valid"` // Valid is true if VoucherNumberingConfigsResetFrequency is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullVoucherNumberingConfigsResetFrequency) Scan(value interface{}) error {
+	if value == nil {
+		ns.VoucherNumberingConfigsResetFrequency, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.VoucherNumberingConfigsResetFrequency.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullVoucherNumberingConfigsResetFrequency) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.VoucherNumberingConfigsResetFrequency), nil
+}
+
 type VouchersVoucherType string
 
 const (
@@ -601,6 +644,37 @@ type SodConflictRule struct {
 	Description string `json:"description"`
 }
 
+type SystemConfigHistory struct {
+	ID               string         `json:"id"`
+	CompanyProfileID string         `json:"company_profile_id"`
+	OptionKey        string         `json:"option_key"`
+	OldValue         sql.NullString `json:"old_value"`
+	NewValue         string         `json:"new_value"`
+	ChangedBy        string         `json:"changed_by"`
+	ChangedAt        time.Time      `json:"changed_at"`
+	Reason           sql.NullString `json:"reason"`
+	ClientIp         sql.NullString `json:"client_ip"`
+}
+
+type SystemOption struct {
+	ID               string         `json:"id"`
+	CompanyProfileID string         `json:"company_profile_id"`
+	BranchID         sql.NullString `json:"branch_id"`
+	Category         string         `json:"category"`
+	OptionKey        string         `json:"option_key"`
+	OptionValue      string         `json:"option_value"`
+	DataType         string         `json:"data_type"`
+	DefaultValue     string         `json:"default_value"`
+	ScopeLevel       string         `json:"scope_level"`
+	Description      sql.NullString `json:"description"`
+	IsReadonly       bool           `json:"is_readonly"`
+	IsEncrypted      bool           `json:"is_encrypted"`
+	CreatedAt        time.Time      `json:"created_at"`
+	UpdatedAt        time.Time      `json:"updated_at"`
+	UpdatedBy        sql.NullString `json:"updated_by"`
+	BranchScopeID    sql.NullString `json:"branch_scope_id"`
+}
+
 type User struct {
 	ID                     string         `json:"id"`
 	CompanyProfileID       string         `json:"company_profile_id"`
@@ -660,4 +734,19 @@ type VoucherLine struct {
 	CreditAccountID string         `json:"credit_account_id"`
 	Amount          string         `json:"amount"`
 	Note            sql.NullString `json:"note"`
+}
+
+type VoucherNumberingConfig struct {
+	ID               string                                `json:"id"`
+	CompanyProfileID string                                `json:"company_profile_id"`
+	BranchID         sql.NullString                        `json:"branch_id"`
+	VoucherType      string                                `json:"voucher_type"`
+	Prefix           string                                `json:"prefix"`
+	Pattern          string                                `json:"pattern"`
+	ResetFrequency   VoucherNumberingConfigsResetFrequency `json:"reset_frequency"`
+	CurrentSequence  int64                                 `json:"current_sequence"`
+	LastResetDate    time.Time                             `json:"last_reset_date"`
+	CreatedAt        time.Time                             `json:"created_at"`
+	UpdatedAt        time.Time                             `json:"updated_at"`
+	BranchScopeID    sql.NullString                        `json:"branch_scope_id"`
 }

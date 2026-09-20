@@ -21,18 +21,28 @@ type Querier interface {
 	GetBranchOrgUnitByCode(ctx context.Context, arg GetBranchOrgUnitByCodeParams) (BranchOrgUnit, error)
 	GetBranchOrgUnitByID(ctx context.Context, id string) (BranchOrgUnit, error)
 	GetCompanyProfileByTaxCode(ctx context.Context, taxCode string) (CompanyProfile, error)
+	GetEffectiveSystemOption(ctx context.Context, arg GetEffectiveSystemOptionParams) (GetEffectiveSystemOptionRow, error)
+	GetEffectiveVoucherNumberingConfig(ctx context.Context, arg GetEffectiveVoucherNumberingConfigParams) (GetEffectiveVoucherNumberingConfigRow, error)
+	GetEffectiveVoucherNumberingConfigForUpdate(ctx context.Context, arg GetEffectiveVoucherNumberingConfigForUpdateParams) (GetEffectiveVoucherNumberingConfigForUpdateRow, error)
 	GetRoleByCode(ctx context.Context, code string) (Role, error)
+	GetSystemOption(ctx context.Context, arg GetSystemOptionParams) (GetSystemOptionRow, error)
 	GetUserByEmail(ctx context.Context, arg GetUserByEmailParams) (User, error)
 	GetUserByID(ctx context.Context, id string) (User, error)
 	GetUserByUsername(ctx context.Context, arg GetUserByUsernameParams) (User, error)
 	GetUserOrgUnitScopes(ctx context.Context, userID string) ([]GetUserOrgUnitScopesRow, error)
 	GetUserRoles(ctx context.Context, userID string) ([]Role, error)
+	GetVoucherNumberingConfigByID(ctx context.Context, id string) (GetVoucherNumberingConfigByIDRow, error)
 	ListActiveAccounts(ctx context.Context) ([]Account, error)
 	ListBranchOrgUnitsByCompany(ctx context.Context, companyProfileID string) ([]BranchOrgUnit, error)
+	ListConfigHistory(ctx context.Context, arg ListConfigHistoryParams) ([]SystemConfigHistory, error)
 	ListRoles(ctx context.Context) ([]Role, error)
 	ListSoDConflictRules(ctx context.Context) ([]SodConflictRule, error)
+	ListSystemOptionsByCategory(ctx context.Context, arg ListSystemOptionsByCategoryParams) ([]ListSystemOptionsByCategoryRow, error)
+	ListSystemOptionsByCompany(ctx context.Context, companyProfileID string) ([]ListSystemOptionsByCompanyRow, error)
 	ListUsersByCompany(ctx context.Context, companyProfileID string) ([]User, error)
 	ListVoucherLinesByVoucherID(ctx context.Context, voucherID string) ([]VoucherLine, error)
+	ListVoucherNumberingConfigs(ctx context.Context, companyProfileID string) ([]ListVoucherNumberingConfigsRow, error)
+	RecordConfigHistory(ctx context.Context, arg RecordConfigHistoryParams) error
 	RemoveUserOrgUnitScope(ctx context.Context, arg RemoveUserOrgUnitScopeParams) error
 	RemoveUserRole(ctx context.Context, arg RemoveUserRoleParams) error
 	UpdateBranchOrgUnit(ctx context.Context, arg UpdateBranchOrgUnitParams) error
@@ -41,7 +51,12 @@ type Querier interface {
 	UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) error
 	UpdateUserStatus(ctx context.Context, arg UpdateUserStatusParams) error
 	UpdateUserSuccessfulLogin(ctx context.Context, arg UpdateUserSuccessfulLoginParams) error
+	UpdateVoucherSequence(ctx context.Context, arg UpdateVoucherSequenceParams) error
 	UpsertCompanyProfile(ctx context.Context, arg UpsertCompanyProfileParams) error
+	// System Options Queries
+	UpsertSystemOption(ctx context.Context, arg UpsertSystemOptionParams) error
+	// Voucher Numbering Queries
+	UpsertVoucherNumberingConfig(ctx context.Context, arg UpsertVoucherNumberingConfigParams) error
 }
 
 var _ Querier = (*Queries)(nil)
