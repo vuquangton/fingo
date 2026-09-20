@@ -1,17 +1,4 @@
--- name: GetAccountByCode :one
-SELECT id, code, name, parent_id, account_type, nature, is_active, created_at, updated_at
-FROM accounts
-WHERE code = ? LIMIT 1;
-
--- name: ListActiveAccounts :many
-SELECT id, code, name, parent_id, account_type, nature, is_active, created_at, updated_at
-FROM accounts
-WHERE is_active = TRUE
-ORDER BY code ASC;
-
--- name: CreateAccount :exec
-INSERT INTO accounts (id, code, name, parent_id, account_type, nature, is_active)
-VALUES (?, ?, ?, ?, ?, ?, ?);
+-- General Ledger Voucher Queries
 
 -- name: CreateVoucher :exec
 INSERT INTO vouchers (id, voucher_no, voucher_date, posted_date, voucher_type, description, is_posted)

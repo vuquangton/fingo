@@ -12,57 +12,105 @@ import (
 	"time"
 )
 
-type AccountsAccountType string
+type AccountingPeriodsStatus string
 
 const (
-	AccountsAccountTypeASSET     AccountsAccountType = "ASSET"
-	AccountsAccountTypeLIABILITY AccountsAccountType = "LIABILITY"
-	AccountsAccountTypeEQUITY    AccountsAccountType = "EQUITY"
-	AccountsAccountTypeREVENUE   AccountsAccountType = "REVENUE"
-	AccountsAccountTypeEXPENSE   AccountsAccountType = "EXPENSE"
+	AccountingPeriodsStatusOPEN       AccountingPeriodsStatus = "OPEN"
+	AccountingPeriodsStatusSOFTLOCKED AccountingPeriodsStatus = "SOFT_LOCKED"
+	AccountingPeriodsStatusHARDLOCKED AccountingPeriodsStatus = "HARD_LOCKED"
+	AccountingPeriodsStatusAUDITED    AccountingPeriodsStatus = "AUDITED"
 )
 
-func (e *AccountsAccountType) Scan(src interface{}) error {
+func (e *AccountingPeriodsStatus) Scan(src interface{}) error {
 	switch s := src.(type) {
 	case []byte:
-		*e = AccountsAccountType(s)
+		*e = AccountingPeriodsStatus(s)
 	case string:
-		*e = AccountsAccountType(s)
+		*e = AccountingPeriodsStatus(s)
 	default:
-		return fmt.Errorf("unsupported scan type for AccountsAccountType: %T", src)
+		return fmt.Errorf("unsupported scan type for AccountingPeriodsStatus: %T", src)
 	}
 	return nil
 }
 
-type NullAccountsAccountType struct {
-	AccountsAccountType AccountsAccountType `json:"accounts_account_type"`
-	Valid               bool                `json:"valid"` // Valid is true if AccountsAccountType is not NULL
+type NullAccountingPeriodsStatus struct {
+	AccountingPeriodsStatus AccountingPeriodsStatus `json:"accounting_periods_status"`
+	Valid                   bool                    `json:"valid"` // Valid is true if AccountingPeriodsStatus is not NULL
 }
 
 // Scan implements the Scanner interface.
-func (ns *NullAccountsAccountType) Scan(value interface{}) error {
+func (ns *NullAccountingPeriodsStatus) Scan(value interface{}) error {
 	if value == nil {
-		ns.AccountsAccountType, ns.Valid = "", false
+		ns.AccountingPeriodsStatus, ns.Valid = "", false
 		return nil
 	}
 	ns.Valid = true
-	return ns.AccountsAccountType.Scan(value)
+	return ns.AccountingPeriodsStatus.Scan(value)
 }
 
 // Value implements the driver Valuer interface.
-func (ns NullAccountsAccountType) Value() (driver.Value, error) {
+func (ns NullAccountingPeriodsStatus) Value() (driver.Value, error) {
 	if !ns.Valid {
 		return nil, nil
 	}
-	return string(ns.AccountsAccountType), nil
+	return string(ns.AccountingPeriodsStatus), nil
+}
+
+type AccountsCategory string
+
+const (
+	AccountsCategoryASSET        AccountsCategory = "ASSET"
+	AccountsCategoryLIABILITY    AccountsCategory = "LIABILITY"
+	AccountsCategoryEQUITY       AccountsCategory = "EQUITY"
+	AccountsCategoryREVENUE      AccountsCategory = "REVENUE"
+	AccountsCategoryEXPENSE      AccountsCategory = "EXPENSE"
+	AccountsCategoryOTHERINCOME  AccountsCategory = "OTHER_INCOME"
+	AccountsCategoryOTHEREXPENSE AccountsCategory = "OTHER_EXPENSE"
+	AccountsCategorySUMMARY      AccountsCategory = "SUMMARY"
+)
+
+func (e *AccountsCategory) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = AccountsCategory(s)
+	case string:
+		*e = AccountsCategory(s)
+	default:
+		return fmt.Errorf("unsupported scan type for AccountsCategory: %T", src)
+	}
+	return nil
+}
+
+type NullAccountsCategory struct {
+	AccountsCategory AccountsCategory `json:"accounts_category"`
+	Valid            bool             `json:"valid"` // Valid is true if AccountsCategory is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullAccountsCategory) Scan(value interface{}) error {
+	if value == nil {
+		ns.AccountsCategory, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.AccountsCategory.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullAccountsCategory) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.AccountsCategory), nil
 }
 
 type AccountsNature string
 
 const (
-	AccountsNatureDEBIT  AccountsNature = "DEBIT"
-	AccountsNatureCREDIT AccountsNature = "CREDIT"
-	AccountsNatureDUAL   AccountsNature = "DUAL"
+	AccountsNatureDEBIT         AccountsNature = "DEBIT"
+	AccountsNatureCREDIT        AccountsNature = "CREDIT"
+	AccountsNatureHERMAPHRODITE AccountsNature = "HERMAPHRODITE"
+	AccountsNatureNOBALANCE     AccountsNature = "NO_BALANCE"
 )
 
 func (e *AccountsNature) Scan(src interface{}) error {
@@ -402,6 +450,93 @@ func (ns NullCompanyProfileVatMethod) Value() (driver.Value, error) {
 	return string(ns.CompanyProfileVatMethod), nil
 }
 
+type ExchangeRatesRateType string
+
+const (
+	ExchangeRatesRateTypeBUYTRANSFER  ExchangeRatesRateType = "BUY_TRANSFER"
+	ExchangeRatesRateTypeSELLTRANSFER ExchangeRatesRateType = "SELL_TRANSFER"
+	ExchangeRatesRateTypeCENTRALSBV   ExchangeRatesRateType = "CENTRAL_SBV"
+)
+
+func (e *ExchangeRatesRateType) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = ExchangeRatesRateType(s)
+	case string:
+		*e = ExchangeRatesRateType(s)
+	default:
+		return fmt.Errorf("unsupported scan type for ExchangeRatesRateType: %T", src)
+	}
+	return nil
+}
+
+type NullExchangeRatesRateType struct {
+	ExchangeRatesRateType ExchangeRatesRateType `json:"exchange_rates_rate_type"`
+	Valid                 bool                  `json:"valid"` // Valid is true if ExchangeRatesRateType is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullExchangeRatesRateType) Scan(value interface{}) error {
+	if value == nil {
+		ns.ExchangeRatesRateType, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.ExchangeRatesRateType.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullExchangeRatesRateType) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.ExchangeRatesRateType), nil
+}
+
+type FiscalYearsStatus string
+
+const (
+	FiscalYearsStatusOPEN       FiscalYearsStatus = "OPEN"
+	FiscalYearsStatusSOFTLOCKED FiscalYearsStatus = "SOFT_LOCKED"
+	FiscalYearsStatusHARDLOCKED FiscalYearsStatus = "HARD_LOCKED"
+	FiscalYearsStatusCLOSED     FiscalYearsStatus = "CLOSED"
+)
+
+func (e *FiscalYearsStatus) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = FiscalYearsStatus(s)
+	case string:
+		*e = FiscalYearsStatus(s)
+	default:
+		return fmt.Errorf("unsupported scan type for FiscalYearsStatus: %T", src)
+	}
+	return nil
+}
+
+type NullFiscalYearsStatus struct {
+	FiscalYearsStatus FiscalYearsStatus `json:"fiscal_years_status"`
+	Valid             bool              `json:"valid"` // Valid is true if FiscalYearsStatus is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullFiscalYearsStatus) Scan(value interface{}) error {
+	if value == nil {
+		ns.FiscalYearsStatus, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.FiscalYearsStatus.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullFiscalYearsStatus) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.FiscalYearsStatus), nil
+}
+
 type UsersStatus string
 
 const (
@@ -536,24 +671,38 @@ func (ns NullVouchersVoucherType) Value() (driver.Value, error) {
 }
 
 type Account struct {
-	ID          string              `json:"id"`
-	Code        string              `json:"code"`
-	Name        string              `json:"name"`
-	ParentID    sql.NullString      `json:"parent_id"`
-	AccountType AccountsAccountType `json:"account_type"`
-	Nature      AccountsNature      `json:"nature"`
-	IsActive    bool                `json:"is_active"`
-	CreatedAt   time.Time           `json:"created_at"`
-	UpdatedAt   time.Time           `json:"updated_at"`
+	ID                  string           `json:"id"`
+	CompanyProfileID    string           `json:"company_profile_id"`
+	Code                string           `json:"code"`
+	Name                string           `json:"name"`
+	EnglishName         sql.NullString   `json:"english_name"`
+	ParentID            sql.NullString   `json:"parent_id"`
+	AccountLevel        int32            `json:"account_level"`
+	Nature              AccountsNature   `json:"nature"`
+	Category            AccountsCategory `json:"category"`
+	IsLeaf              bool             `json:"is_leaf"`
+	IsForeignCurrency   bool             `json:"is_foreign_currency"`
+	RequiresPartner     bool             `json:"requires_partner"`
+	RequiresBankAccount bool             `json:"requires_bank_account"`
+	RequiresCostCenter  bool             `json:"requires_cost_center"`
+	RequiresExpenseItem bool             `json:"requires_expense_item"`
+	IsActive            bool             `json:"is_active"`
+	CreatedAt           time.Time        `json:"created_at"`
+	UpdatedAt           time.Time        `json:"updated_at"`
 }
 
 type AccountingPeriod struct {
-	ID        string    `json:"id"`
-	Name      string    `json:"name"`
-	StartDate time.Time `json:"start_date"`
-	EndDate   time.Time `json:"end_date"`
-	IsClosed  bool      `json:"is_closed"`
-	CreatedAt time.Time `json:"created_at"`
+	ID               string                  `json:"id"`
+	FiscalYearID     string                  `json:"fiscal_year_id"`
+	CompanyProfileID string                  `json:"company_profile_id"`
+	PeriodNumber     int32                   `json:"period_number"`
+	Name             string                  `json:"name"`
+	StartDate        time.Time               `json:"start_date"`
+	EndDate          time.Time               `json:"end_date"`
+	LockDate         time.Time               `json:"lock_date"`
+	Status           AccountingPeriodsStatus `json:"status"`
+	CreatedAt        time.Time               `json:"created_at"`
+	UpdatedAt        time.Time               `json:"updated_at"`
 }
 
 type BranchOrgUnit struct {
@@ -610,6 +759,67 @@ type CompanyProfile struct {
 	LockDate               sql.NullTime                `json:"lock_date"`
 	CreatedAt              time.Time                   `json:"created_at"`
 	UpdatedAt              time.Time                   `json:"updated_at"`
+}
+
+type CostCenter struct {
+	ID               string         `json:"id"`
+	CompanyProfileID string         `json:"company_profile_id"`
+	BranchID         sql.NullString `json:"branch_id"`
+	Code             string         `json:"code"`
+	Name             string         `json:"name"`
+	ParentID         sql.NullString `json:"parent_id"`
+	IsLeaf           bool           `json:"is_leaf"`
+	IsActive         bool           `json:"is_active"`
+	CreatedAt        time.Time      `json:"created_at"`
+	UpdatedAt        time.Time      `json:"updated_at"`
+}
+
+type Currency struct {
+	Code             string    `json:"code"`
+	CompanyProfileID string    `json:"company_profile_id"`
+	Name             string    `json:"name"`
+	Symbol           string    `json:"symbol"`
+	DecimalPlaces    int32     `json:"decimal_places"`
+	IsBase           bool      `json:"is_base"`
+	IsActive         bool      `json:"is_active"`
+	CreatedAt        time.Time `json:"created_at"`
+	UpdatedAt        time.Time `json:"updated_at"`
+}
+
+type ExchangeRate struct {
+	ID               string                `json:"id"`
+	CompanyProfileID string                `json:"company_profile_id"`
+	CurrencyCode     string                `json:"currency_code"`
+	RateDate         time.Time             `json:"rate_date"`
+	RateType         ExchangeRatesRateType `json:"rate_type"`
+	Rate             string                `json:"rate"`
+	SourceBank       string                `json:"source_bank"`
+	CreatedAt        time.Time             `json:"created_at"`
+	CreatedBy        string                `json:"created_by"`
+}
+
+type ExpenseItem struct {
+	ID               string         `json:"id"`
+	CompanyProfileID string         `json:"company_profile_id"`
+	Code             string         `json:"code"`
+	Name             string         `json:"name"`
+	Category         string         `json:"category"`
+	ParentID         sql.NullString `json:"parent_id"`
+	IsLeaf           bool           `json:"is_leaf"`
+	IsActive         bool           `json:"is_active"`
+	CreatedAt        time.Time      `json:"created_at"`
+	UpdatedAt        time.Time      `json:"updated_at"`
+}
+
+type FiscalYear struct {
+	ID               string            `json:"id"`
+	CompanyProfileID string            `json:"company_profile_id"`
+	Year             int32             `json:"year"`
+	StartDate        time.Time         `json:"start_date"`
+	EndDate          time.Time         `json:"end_date"`
+	Status           FiscalYearsStatus `json:"status"`
+	CreatedAt        time.Time         `json:"created_at"`
+	UpdatedAt        time.Time         `json:"updated_at"`
 }
 
 type Permission struct {

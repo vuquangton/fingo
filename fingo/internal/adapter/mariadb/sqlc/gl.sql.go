@@ -11,35 +11,8 @@ import (
 	"time"
 )
 
-const createAccount = `-- name: CreateAccount :exec
-INSERT INTO accounts (id, code, name, parent_id, account_type, nature, is_active)
-VALUES (?, ?, ?, ?, ?, ?, ?)
-`
-
-type CreateAccountParams struct {
-	ID          string              `json:"id"`
-	Code        string              `json:"code"`
-	Name        string              `json:"name"`
-	ParentID    sql.NullString      `json:"parent_id"`
-	AccountType AccountsAccountType `json:"account_type"`
-	Nature      AccountsNature      `json:"nature"`
-	IsActive    bool                `json:"is_active"`
-}
-
-func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) error {
-	_, err := q.db.ExecContext(ctx, createAccount,
-		arg.ID,
-		arg.Code,
-		arg.Name,
-		arg.ParentID,
-		arg.AccountType,
-		arg.Nature,
-		arg.IsActive,
-	)
-	return err
-}
-
 const createVoucher = `-- name: CreateVoucher :exec
+
 INSERT INTO vouchers (id, voucher_no, voucher_date, posted_date, voucher_type, description, is_posted)
 VALUES (?, ?, ?, ?, ?, ?, ?)
 `
@@ -54,6 +27,7 @@ type CreateVoucherParams struct {
 	IsPosted    bool                `json:"is_posted"`
 }
 
+// General Ledger Voucher Queries
 func (q *Queries) CreateVoucher(ctx context.Context, arg CreateVoucherParams) error {
 	_, err := q.db.ExecContext(ctx, createVoucher,
 		arg.ID,
@@ -93,69 +67,6 @@ func (q *Queries) CreateVoucherLine(ctx context.Context, arg CreateVoucherLinePa
 		arg.Note,
 	)
 	return err
-}
-
-const getAccountByCode = `-- name: GetAccountByCode :one
-SELECT id, code, name, parent_id, account_type, nature, is_active, created_at, updated_at
-FROM accounts
-WHERE code = ? LIMIT 1
-`
-
-func (q *Queries) GetAccountByCode(ctx context.Context, code string) (Account, error) {
-	row := q.db.QueryRowContext(ctx, getAccountByCode, code)
-	var i Account
-	err := row.Scan(
-		&i.ID,
-		&i.Code,
-		&i.Name,
-		&i.ParentID,
-		&i.AccountType,
-		&i.Nature,
-		&i.IsActive,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
-}
-
-const listActiveAccounts = `-- name: ListActiveAccounts :many
-SELECT id, code, name, parent_id, account_type, nature, is_active, created_at, updated_at
-FROM accounts
-WHERE is_active = TRUE
-ORDER BY code ASC
-`
-
-func (q *Queries) ListActiveAccounts(ctx context.Context) ([]Account, error) {
-	rows, err := q.db.QueryContext(ctx, listActiveAccounts)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Account
-	for rows.Next() {
-		var i Account
-		if err := rows.Scan(
-			&i.ID,
-			&i.Code,
-			&i.Name,
-			&i.ParentID,
-			&i.AccountType,
-			&i.Nature,
-			&i.IsActive,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
 }
 
 const listVoucherLinesByVoucherID = `-- name: ListVoucherLinesByVoucherID :many

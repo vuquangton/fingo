@@ -6,24 +6,33 @@ package mariadb
 
 import (
 	"context"
+	"database/sql"
 )
 
 type Querier interface {
 	AssignUserOrgUnitScope(ctx context.Context, arg AssignUserOrgUnitScopeParams) error
 	AssignUserRole(ctx context.Context, arg AssignUserRoleParams) error
-	CreateAccount(ctx context.Context, arg CreateAccountParams) error
 	CreateBranchOrgUnit(ctx context.Context, arg CreateBranchOrgUnitParams) error
 	CreateUser(ctx context.Context, arg CreateUserParams) error
+	// General Ledger Voucher Queries
 	CreateVoucher(ctx context.Context, arg CreateVoucherParams) error
 	CreateVoucherLine(ctx context.Context, arg CreateVoucherLineParams) error
-	GetAccountByCode(ctx context.Context, code string) (Account, error)
+	GetAccountByCode(ctx context.Context, arg GetAccountByCodeParams) (Account, error)
+	GetAccountByID(ctx context.Context, id string) (Account, error)
 	GetActiveCompanyProfile(ctx context.Context) (CompanyProfile, error)
+	GetBaseCurrency(ctx context.Context, companyProfileID string) (Currency, error)
 	GetBranchOrgUnitByCode(ctx context.Context, arg GetBranchOrgUnitByCodeParams) (BranchOrgUnit, error)
 	GetBranchOrgUnitByID(ctx context.Context, id string) (BranchOrgUnit, error)
 	GetCompanyProfileByTaxCode(ctx context.Context, taxCode string) (CompanyProfile, error)
+	GetCostCenterByCode(ctx context.Context, arg GetCostCenterByCodeParams) (CostCenter, error)
+	GetCurrencyByCode(ctx context.Context, arg GetCurrencyByCodeParams) (Currency, error)
+	GetEffectiveExchangeRate(ctx context.Context, arg GetEffectiveExchangeRateParams) (ExchangeRate, error)
 	GetEffectiveSystemOption(ctx context.Context, arg GetEffectiveSystemOptionParams) (GetEffectiveSystemOptionRow, error)
 	GetEffectiveVoucherNumberingConfig(ctx context.Context, arg GetEffectiveVoucherNumberingConfigParams) (GetEffectiveVoucherNumberingConfigRow, error)
 	GetEffectiveVoucherNumberingConfigForUpdate(ctx context.Context, arg GetEffectiveVoucherNumberingConfigForUpdateParams) (GetEffectiveVoucherNumberingConfigForUpdateRow, error)
+	GetExpenseItemByCode(ctx context.Context, arg GetExpenseItemByCodeParams) (ExpenseItem, error)
+	GetFiscalYearByYear(ctx context.Context, arg GetFiscalYearByYearParams) (FiscalYear, error)
+	GetPeriodByDate(ctx context.Context, arg GetPeriodByDateParams) (AccountingPeriod, error)
 	GetRoleByCode(ctx context.Context, code string) (Role, error)
 	GetSystemOption(ctx context.Context, arg GetSystemOptionParams) (GetSystemOptionRow, error)
 	GetUserByEmail(ctx context.Context, arg GetUserByEmailParams) (User, error)
@@ -32,9 +41,16 @@ type Querier interface {
 	GetUserOrgUnitScopes(ctx context.Context, userID string) ([]GetUserOrgUnitScopesRow, error)
 	GetUserRoles(ctx context.Context, userID string) ([]Role, error)
 	GetVoucherNumberingConfigByID(ctx context.Context, id string) (GetVoucherNumberingConfigByIDRow, error)
-	ListActiveAccounts(ctx context.Context) ([]Account, error)
+	ListAccountsByCompany(ctx context.Context, companyProfileID string) ([]Account, error)
 	ListBranchOrgUnitsByCompany(ctx context.Context, companyProfileID string) ([]BranchOrgUnit, error)
+	ListChildAccounts(ctx context.Context, parentID sql.NullString) ([]Account, error)
 	ListConfigHistory(ctx context.Context, arg ListConfigHistoryParams) ([]SystemConfigHistory, error)
+	ListCostCentersByCompany(ctx context.Context, companyProfileID string) ([]CostCenter, error)
+	ListCurrenciesByCompany(ctx context.Context, companyProfileID string) ([]Currency, error)
+	ListExchangeRatesByDate(ctx context.Context, arg ListExchangeRatesByDateParams) ([]ExchangeRate, error)
+	ListExpenseItemsByCompany(ctx context.Context, companyProfileID string) ([]ExpenseItem, error)
+	ListFiscalYearsByCompany(ctx context.Context, companyProfileID string) ([]FiscalYear, error)
+	ListPeriodsByFiscalYear(ctx context.Context, fiscalYearID string) ([]AccountingPeriod, error)
 	ListRoles(ctx context.Context) ([]Role, error)
 	ListSoDConflictRules(ctx context.Context) ([]SodConflictRule, error)
 	ListSystemOptionsByCategory(ctx context.Context, arg ListSystemOptionsByCategoryParams) ([]ListSystemOptionsByCategoryRow, error)
@@ -45,14 +61,30 @@ type Querier interface {
 	RecordConfigHistory(ctx context.Context, arg RecordConfigHistoryParams) error
 	RemoveUserOrgUnitScope(ctx context.Context, arg RemoveUserOrgUnitScopeParams) error
 	RemoveUserRole(ctx context.Context, arg RemoveUserRoleParams) error
+	UpdateAccountLeafStatus(ctx context.Context, arg UpdateAccountLeafStatusParams) error
 	UpdateBranchOrgUnit(ctx context.Context, arg UpdateBranchOrgUnitParams) error
 	UpdateLockDate(ctx context.Context, arg UpdateLockDateParams) error
+	UpdatePeriodLock(ctx context.Context, arg UpdatePeriodLockParams) error
 	UpdateUserFailedLogin(ctx context.Context, arg UpdateUserFailedLoginParams) error
 	UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) error
 	UpdateUserStatus(ctx context.Context, arg UpdateUserStatusParams) error
 	UpdateUserSuccessfulLogin(ctx context.Context, arg UpdateUserSuccessfulLoginParams) error
 	UpdateVoucherSequence(ctx context.Context, arg UpdateVoucherSequenceParams) error
+	// Chart of Accounts Queries
+	UpsertAccount(ctx context.Context, arg UpsertAccountParams) error
+	// Accounting Periods Queries
+	UpsertAccountingPeriod(ctx context.Context, arg UpsertAccountingPeriodParams) error
 	UpsertCompanyProfile(ctx context.Context, arg UpsertCompanyProfileParams) error
+	// Cost Centers Queries
+	UpsertCostCenter(ctx context.Context, arg UpsertCostCenterParams) error
+	// Currency Queries
+	UpsertCurrency(ctx context.Context, arg UpsertCurrencyParams) error
+	// Exchange Rate Queries
+	UpsertExchangeRate(ctx context.Context, arg UpsertExchangeRateParams) error
+	// Expense Items Queries
+	UpsertExpenseItem(ctx context.Context, arg UpsertExpenseItemParams) error
+	// Fiscal Years Queries
+	UpsertFiscalYear(ctx context.Context, arg UpsertFiscalYearParams) error
 	// System Options Queries
 	UpsertSystemOption(ctx context.Context, arg UpsertSystemOptionParams) error
 	// Voucher Numbering Queries
