@@ -756,14 +756,65 @@ func (ns NullVoucherNumberingConfigsResetFrequency) Value() (driver.Value, error
 	return string(ns.VoucherNumberingConfigsResetFrequency), nil
 }
 
+type VouchersStatus string
+
+const (
+	VouchersStatusDRAFT     VouchersStatus = "DRAFT"
+	VouchersStatusPOSTED    VouchersStatus = "POSTED"
+	VouchersStatusCANCELLED VouchersStatus = "CANCELLED"
+)
+
+func (e *VouchersStatus) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = VouchersStatus(s)
+	case string:
+		*e = VouchersStatus(s)
+	default:
+		return fmt.Errorf("unsupported scan type for VouchersStatus: %T", src)
+	}
+	return nil
+}
+
+type NullVouchersStatus struct {
+	VouchersStatus VouchersStatus `json:"vouchers_status"`
+	Valid          bool           `json:"valid"` // Valid is true if VouchersStatus is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullVouchersStatus) Scan(value interface{}) error {
+	if value == nil {
+		ns.VouchersStatus, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.VouchersStatus.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullVouchersStatus) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.VouchersStatus), nil
+}
+
 type VouchersVoucherType string
 
 const (
-	VouchersVoucherTypeSALES       VouchersVoucherType = "SALES"
-	VouchersVoucherTypePURCHASE    VouchersVoucherType = "PURCHASE"
-	VouchersVoucherTypeCASHRECEIPT VouchersVoucherType = "CASH_RECEIPT"
-	VouchersVoucherTypeCASHPAYMENT VouchersVoucherType = "CASH_PAYMENT"
-	VouchersVoucherTypeGENERAL     VouchersVoucherType = "GENERAL"
+	VouchersVoucherTypeGENERAL        VouchersVoucherType = "GENERAL"
+	VouchersVoucherTypeCASHRECEIPT    VouchersVoucherType = "CASH_RECEIPT"
+	VouchersVoucherTypeCASHPAYMENT    VouchersVoucherType = "CASH_PAYMENT"
+	VouchersVoucherTypeBANKRECEIPT    VouchersVoucherType = "BANK_RECEIPT"
+	VouchersVoucherTypeBANKPAYMENT    VouchersVoucherType = "BANK_PAYMENT"
+	VouchersVoucherTypeSALES          VouchersVoucherType = "SALES"
+	VouchersVoucherTypeSALESRETURN    VouchersVoucherType = "SALES_RETURN"
+	VouchersVoucherTypePURCHASE       VouchersVoucherType = "PURCHASE"
+	VouchersVoucherTypePURCHASERETURN VouchersVoucherType = "PURCHASE_RETURN"
+	VouchersVoucherTypeSTOCKINWARD    VouchersVoucherType = "STOCK_INWARD"
+	VouchersVoucherTypeSTOCKOUTWARD   VouchersVoucherType = "STOCK_OUTWARD"
+	VouchersVoucherTypeASSET          VouchersVoucherType = "ASSET"
+	VouchersVoucherTypePAYROLL        VouchersVoucherType = "PAYROLL"
 )
 
 func (e *VouchersVoucherType) Scan(src interface{}) error {
@@ -1277,24 +1328,48 @@ type VendorOpeningBalance struct {
 }
 
 type Voucher struct {
-	ID          string              `json:"id"`
-	VoucherNo   string              `json:"voucher_no"`
-	VoucherDate time.Time           `json:"voucher_date"`
-	PostedDate  time.Time           `json:"posted_date"`
-	VoucherType VouchersVoucherType `json:"voucher_type"`
-	Description sql.NullString      `json:"description"`
-	IsPosted    bool                `json:"is_posted"`
-	CreatedAt   time.Time           `json:"created_at"`
+	ID                 string              `json:"id"`
+	CompanyProfileID   string              `json:"company_profile_id"`
+	BranchID           sql.NullString      `json:"branch_id"`
+	VoucherNo          string              `json:"voucher_no"`
+	VoucherDate        time.Time           `json:"voucher_date"`
+	PostedDate         time.Time           `json:"posted_date"`
+	VoucherType        VouchersVoucherType `json:"voucher_type"`
+	Description        string              `json:"description"`
+	Status             VouchersStatus      `json:"status"`
+	TotalDebit         string              `json:"total_debit"`
+	TotalCredit        string              `json:"total_credit"`
+	CurrencyCode       string              `json:"currency_code"`
+	ExchangeRate       string              `json:"exchange_rate"`
+	SourceDocumentID   sql.NullString      `json:"source_document_id"`
+	SourceDocumentType sql.NullString      `json:"source_document_type"`
+	IdempotencyKey     sql.NullString      `json:"idempotency_key"`
+	CreatedBy          string              `json:"created_by"`
+	CreatedAt          time.Time           `json:"created_at"`
+	UpdatedAt          time.Time           `json:"updated_at"`
 }
 
 type VoucherLine struct {
-	ID              string         `json:"id"`
-	VoucherID       string         `json:"voucher_id"`
-	LineOrder       int32          `json:"line_order"`
-	DebitAccountID  string         `json:"debit_account_id"`
-	CreditAccountID string         `json:"credit_account_id"`
-	Amount          string         `json:"amount"`
-	Note            sql.NullString `json:"note"`
+	ID                string         `json:"id"`
+	VoucherID         string         `json:"voucher_id"`
+	LineOrder         int32          `json:"line_order"`
+	DebitAccountID    string         `json:"debit_account_id"`
+	CreditAccountID   string         `json:"credit_account_id"`
+	DebitAccountCode  string         `json:"debit_account_code"`
+	CreditAccountCode string         `json:"credit_account_code"`
+	AmountFc          string         `json:"amount_fc"`
+	AmountVnd         string         `json:"amount_vnd"`
+	Note              sql.NullString `json:"note"`
+	CustomerID        sql.NullString `json:"customer_id"`
+	VendorID          sql.NullString `json:"vendor_id"`
+	EmployeeID        sql.NullString `json:"employee_id"`
+	ItemID            sql.NullString `json:"item_id"`
+	WarehouseID       sql.NullString `json:"warehouse_id"`
+	CostCenterID      sql.NullString `json:"cost_center_id"`
+	ExpenseItemID     sql.NullString `json:"expense_item_id"`
+	InvoiceNo         sql.NullString `json:"invoice_no"`
+	InvoiceDate       sql.NullTime   `json:"invoice_date"`
+	CreatedAt         time.Time      `json:"created_at"`
 }
 
 type VoucherNumberingConfig struct {

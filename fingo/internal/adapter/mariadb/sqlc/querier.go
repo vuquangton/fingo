@@ -43,9 +43,7 @@ type Querier interface {
 	// Vendor Queries
 	// ============================================================================
 	CreateVendor(ctx context.Context, arg CreateVendorParams) error
-	// General Ledger Voucher Queries
 	CreateVoucher(ctx context.Context, arg CreateVoucherParams) error
-	CreateVoucherLine(ctx context.Context, arg CreateVoucherLineParams) error
 	// ============================================================================
 	// Warehouse Queries
 	// ============================================================================
@@ -55,6 +53,7 @@ type Querier interface {
 	DeleteCustomerBalancesByBatch(ctx context.Context, batchID string) error
 	DeleteInventoryBalancesByBatch(ctx context.Context, batchID string) error
 	DeleteVendorBalancesByBatch(ctx context.Context, batchID string) error
+	DeleteVoucherLinesByVoucherID(ctx context.Context, voucherID string) error
 	GetAccountByCode(ctx context.Context, arg GetAccountByCodeParams) (Account, error)
 	GetAccountByID(ctx context.Context, id string) (Account, error)
 	GetActiveCompanyProfile(ctx context.Context) (CompanyProfile, error)
@@ -96,6 +95,9 @@ type Querier interface {
 	GetVendorByCode(ctx context.Context, arg GetVendorByCodeParams) (Vendor, error)
 	GetVendorByID(ctx context.Context, id string) (Vendor, error)
 	GetVendorByTaxCode(ctx context.Context, arg GetVendorByTaxCodeParams) (Vendor, error)
+	GetVoucherByID(ctx context.Context, id string) (Voucher, error)
+	GetVoucherByIdempotencyKey(ctx context.Context, arg GetVoucherByIdempotencyKeyParams) (Voucher, error)
+	GetVoucherByNo(ctx context.Context, arg GetVoucherByNoParams) (Voucher, error)
 	GetVoucherNumberingConfigByID(ctx context.Context, id string) (GetVoucherNumberingConfigByIDRow, error)
 	GetWarehouseByCode(ctx context.Context, arg GetWarehouseByCodeParams) (Warehouse, error)
 	GetWarehouseByID(ctx context.Context, id string) (Warehouse, error)
@@ -104,6 +106,7 @@ type Querier interface {
 	InsertCustomerBalance(ctx context.Context, arg InsertCustomerBalanceParams) error
 	InsertInventoryBalance(ctx context.Context, arg InsertInventoryBalanceParams) error
 	InsertVendorBalance(ctx context.Context, arg InsertVendorBalanceParams) error
+	InsertVoucherLine(ctx context.Context, arg InsertVoucherLineParams) error
 	ListAccountBalancesByBatch(ctx context.Context, batchID string) ([]ListAccountBalancesByBatchRow, error)
 	ListAccountsByCompany(ctx context.Context, companyProfileID string) ([]Account, error)
 	ListAssetBalancesByBatch(ctx context.Context, batchID string) ([]ListAssetBalancesByBatchRow, error)
@@ -133,6 +136,7 @@ type Querier interface {
 	ListVendors(ctx context.Context, companyProfileID string) ([]Vendor, error)
 	ListVoucherLinesByVoucherID(ctx context.Context, voucherID string) ([]VoucherLine, error)
 	ListVoucherNumberingConfigs(ctx context.Context, companyProfileID string) ([]ListVoucherNumberingConfigsRow, error)
+	ListVouchersByPeriod(ctx context.Context, arg ListVouchersByPeriodParams) ([]Voucher, error)
 	ListWarehouses(ctx context.Context, companyProfileID string) ([]Warehouse, error)
 	RecordConfigHistory(ctx context.Context, arg RecordConfigHistoryParams) error
 	RemoveUserOrgUnitScope(ctx context.Context, arg RemoveUserOrgUnitScopeParams) error
@@ -148,6 +152,8 @@ type Querier interface {
 	UpdateUserStatus(ctx context.Context, arg UpdateUserStatusParams) error
 	UpdateUserSuccessfulLogin(ctx context.Context, arg UpdateUserSuccessfulLoginParams) error
 	UpdateVoucherSequence(ctx context.Context, arg UpdateVoucherSequenceParams) error
+	UpdateVoucherStatus(ctx context.Context, arg UpdateVoucherStatusParams) error
+	UpdateVoucherTotals(ctx context.Context, arg UpdateVoucherTotalsParams) error
 	// Chart of Accounts Queries
 	UpsertAccount(ctx context.Context, arg UpsertAccountParams) error
 	// Accounting Periods Queries
