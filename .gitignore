@@ -677,5 +677,13 @@ $RECYCLE.BIN/
 *.swp
 *.db
 *.db-shm
-*.db-wal
 error_log.txt
+
+# FinGo & Go/Wails specific
+*.exe
+fingo/FinGo.exe
+fingo/build/bin/
+fingo/frontend/node_modules/
+fingo/frontend/dist/
+.codegraph/
+.env
