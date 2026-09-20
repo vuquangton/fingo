@@ -62,14 +62,11 @@ func TestUserRepo_CRUD_And_Roles(t *testing.T) {
 	require.NoError(t, err)
 
 	// Clean up if already exists from prior run
-	_ = userRepo.RemoveRole(ctx, userID, "role-03")
-	_ = userRepo.UpdateUserStatus(ctx, userID, system.UserStatusActive, nil, 0)
+	_, _ = db.ExecContext(ctx, "DELETE FROM user_roles WHERE user_id = ?", userID)
+	_, _ = db.ExecContext(ctx, "DELETE FROM users WHERE id = ? OR username = ?", userID, username)
 
 	err = userRepo.CreateUser(ctx, u)
-	if err != nil {
-		// If duplicate key, fetch existing and continue
-		t.Logf("CreateUser notice (maybe exists): %v", err)
-	}
+	require.NoError(t, err)
 
 	// 3. Get User By ID
 	fetched, err := userRepo.GetUserByID(ctx, userID)

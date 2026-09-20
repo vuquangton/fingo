@@ -29,6 +29,7 @@ type Querier interface {
 	// Item Queries
 	// ============================================================================
 	CreateItem(ctx context.Context, arg CreateItemParams) error
+	CreateOpeningBatch(ctx context.Context, arg CreateOpeningBatchParams) error
 	// ============================================================================
 	// UnitOfMeasure Queries
 	// ============================================================================
@@ -49,6 +50,11 @@ type Querier interface {
 	// Warehouse Queries
 	// ============================================================================
 	CreateWarehouse(ctx context.Context, arg CreateWarehouseParams) error
+	DeleteAccountBalancesByBatch(ctx context.Context, batchID string) error
+	DeleteAssetBalancesByBatch(ctx context.Context, batchID string) error
+	DeleteCustomerBalancesByBatch(ctx context.Context, batchID string) error
+	DeleteInventoryBalancesByBatch(ctx context.Context, batchID string) error
+	DeleteVendorBalancesByBatch(ctx context.Context, batchID string) error
 	GetAccountByCode(ctx context.Context, arg GetAccountByCodeParams) (Account, error)
 	GetAccountByID(ctx context.Context, id string) (Account, error)
 	GetActiveCompanyProfile(ctx context.Context) (CompanyProfile, error)
@@ -74,6 +80,8 @@ type Querier interface {
 	GetFiscalYearByYear(ctx context.Context, arg GetFiscalYearByYearParams) (FiscalYear, error)
 	GetItemByCode(ctx context.Context, arg GetItemByCodeParams) (Item, error)
 	GetItemByID(ctx context.Context, id string) (Item, error)
+	GetOpeningBatchByDate(ctx context.Context, arg GetOpeningBatchByDateParams) (OpeningBatch, error)
+	GetOpeningBatchByID(ctx context.Context, id string) (OpeningBatch, error)
 	GetPeriodByDate(ctx context.Context, arg GetPeriodByDateParams) (AccountingPeriod, error)
 	GetRoleByCode(ctx context.Context, code string) (Role, error)
 	GetSystemOption(ctx context.Context, arg GetSystemOptionParams) (GetSystemOptionRow, error)
@@ -91,18 +99,27 @@ type Querier interface {
 	GetVoucherNumberingConfigByID(ctx context.Context, id string) (GetVoucherNumberingConfigByIDRow, error)
 	GetWarehouseByCode(ctx context.Context, arg GetWarehouseByCodeParams) (Warehouse, error)
 	GetWarehouseByID(ctx context.Context, id string) (Warehouse, error)
+	InsertAccountBalance(ctx context.Context, arg InsertAccountBalanceParams) error
+	InsertAssetBalance(ctx context.Context, arg InsertAssetBalanceParams) error
+	InsertCustomerBalance(ctx context.Context, arg InsertCustomerBalanceParams) error
+	InsertInventoryBalance(ctx context.Context, arg InsertInventoryBalanceParams) error
+	InsertVendorBalance(ctx context.Context, arg InsertVendorBalanceParams) error
+	ListAccountBalancesByBatch(ctx context.Context, batchID string) ([]ListAccountBalancesByBatchRow, error)
 	ListAccountsByCompany(ctx context.Context, companyProfileID string) ([]Account, error)
+	ListAssetBalancesByBatch(ctx context.Context, batchID string) ([]ListAssetBalancesByBatchRow, error)
 	ListBankAccounts(ctx context.Context, companyProfileID string) ([]BankAccount, error)
 	ListBranchOrgUnitsByCompany(ctx context.Context, companyProfileID string) ([]BranchOrgUnit, error)
 	ListChildAccounts(ctx context.Context, parentID sql.NullString) ([]Account, error)
 	ListConfigHistory(ctx context.Context, arg ListConfigHistoryParams) ([]SystemConfigHistory, error)
 	ListCostCentersByCompany(ctx context.Context, companyProfileID string) ([]CostCenter, error)
 	ListCurrenciesByCompany(ctx context.Context, companyProfileID string) ([]Currency, error)
+	ListCustomerBalancesByBatch(ctx context.Context, batchID string) ([]ListCustomerBalancesByBatchRow, error)
 	ListCustomers(ctx context.Context, companyProfileID string) ([]Customer, error)
 	ListEmployees(ctx context.Context, companyProfileID string) ([]Employee, error)
 	ListExchangeRatesByDate(ctx context.Context, arg ListExchangeRatesByDateParams) ([]ExchangeRate, error)
 	ListExpenseItemsByCompany(ctx context.Context, companyProfileID string) ([]ExpenseItem, error)
 	ListFiscalYearsByCompany(ctx context.Context, companyProfileID string) ([]FiscalYear, error)
+	ListInventoryBalancesByBatch(ctx context.Context, batchID string) ([]ListInventoryBalancesByBatchRow, error)
 	ListItems(ctx context.Context, companyProfileID string) ([]Item, error)
 	ListPeriodsByFiscalYear(ctx context.Context, fiscalYearID string) ([]AccountingPeriod, error)
 	ListRoles(ctx context.Context) ([]Role, error)
@@ -112,6 +129,7 @@ type Querier interface {
 	ListUOMConversionsByItem(ctx context.Context, arg ListUOMConversionsByItemParams) ([]UomConversion, error)
 	ListUOMs(ctx context.Context, companyProfileID string) ([]UnitOfMeasure, error)
 	ListUsersByCompany(ctx context.Context, companyProfileID string) ([]User, error)
+	ListVendorBalancesByBatch(ctx context.Context, batchID string) ([]ListVendorBalancesByBatchRow, error)
 	ListVendors(ctx context.Context, companyProfileID string) ([]Vendor, error)
 	ListVoucherLinesByVoucherID(ctx context.Context, voucherID string) ([]VoucherLine, error)
 	ListVoucherNumberingConfigs(ctx context.Context, companyProfileID string) ([]ListVoucherNumberingConfigsRow, error)
@@ -122,6 +140,8 @@ type Querier interface {
 	UpdateAccountLeafStatus(ctx context.Context, arg UpdateAccountLeafStatusParams) error
 	UpdateBranchOrgUnit(ctx context.Context, arg UpdateBranchOrgUnitParams) error
 	UpdateLockDate(ctx context.Context, arg UpdateLockDateParams) error
+	UpdateOpeningBatchStatus(ctx context.Context, arg UpdateOpeningBatchStatusParams) error
+	UpdateOpeningBatchTotals(ctx context.Context, arg UpdateOpeningBatchTotalsParams) error
 	UpdatePeriodLock(ctx context.Context, arg UpdatePeriodLockParams) error
 	UpdateUserFailedLogin(ctx context.Context, arg UpdateUserFailedLoginParams) error
 	UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) error

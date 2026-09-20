@@ -58,7 +58,7 @@ func TestBranchOrgUnitRepo_CreateAndList(t *testing.T) {
 		UnitType:             system.OrgUnitBranch,
 		AccountingGovernance: system.GovDependent,
 		TaxFilingMechanism:   system.TaxFilingAllocated,
-		TaxCode:              "0101243150-001",
+		TaxCode:              parentMST + "-001",
 		TaxAuthorityCode:     "79001",
 		TaxAuthorityName:     "Chi cục Thuế Quận 1",
 		ProvinceCityCode:     "79",

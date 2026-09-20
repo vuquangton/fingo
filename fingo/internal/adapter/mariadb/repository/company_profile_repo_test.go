@@ -31,6 +31,10 @@ func TestCompanyProfileRepo_SaveAndGet(t *testing.T) {
 	repo := repository.NewCompanyProfileRepo(db)
 	ctx := context.Background()
 
+	// Ensure isolation: delete test-cp-01 and deactivate other companies
+	_, _ = db.ExecContext(ctx, "DELETE FROM company_profile WHERE id = 'test-cp-01'")
+	_, _ = db.ExecContext(ctx, "UPDATE company_profile SET is_active = FALSE")
+
 	profile, err := system.NewProductionCompanyProfile(system.CreateCompanyProfileParams{
 		ID:                  "test-cp-01",
 		TaxCode:             "0101243150",

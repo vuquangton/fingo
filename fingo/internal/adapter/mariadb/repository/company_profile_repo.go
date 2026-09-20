@@ -93,7 +93,11 @@ func (r *CompanyProfileRepo) GetProfile(ctx context.Context) (*system.Production
 }
 
 func (r *CompanyProfileRepo) SaveProfile(ctx context.Context, p *system.ProductionCompanyProfile) error {
-	banksJSON, _ := json.Marshal(p.RegisteredBanks)
+	banks := p.RegisteredBanks
+	if banks == nil {
+		banks = []system.BankAccountRegistration{}
+	}
+	banksJSON, _ := json.Marshal(banks)
 	einvJSON, _ := json.Marshal(p.EInvoice)
 
 	var lockDate sql.NullTime

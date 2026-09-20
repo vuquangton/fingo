@@ -15,8 +15,10 @@ const getActiveCompanyProfile = `-- name: GetActiveCompanyProfile :one
 SELECT id, tax_code, legal_name, trade_name, english_name, address, province_city, district_ward,
        phone, email, website, legal_representative, representative_position, chief_accountant,
        tax_authority_code, tax_authority_name, state_budget_chapter, regime, base_currency,
-       fiscal_year_start_month, vat_method, costing_method, business_type, registered_banks,
-       einvoice_config, is_active, lock_date, created_at, updated_at
+       fiscal_year_start_month, vat_method, costing_method, business_type,
+       COALESCE(registered_banks, '[]') AS registered_banks,
+       COALESCE(einvoice_config, '{}') AS einvoice_config,
+       is_active, lock_date, created_at, updated_at
 FROM company_profile
 WHERE is_active = TRUE
 LIMIT 1
@@ -63,8 +65,10 @@ const getCompanyProfileByTaxCode = `-- name: GetCompanyProfileByTaxCode :one
 SELECT id, tax_code, legal_name, trade_name, english_name, address, province_city, district_ward,
        phone, email, website, legal_representative, representative_position, chief_accountant,
        tax_authority_code, tax_authority_name, state_budget_chapter, regime, base_currency,
-       fiscal_year_start_month, vat_method, costing_method, business_type, registered_banks,
-       einvoice_config, is_active, lock_date, created_at, updated_at
+       fiscal_year_start_month, vat_method, costing_method, business_type,
+       COALESCE(registered_banks, '[]') AS registered_banks,
+       COALESCE(einvoice_config, '{}') AS einvoice_config,
+       is_active, lock_date, created_at, updated_at
 FROM company_profile
 WHERE tax_code = ?
 LIMIT 1

@@ -582,6 +582,50 @@ func (ns NullItemsItemType) Value() (driver.Value, error) {
 	return string(ns.ItemsItemType), nil
 }
 
+type OpeningBatchesStatus string
+
+const (
+	OpeningBatchesStatusDRAFT     OpeningBatchesStatus = "DRAFT"
+	OpeningBatchesStatusVALIDATED OpeningBatchesStatus = "VALIDATED"
+	OpeningBatchesStatusCOMMITTED OpeningBatchesStatus = "COMMITTED"
+	OpeningBatchesStatusLOCKED    OpeningBatchesStatus = "LOCKED"
+)
+
+func (e *OpeningBatchesStatus) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = OpeningBatchesStatus(s)
+	case string:
+		*e = OpeningBatchesStatus(s)
+	default:
+		return fmt.Errorf("unsupported scan type for OpeningBatchesStatus: %T", src)
+	}
+	return nil
+}
+
+type NullOpeningBatchesStatus struct {
+	OpeningBatchesStatus OpeningBatchesStatus `json:"opening_batches_status"`
+	Valid                bool                 `json:"valid"` // Valid is true if OpeningBatchesStatus is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullOpeningBatchesStatus) Scan(value interface{}) error {
+	if value == nil {
+		ns.OpeningBatchesStatus, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.OpeningBatchesStatus.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullOpeningBatchesStatus) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.OpeningBatchesStatus), nil
+}
+
 type UomConversionsConversionType string
 
 const (
@@ -778,6 +822,20 @@ type Account struct {
 	UpdatedAt           time.Time        `json:"updated_at"`
 }
 
+type AccountOpeningBalance struct {
+	ID              string    `json:"id"`
+	BatchID         string    `json:"batch_id"`
+	AccountID       string    `json:"account_id"`
+	CurrencyCode    string    `json:"currency_code"`
+	DebitAmountFc   string    `json:"debit_amount_fc"`
+	CreditAmountFc  string    `json:"credit_amount_fc"`
+	ExchangeRate    string    `json:"exchange_rate"`
+	DebitAmountVnd  string    `json:"debit_amount_vnd"`
+	CreditAmountVnd string    `json:"credit_amount_vnd"`
+	CreatedAt       time.Time `json:"created_at"`
+	UpdatedAt       time.Time `json:"updated_at"`
+}
+
 type AccountingPeriod struct {
 	ID               string                  `json:"id"`
 	FiscalYearID     string                  `json:"fiscal_year_id"`
@@ -790,6 +848,27 @@ type AccountingPeriod struct {
 	Status           AccountingPeriodsStatus `json:"status"`
 	CreatedAt        time.Time               `json:"created_at"`
 	UpdatedAt        time.Time               `json:"updated_at"`
+}
+
+type AssetOpeningBalance struct {
+	ID                      string         `json:"id"`
+	BatchID                 string         `json:"batch_id"`
+	AssetCode               string         `json:"asset_code"`
+	AssetName               string         `json:"asset_name"`
+	AssetAccountID          string         `json:"asset_account_id"`
+	DepreciationAccountID   string         `json:"depreciation_account_id"`
+	CostAccountID           string         `json:"cost_account_id"`
+	DepartmentID            sql.NullString `json:"department_id"`
+	AcquisitionDate         time.Time      `json:"acquisition_date"`
+	StartDepreciationDate   time.Time      `json:"start_depreciation_date"`
+	OriginalCost            string         `json:"original_cost"`
+	AccumulatedDepreciation string         `json:"accumulated_depreciation"`
+	NetBookValue            string         `json:"net_book_value"`
+	UsefulLifeMonths        int32          `json:"useful_life_months"`
+	RemainingLifeMonths     int32          `json:"remaining_life_months"`
+	MonthlyDepreciation     string         `json:"monthly_depreciation"`
+	CreatedAt               time.Time      `json:"created_at"`
+	UpdatedAt               time.Time      `json:"updated_at"`
 }
 
 type BankAccount struct {
@@ -907,6 +986,24 @@ type Customer struct {
 	UpdatedAt          time.Time      `json:"updated_at"`
 }
 
+type CustomerOpeningBalance struct {
+	ID              string         `json:"id"`
+	BatchID         string         `json:"batch_id"`
+	CustomerID      string         `json:"customer_id"`
+	InvoiceNo       sql.NullString `json:"invoice_no"`
+	InvoiceDate     sql.NullTime   `json:"invoice_date"`
+	DueDate         sql.NullTime   `json:"due_date"`
+	CurrencyCode    string         `json:"currency_code"`
+	DebitAmountFc   string         `json:"debit_amount_fc"`
+	CreditAmountFc  string         `json:"credit_amount_fc"`
+	ExchangeRate    string         `json:"exchange_rate"`
+	DebitAmountVnd  string         `json:"debit_amount_vnd"`
+	CreditAmountVnd string         `json:"credit_amount_vnd"`
+	Notes           sql.NullString `json:"notes"`
+	CreatedAt       time.Time      `json:"created_at"`
+	UpdatedAt       time.Time      `json:"updated_at"`
+}
+
 type Employee struct {
 	ID                string         `json:"id"`
 	CompanyProfileID  string         `json:"company_profile_id"`
@@ -965,6 +1062,21 @@ type FiscalYear struct {
 	UpdatedAt        time.Time         `json:"updated_at"`
 }
 
+type InventoryOpeningBalance struct {
+	ID             string         `json:"id"`
+	BatchID        string         `json:"batch_id"`
+	WarehouseID    string         `json:"warehouse_id"`
+	ItemID         string         `json:"item_id"`
+	UomID          string         `json:"uom_id"`
+	Quantity       string         `json:"quantity"`
+	UnitCost       string         `json:"unit_cost"`
+	TotalAmountVnd string         `json:"total_amount_vnd"`
+	BatchNumber    sql.NullString `json:"batch_number"`
+	ExpiryDate     sql.NullTime   `json:"expiry_date"`
+	CreatedAt      time.Time      `json:"created_at"`
+	UpdatedAt      time.Time      `json:"updated_at"`
+}
+
 type Item struct {
 	ID                 string         `json:"id"`
 	CompanyProfileID   string         `json:"company_profile_id"`
@@ -983,6 +1095,20 @@ type Item struct {
 	IsActive           bool           `json:"is_active"`
 	CreatedAt          time.Time      `json:"created_at"`
 	UpdatedAt          time.Time      `json:"updated_at"`
+}
+
+type OpeningBatch struct {
+	ID               string               `json:"id"`
+	CompanyProfileID string               `json:"company_profile_id"`
+	AsOfDate         time.Time            `json:"as_of_date"`
+	Status           OpeningBatchesStatus `json:"status"`
+	TotalDebit       string               `json:"total_debit"`
+	TotalCredit      string               `json:"total_credit"`
+	CommittedAt      sql.NullTime         `json:"committed_at"`
+	CommittedBy      sql.NullString       `json:"committed_by"`
+	Notes            sql.NullString       `json:"notes"`
+	CreatedAt        time.Time            `json:"created_at"`
+	UpdatedAt        time.Time            `json:"updated_at"`
 }
 
 type Permission struct {
@@ -1130,6 +1256,24 @@ type Vendor struct {
 	IsActive           bool           `json:"is_active"`
 	CreatedAt          time.Time      `json:"created_at"`
 	UpdatedAt          time.Time      `json:"updated_at"`
+}
+
+type VendorOpeningBalance struct {
+	ID              string         `json:"id"`
+	BatchID         string         `json:"batch_id"`
+	VendorID        string         `json:"vendor_id"`
+	BillNo          sql.NullString `json:"bill_no"`
+	BillDate        sql.NullTime   `json:"bill_date"`
+	DueDate         sql.NullTime   `json:"due_date"`
+	CurrencyCode    string         `json:"currency_code"`
+	DebitAmountFc   string         `json:"debit_amount_fc"`
+	CreditAmountFc  string         `json:"credit_amount_fc"`
+	ExchangeRate    string         `json:"exchange_rate"`
+	DebitAmountVnd  string         `json:"debit_amount_vnd"`
+	CreditAmountVnd string         `json:"credit_amount_vnd"`
+	Notes           sql.NullString `json:"notes"`
+	CreatedAt       time.Time      `json:"created_at"`
+	UpdatedAt       time.Time      `json:"updated_at"`
 }
 
 type Voucher struct {
