@@ -10,13 +10,18 @@ import (
 
 type Querier interface {
 	CreateAccount(ctx context.Context, arg CreateAccountParams) error
+	CreateBranchOrgUnit(ctx context.Context, arg CreateBranchOrgUnitParams) error
 	CreateVoucher(ctx context.Context, arg CreateVoucherParams) error
 	CreateVoucherLine(ctx context.Context, arg CreateVoucherLineParams) error
 	GetAccountByCode(ctx context.Context, code string) (Account, error)
 	GetActiveCompanyProfile(ctx context.Context) (CompanyProfile, error)
+	GetBranchOrgUnitByCode(ctx context.Context, arg GetBranchOrgUnitByCodeParams) (BranchOrgUnit, error)
+	GetBranchOrgUnitByID(ctx context.Context, id string) (BranchOrgUnit, error)
 	GetCompanyProfileByTaxCode(ctx context.Context, taxCode string) (CompanyProfile, error)
 	ListActiveAccounts(ctx context.Context) ([]Account, error)
+	ListBranchOrgUnitsByCompany(ctx context.Context, companyProfileID string) ([]BranchOrgUnit, error)
 	ListVoucherLinesByVoucherID(ctx context.Context, voucherID string) ([]VoucherLine, error)
+	UpdateBranchOrgUnit(ctx context.Context, arg UpdateBranchOrgUnitParams) error
 	UpdateLockDate(ctx context.Context, arg UpdateLockDateParams) error
 	UpsertCompanyProfile(ctx context.Context, arg UpsertCompanyProfileParams) error
 }

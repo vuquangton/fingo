@@ -100,6 +100,137 @@ func (ns NullAccountsNature) Value() (driver.Value, error) {
 	return string(ns.AccountsNature), nil
 }
 
+type BranchOrgUnitsAccountingGovernance string
+
+const (
+	BranchOrgUnitsAccountingGovernanceINDEPENDENT BranchOrgUnitsAccountingGovernance = "INDEPENDENT"
+	BranchOrgUnitsAccountingGovernanceDEPENDENT   BranchOrgUnitsAccountingGovernance = "DEPENDENT"
+	BranchOrgUnitsAccountingGovernanceCOSTCENTER  BranchOrgUnitsAccountingGovernance = "COST_CENTER"
+)
+
+func (e *BranchOrgUnitsAccountingGovernance) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = BranchOrgUnitsAccountingGovernance(s)
+	case string:
+		*e = BranchOrgUnitsAccountingGovernance(s)
+	default:
+		return fmt.Errorf("unsupported scan type for BranchOrgUnitsAccountingGovernance: %T", src)
+	}
+	return nil
+}
+
+type NullBranchOrgUnitsAccountingGovernance struct {
+	BranchOrgUnitsAccountingGovernance BranchOrgUnitsAccountingGovernance `json:"branch_org_units_accounting_governance"`
+	Valid                              bool                               `json:"valid"` // Valid is true if BranchOrgUnitsAccountingGovernance is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullBranchOrgUnitsAccountingGovernance) Scan(value interface{}) error {
+	if value == nil {
+		ns.BranchOrgUnitsAccountingGovernance, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.BranchOrgUnitsAccountingGovernance.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullBranchOrgUnitsAccountingGovernance) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.BranchOrgUnitsAccountingGovernance), nil
+}
+
+type BranchOrgUnitsTaxFilingMechanism string
+
+const (
+	BranchOrgUnitsTaxFilingMechanismCENTRALIZED   BranchOrgUnitsTaxFilingMechanism = "CENTRALIZED"
+	BranchOrgUnitsTaxFilingMechanismDECENTRALIZED BranchOrgUnitsTaxFilingMechanism = "DECENTRALIZED"
+	BranchOrgUnitsTaxFilingMechanismALLOCATED     BranchOrgUnitsTaxFilingMechanism = "ALLOCATED"
+)
+
+func (e *BranchOrgUnitsTaxFilingMechanism) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = BranchOrgUnitsTaxFilingMechanism(s)
+	case string:
+		*e = BranchOrgUnitsTaxFilingMechanism(s)
+	default:
+		return fmt.Errorf("unsupported scan type for BranchOrgUnitsTaxFilingMechanism: %T", src)
+	}
+	return nil
+}
+
+type NullBranchOrgUnitsTaxFilingMechanism struct {
+	BranchOrgUnitsTaxFilingMechanism BranchOrgUnitsTaxFilingMechanism `json:"branch_org_units_tax_filing_mechanism"`
+	Valid                            bool                             `json:"valid"` // Valid is true if BranchOrgUnitsTaxFilingMechanism is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullBranchOrgUnitsTaxFilingMechanism) Scan(value interface{}) error {
+	if value == nil {
+		ns.BranchOrgUnitsTaxFilingMechanism, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.BranchOrgUnitsTaxFilingMechanism.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullBranchOrgUnitsTaxFilingMechanism) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.BranchOrgUnitsTaxFilingMechanism), nil
+}
+
+type BranchOrgUnitsUnitType string
+
+const (
+	BranchOrgUnitsUnitTypeHEADOFFICE       BranchOrgUnitsUnitType = "HEAD_OFFICE"
+	BranchOrgUnitsUnitTypeBRANCH           BranchOrgUnitsUnitType = "BRANCH"
+	BranchOrgUnitsUnitTypeREPOFFICE        BranchOrgUnitsUnitType = "REP_OFFICE"
+	BranchOrgUnitsUnitTypeBUSINESSLOCATION BranchOrgUnitsUnitType = "BUSINESS_LOCATION"
+	BranchOrgUnitsUnitTypeDEPARTMENT       BranchOrgUnitsUnitType = "DEPARTMENT"
+)
+
+func (e *BranchOrgUnitsUnitType) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = BranchOrgUnitsUnitType(s)
+	case string:
+		*e = BranchOrgUnitsUnitType(s)
+	default:
+		return fmt.Errorf("unsupported scan type for BranchOrgUnitsUnitType: %T", src)
+	}
+	return nil
+}
+
+type NullBranchOrgUnitsUnitType struct {
+	BranchOrgUnitsUnitType BranchOrgUnitsUnitType `json:"branch_org_units_unit_type"`
+	Valid                  bool                   `json:"valid"` // Valid is true if BranchOrgUnitsUnitType is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullBranchOrgUnitsUnitType) Scan(value interface{}) error {
+	if value == nil {
+		ns.BranchOrgUnitsUnitType, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.BranchOrgUnitsUnitType.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullBranchOrgUnitsUnitType) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.BranchOrgUnitsUnitType), nil
+}
+
 type CompanyProfileBusinessType string
 
 const (
@@ -335,6 +466,30 @@ type AccountingPeriod struct {
 	EndDate   time.Time `json:"end_date"`
 	IsClosed  bool      `json:"is_closed"`
 	CreatedAt time.Time `json:"created_at"`
+}
+
+type BranchOrgUnit struct {
+	ID                        string                             `json:"id"`
+	ParentID                  sql.NullString                     `json:"parent_id"`
+	CompanyProfileID          string                             `json:"company_profile_id"`
+	Code                      string                             `json:"code"`
+	Name                      string                             `json:"name"`
+	UnitType                  BranchOrgUnitsUnitType             `json:"unit_type"`
+	AccountingGovernance      BranchOrgUnitsAccountingGovernance `json:"accounting_governance"`
+	TaxFilingMechanism        BranchOrgUnitsTaxFilingMechanism   `json:"tax_filing_mechanism"`
+	TaxCode                   sql.NullString                     `json:"tax_code"`
+	TaxAuthorityCode          sql.NullString                     `json:"tax_authority_code"`
+	TaxAuthorityName          sql.NullString                     `json:"tax_authority_name"`
+	ProvinceCityCode          string                             `json:"province_city_code"`
+	Address                   string                             `json:"address"`
+	ManagerName               sql.NullString                     `json:"manager_name"`
+	ChiefAccountant           sql.NullString                     `json:"chief_accountant"`
+	InternalReceivableAccount string                             `json:"internal_receivable_account"`
+	InternalPayableAccount    string                             `json:"internal_payable_account"`
+	HasOwnEinvoice            bool                               `json:"has_own_einvoice"`
+	IsActive                  bool                               `json:"is_active"`
+	CreatedAt                 time.Time                          `json:"created_at"`
+	UpdatedAt                 time.Time                          `json:"updated_at"`
 }
 
 type CompanyProfile struct {
