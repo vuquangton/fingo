@@ -148,6 +148,49 @@ func (ns NullAccountsNature) Value() (driver.Value, error) {
 	return string(ns.AccountsNature), nil
 }
 
+type BankTransactionsTransactionType string
+
+const (
+	BankTransactionsTransactionTypeCREDITADVICE  BankTransactionsTransactionType = "CREDIT_ADVICE"
+	BankTransactionsTransactionTypeDEBITADVICE   BankTransactionsTransactionType = "DEBIT_ADVICE"
+	BankTransactionsTransactionTypeTRANSFERORDER BankTransactionsTransactionType = "TRANSFER_ORDER"
+)
+
+func (e *BankTransactionsTransactionType) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = BankTransactionsTransactionType(s)
+	case string:
+		*e = BankTransactionsTransactionType(s)
+	default:
+		return fmt.Errorf("unsupported scan type for BankTransactionsTransactionType: %T", src)
+	}
+	return nil
+}
+
+type NullBankTransactionsTransactionType struct {
+	BankTransactionsTransactionType BankTransactionsTransactionType `json:"bank_transactions_transaction_type"`
+	Valid                           bool                            `json:"valid"` // Valid is true if BankTransactionsTransactionType is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullBankTransactionsTransactionType) Scan(value interface{}) error {
+	if value == nil {
+		ns.BankTransactionsTransactionType, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.BankTransactionsTransactionType.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullBankTransactionsTransactionType) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.BankTransactionsTransactionType), nil
+}
+
 type BranchOrgUnitsAccountingGovernance string
 
 const (
@@ -935,6 +978,21 @@ type BankAccount struct {
 	IsActive         bool           `json:"is_active"`
 	CreatedAt        time.Time      `json:"created_at"`
 	UpdatedAt        time.Time      `json:"updated_at"`
+}
+
+type BankTransaction struct {
+	ID                    string                          `json:"id"`
+	VoucherID             string                          `json:"voucher_id"`
+	CompanyProfileID      string                          `json:"company_profile_id"`
+	BankAccountID         string                          `json:"bank_account_id"`
+	TransactionType       BankTransactionsTransactionType `json:"transaction_type"`
+	CounterpartyAccountNo sql.NullString                  `json:"counterparty_account_no"`
+	CounterpartyBankName  sql.NullString                  `json:"counterparty_bank_name"`
+	CounterpartyName      sql.NullString                  `json:"counterparty_name"`
+	BankReferenceNo       sql.NullString                  `json:"bank_reference_no"`
+	FeeAmountVnd          string                          `json:"fee_amount_vnd"`
+	VatFeeAmountVnd       string                          `json:"vat_fee_amount_vnd"`
+	TotalAmountVnd        string                          `json:"total_amount_vnd"`
 }
 
 type BranchOrgUnit struct {

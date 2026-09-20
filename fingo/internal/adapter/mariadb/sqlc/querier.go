@@ -16,6 +16,7 @@ type Querier interface {
 	// BankAccount Queries
 	// ============================================================================
 	CreateBankAccount(ctx context.Context, arg CreateBankAccountParams) error
+	CreateBankTransaction(ctx context.Context, arg CreateBankTransactionParams) error
 	CreateBranchOrgUnit(ctx context.Context, arg CreateBranchOrgUnitParams) error
 	CreateCashPayment(ctx context.Context, arg CreateCashPaymentParams) error
 	CreateCashReceipt(ctx context.Context, arg CreateCashReceiptParams) error
@@ -61,6 +62,8 @@ type Querier interface {
 	GetActiveCompanyProfile(ctx context.Context) (CompanyProfile, error)
 	GetBankAccountByID(ctx context.Context, id string) (BankAccount, error)
 	GetBankAccountByNumber(ctx context.Context, arg GetBankAccountByNumberParams) (BankAccount, error)
+	GetBankTransactionByID(ctx context.Context, id string) (BankTransaction, error)
+	GetBankTransactionByVoucherID(ctx context.Context, voucherID string) (BankTransaction, error)
 	GetBaseCurrency(ctx context.Context, companyProfileID string) (Currency, error)
 	GetBranchOrgUnitByCode(ctx context.Context, arg GetBranchOrgUnitByCodeParams) (BranchOrgUnit, error)
 	GetBranchOrgUnitByID(ctx context.Context, id string) (BranchOrgUnit, error)
