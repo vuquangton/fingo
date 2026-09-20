@@ -17,6 +17,8 @@ type Querier interface {
 	// ============================================================================
 	CreateBankAccount(ctx context.Context, arg CreateBankAccountParams) error
 	CreateBranchOrgUnit(ctx context.Context, arg CreateBranchOrgUnitParams) error
+	CreateCashPayment(ctx context.Context, arg CreateCashPaymentParams) error
+	CreateCashReceipt(ctx context.Context, arg CreateCashReceiptParams) error
 	// ============================================================================
 	// Customer Queries
 	// ============================================================================
@@ -62,6 +64,10 @@ type Querier interface {
 	GetBaseCurrency(ctx context.Context, companyProfileID string) (Currency, error)
 	GetBranchOrgUnitByCode(ctx context.Context, arg GetBranchOrgUnitByCodeParams) (BranchOrgUnit, error)
 	GetBranchOrgUnitByID(ctx context.Context, id string) (BranchOrgUnit, error)
+	GetCashPaymentByID(ctx context.Context, id string) (CashPayment, error)
+	GetCashPaymentByVoucherID(ctx context.Context, voucherID string) (CashPayment, error)
+	GetCashReceiptByID(ctx context.Context, id string) (CashReceipt, error)
+	GetCashReceiptByVoucherID(ctx context.Context, voucherID string) (CashReceipt, error)
 	GetCompanyProfileByTaxCode(ctx context.Context, taxCode string) (CompanyProfile, error)
 	GetCostCenterByCode(ctx context.Context, arg GetCostCenterByCodeParams) (CostCenter, error)
 	GetCurrencyByCode(ctx context.Context, arg GetCurrencyByCodeParams) (Currency, error)

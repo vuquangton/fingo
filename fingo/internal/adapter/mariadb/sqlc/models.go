@@ -961,6 +961,32 @@ type BranchOrgUnit struct {
 	UpdatedAt                 time.Time                          `json:"updated_at"`
 }
 
+type CashPayment struct {
+	ID                    string         `json:"id"`
+	VoucherID             string         `json:"voucher_id"`
+	CompanyProfileID      string         `json:"company_profile_id"`
+	ReceiverName          string         `json:"receiver_name"`
+	ReceiverAddress       sql.NullString `json:"receiver_address"`
+	Reason                string         `json:"reason"`
+	CashAccountID         string         `json:"cash_account_id"`
+	TotalAmountVnd        string         `json:"total_amount_vnd"`
+	IsNonCashOverride     bool           `json:"is_non_cash_override"`
+	OverrideReason        sql.NullString `json:"override_reason"`
+	AccompanyingDocuments sql.NullString `json:"accompanying_documents"`
+}
+
+type CashReceipt struct {
+	ID                    string         `json:"id"`
+	VoucherID             string         `json:"voucher_id"`
+	CompanyProfileID      string         `json:"company_profile_id"`
+	PayerName             string         `json:"payer_name"`
+	PayerAddress          sql.NullString `json:"payer_address"`
+	Reason                string         `json:"reason"`
+	CashAccountID         string         `json:"cash_account_id"`
+	TotalAmountVnd        string         `json:"total_amount_vnd"`
+	AccompanyingDocuments sql.NullString `json:"accompanying_documents"`
+}
+
 type CompanyProfile struct {
 	ID                     string                      `json:"id"`
 	TaxCode                string                      `json:"tax_code"`
