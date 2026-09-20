@@ -669,6 +669,49 @@ func (ns NullOpeningBatchesStatus) Value() (driver.Value, error) {
 	return string(ns.OpeningBatchesStatus), nil
 }
 
+type PurchaseInvoicesPaymentStatus string
+
+const (
+	PurchaseInvoicesPaymentStatusUNPAID        PurchaseInvoicesPaymentStatus = "UNPAID"
+	PurchaseInvoicesPaymentStatusPARTIALLYPAID PurchaseInvoicesPaymentStatus = "PARTIALLY_PAID"
+	PurchaseInvoicesPaymentStatusPAID          PurchaseInvoicesPaymentStatus = "PAID"
+)
+
+func (e *PurchaseInvoicesPaymentStatus) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = PurchaseInvoicesPaymentStatus(s)
+	case string:
+		*e = PurchaseInvoicesPaymentStatus(s)
+	default:
+		return fmt.Errorf("unsupported scan type for PurchaseInvoicesPaymentStatus: %T", src)
+	}
+	return nil
+}
+
+type NullPurchaseInvoicesPaymentStatus struct {
+	PurchaseInvoicesPaymentStatus PurchaseInvoicesPaymentStatus `json:"purchase_invoices_payment_status"`
+	Valid                         bool                          `json:"valid"` // Valid is true if PurchaseInvoicesPaymentStatus is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullPurchaseInvoicesPaymentStatus) Scan(value interface{}) error {
+	if value == nil {
+		ns.PurchaseInvoicesPaymentStatus, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.PurchaseInvoicesPaymentStatus.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullPurchaseInvoicesPaymentStatus) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.PurchaseInvoicesPaymentStatus), nil
+}
+
 type UomConversionsConversionType string
 
 const (
@@ -1253,6 +1296,40 @@ type Permission struct {
 	Resource    string         `json:"resource"`
 	Action      string         `json:"action"`
 	Description sql.NullString `json:"description"`
+}
+
+type PurchaseInvoice struct {
+	ID                string                        `json:"id"`
+	VoucherID         string                        `json:"voucher_id"`
+	CompanyProfileID  string                        `json:"company_profile_id"`
+	VendorID          string                        `json:"vendor_id"`
+	InvoiceTemplate   string                        `json:"invoice_template"`
+	InvoiceSeries     string                        `json:"invoice_series"`
+	InvoiceNo         string                        `json:"invoice_no"`
+	InvoiceDate       time.Time                     `json:"invoice_date"`
+	DueDate           time.Time                     `json:"due_date"`
+	PaymentStatus     PurchaseInvoicesPaymentStatus `json:"payment_status"`
+	SubtotalVnd       string                        `json:"subtotal_vnd"`
+	VatAmountVnd      string                        `json:"vat_amount_vnd"`
+	TotalAmountVnd    string                        `json:"total_amount_vnd"`
+	PaidAmountVnd     string                        `json:"paid_amount_vnd"`
+	IsStockInwardAuto bool                          `json:"is_stock_inward_auto"`
+}
+
+type PurchaseInvoiceLine struct {
+	ID                string         `json:"id"`
+	PurchaseInvoiceID string         `json:"purchase_invoice_id"`
+	LineOrder         int32          `json:"line_order"`
+	ItemID            string         `json:"item_id"`
+	WarehouseID       sql.NullString `json:"warehouse_id"`
+	DebitAccountID    string         `json:"debit_account_id"`
+	CreditAccountID   string         `json:"credit_account_id"`
+	Quantity          string         `json:"quantity"`
+	UnitPriceVnd      string         `json:"unit_price_vnd"`
+	AmountVnd         string         `json:"amount_vnd"`
+	VatRate           string         `json:"vat_rate"`
+	VatAmountVnd      string         `json:"vat_amount_vnd"`
+	Note              sql.NullString `json:"note"`
 }
 
 type Role struct {

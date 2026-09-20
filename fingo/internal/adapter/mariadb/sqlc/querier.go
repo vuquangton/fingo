@@ -33,6 +33,8 @@ type Querier interface {
 	// ============================================================================
 	CreateItem(ctx context.Context, arg CreateItemParams) error
 	CreateOpeningBatch(ctx context.Context, arg CreateOpeningBatchParams) error
+	CreatePurchaseInvoice(ctx context.Context, arg CreatePurchaseInvoiceParams) error
+	CreatePurchaseInvoiceLine(ctx context.Context, arg CreatePurchaseInvoiceLineParams) error
 	// ============================================================================
 	// UnitOfMeasure Queries
 	// ============================================================================
@@ -91,6 +93,8 @@ type Querier interface {
 	GetOpeningBatchByDate(ctx context.Context, arg GetOpeningBatchByDateParams) (OpeningBatch, error)
 	GetOpeningBatchByID(ctx context.Context, id string) (OpeningBatch, error)
 	GetPeriodByDate(ctx context.Context, arg GetPeriodByDateParams) (AccountingPeriod, error)
+	GetPurchaseInvoiceByID(ctx context.Context, id string) (PurchaseInvoice, error)
+	GetPurchaseInvoiceByVoucherID(ctx context.Context, voucherID string) (PurchaseInvoice, error)
 	GetRoleByCode(ctx context.Context, code string) (Role, error)
 	GetSystemOption(ctx context.Context, arg GetSystemOptionParams) (GetSystemOptionRow, error)
 	GetUOMByCode(ctx context.Context, arg GetUOMByCodeParams) (UnitOfMeasure, error)
@@ -134,6 +138,7 @@ type Querier interface {
 	ListInventoryBalancesByBatch(ctx context.Context, batchID string) ([]ListInventoryBalancesByBatchRow, error)
 	ListItems(ctx context.Context, companyProfileID string) ([]Item, error)
 	ListPeriodsByFiscalYear(ctx context.Context, fiscalYearID string) ([]AccountingPeriod, error)
+	ListPurchaseInvoiceLinesByInvoiceID(ctx context.Context, purchaseInvoiceID string) ([]PurchaseInvoiceLine, error)
 	ListRoles(ctx context.Context) ([]Role, error)
 	ListSoDConflictRules(ctx context.Context) ([]SodConflictRule, error)
 	ListSystemOptionsByCategory(ctx context.Context, arg ListSystemOptionsByCategoryParams) ([]ListSystemOptionsByCategoryRow, error)
@@ -156,6 +161,7 @@ type Querier interface {
 	UpdateOpeningBatchStatus(ctx context.Context, arg UpdateOpeningBatchStatusParams) error
 	UpdateOpeningBatchTotals(ctx context.Context, arg UpdateOpeningBatchTotalsParams) error
 	UpdatePeriodLock(ctx context.Context, arg UpdatePeriodLockParams) error
+	UpdatePurchaseInvoicePaymentStatus(ctx context.Context, arg UpdatePurchaseInvoicePaymentStatusParams) error
 	UpdateUserFailedLogin(ctx context.Context, arg UpdateUserFailedLoginParams) error
 	UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) error
 	UpdateUserStatus(ctx context.Context, arg UpdateUserStatusParams) error
