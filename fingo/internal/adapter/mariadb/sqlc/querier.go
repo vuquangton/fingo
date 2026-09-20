@@ -35,6 +35,8 @@ type Querier interface {
 	CreateOpeningBatch(ctx context.Context, arg CreateOpeningBatchParams) error
 	CreatePurchaseInvoice(ctx context.Context, arg CreatePurchaseInvoiceParams) error
 	CreatePurchaseInvoiceLine(ctx context.Context, arg CreatePurchaseInvoiceLineParams) error
+	CreateSalesInvoice(ctx context.Context, arg CreateSalesInvoiceParams) error
+	CreateSalesInvoiceLine(ctx context.Context, arg CreateSalesInvoiceLineParams) error
 	// ============================================================================
 	// UnitOfMeasure Queries
 	// ============================================================================
@@ -96,6 +98,8 @@ type Querier interface {
 	GetPurchaseInvoiceByID(ctx context.Context, id string) (PurchaseInvoice, error)
 	GetPurchaseInvoiceByVoucherID(ctx context.Context, voucherID string) (PurchaseInvoice, error)
 	GetRoleByCode(ctx context.Context, code string) (Role, error)
+	GetSalesInvoiceByID(ctx context.Context, id string) (SalesInvoice, error)
+	GetSalesInvoiceByVoucherID(ctx context.Context, voucherID string) (SalesInvoice, error)
 	GetSystemOption(ctx context.Context, arg GetSystemOptionParams) (GetSystemOptionRow, error)
 	GetUOMByCode(ctx context.Context, arg GetUOMByCodeParams) (UnitOfMeasure, error)
 	GetUOMByID(ctx context.Context, id string) (UnitOfMeasure, error)
@@ -140,6 +144,7 @@ type Querier interface {
 	ListPeriodsByFiscalYear(ctx context.Context, fiscalYearID string) ([]AccountingPeriod, error)
 	ListPurchaseInvoiceLinesByInvoiceID(ctx context.Context, purchaseInvoiceID string) ([]PurchaseInvoiceLine, error)
 	ListRoles(ctx context.Context) ([]Role, error)
+	ListSalesInvoiceLinesByInvoiceID(ctx context.Context, salesInvoiceID string) ([]SalesInvoiceLine, error)
 	ListSoDConflictRules(ctx context.Context) ([]SodConflictRule, error)
 	ListSystemOptionsByCategory(ctx context.Context, arg ListSystemOptionsByCategoryParams) ([]ListSystemOptionsByCategoryRow, error)
 	ListSystemOptionsByCompany(ctx context.Context, companyProfileID string) ([]ListSystemOptionsByCompanyRow, error)
@@ -162,6 +167,7 @@ type Querier interface {
 	UpdateOpeningBatchTotals(ctx context.Context, arg UpdateOpeningBatchTotalsParams) error
 	UpdatePeriodLock(ctx context.Context, arg UpdatePeriodLockParams) error
 	UpdatePurchaseInvoicePaymentStatus(ctx context.Context, arg UpdatePurchaseInvoicePaymentStatusParams) error
+	UpdateSalesInvoiceEInvoiceStatus(ctx context.Context, arg UpdateSalesInvoiceEInvoiceStatusParams) error
 	UpdateUserFailedLogin(ctx context.Context, arg UpdateUserFailedLoginParams) error
 	UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) error
 	UpdateUserStatus(ctx context.Context, arg UpdateUserStatusParams) error

@@ -712,6 +712,51 @@ func (ns NullPurchaseInvoicesPaymentStatus) Value() (driver.Value, error) {
 	return string(ns.PurchaseInvoicesPaymentStatus), nil
 }
 
+type SalesInvoicesEinvoiceStatus string
+
+const (
+	SalesInvoicesEinvoiceStatusDRAFT       SalesInvoicesEinvoiceStatus = "DRAFT"
+	SalesInvoicesEinvoiceStatusSIGNED      SalesInvoicesEinvoiceStatus = "SIGNED"
+	SalesInvoicesEinvoiceStatusCQTSENT     SalesInvoicesEinvoiceStatus = "CQT_SENT"
+	SalesInvoicesEinvoiceStatusCQTACCEPTED SalesInvoicesEinvoiceStatus = "CQT_ACCEPTED"
+	SalesInvoicesEinvoiceStatusCQTREJECTED SalesInvoicesEinvoiceStatus = "CQT_REJECTED"
+)
+
+func (e *SalesInvoicesEinvoiceStatus) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = SalesInvoicesEinvoiceStatus(s)
+	case string:
+		*e = SalesInvoicesEinvoiceStatus(s)
+	default:
+		return fmt.Errorf("unsupported scan type for SalesInvoicesEinvoiceStatus: %T", src)
+	}
+	return nil
+}
+
+type NullSalesInvoicesEinvoiceStatus struct {
+	SalesInvoicesEinvoiceStatus SalesInvoicesEinvoiceStatus `json:"sales_invoices_einvoice_status"`
+	Valid                       bool                        `json:"valid"` // Valid is true if SalesInvoicesEinvoiceStatus is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullSalesInvoicesEinvoiceStatus) Scan(value interface{}) error {
+	if value == nil {
+		ns.SalesInvoicesEinvoiceStatus, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.SalesInvoicesEinvoiceStatus.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullSalesInvoicesEinvoiceStatus) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.SalesInvoicesEinvoiceStatus), nil
+}
+
 type UomConversionsConversionType string
 
 const (
@@ -1345,6 +1390,44 @@ type Role struct {
 type RolePermission struct {
 	RoleID       string `json:"role_id"`
 	PermissionID string `json:"permission_id"`
+}
+
+type SalesInvoice struct {
+	ID                 string                      `json:"id"`
+	VoucherID          string                      `json:"voucher_id"`
+	CompanyProfileID   string                      `json:"company_profile_id"`
+	CustomerID         string                      `json:"customer_id"`
+	InvoiceTemplate    string                      `json:"invoice_template"`
+	InvoiceSeries      string                      `json:"invoice_series"`
+	InvoiceNo          string                      `json:"invoice_no"`
+	InvoiceDate        time.Time                   `json:"invoice_date"`
+	DueDate            time.Time                   `json:"due_date"`
+	PaymentMethod      string                      `json:"payment_method"`
+	EinvoiceStatus     SalesInvoicesEinvoiceStatus `json:"einvoice_status"`
+	EinvoiceCodeCqt    sql.NullString              `json:"einvoice_code_cqt"`
+	SubtotalVnd        string                      `json:"subtotal_vnd"`
+	DiscountVnd        string                      `json:"discount_vnd"`
+	VatAmountVnd       string                      `json:"vat_amount_vnd"`
+	TotalAmountVnd     string                      `json:"total_amount_vnd"`
+	IsStockOutwardAuto bool                        `json:"is_stock_outward_auto"`
+}
+
+type SalesInvoiceLine struct {
+	ID                string         `json:"id"`
+	SalesInvoiceID    string         `json:"sales_invoice_id"`
+	LineOrder         int32          `json:"line_order"`
+	ItemID            string         `json:"item_id"`
+	WarehouseID       sql.NullString `json:"warehouse_id"`
+	DebitAccountID    string         `json:"debit_account_id"`
+	CreditAccountID   string         `json:"credit_account_id"`
+	Quantity          string         `json:"quantity"`
+	UnitPriceVnd      string         `json:"unit_price_vnd"`
+	AmountVnd         string         `json:"amount_vnd"`
+	DiscountRate      string         `json:"discount_rate"`
+	DiscountAmountVnd string         `json:"discount_amount_vnd"`
+	VatRate           string         `json:"vat_rate"`
+	VatAmountVnd      string         `json:"vat_amount_vnd"`
+	Note              sql.NullString `json:"note"`
 }
 
 type SodConflictRule struct {
