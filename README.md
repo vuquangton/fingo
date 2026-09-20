@@ -1,111 +1,122 @@
-﻿# Battle-Tested On-Premise Enterprise Accounting Desktop Application (.NET 10 LTS)
+# FinGo - SME Accounting Desktop Application
 
-Production-grade architectural scaffolding and complete module contracts for a high-reliability, on-premise Desktop Accounting System running on **.NET 10 (LTS)**, fully compliant with the Vietnamese Accounting System (VAS - Circular 200/2014/TT-BTC & Circular 133/2016/TT-BTC).
+On-premise enterprise accounting desktop application built with **Go (v1.25+)**, **Wails v2**, **Vue 3 / TypeScript**, and **MariaDB 12.3**. Designed using strict **Onion Architecture** (Modular Monolith) with zero external dependency leaks in domain rules. Fully aligned with Vietnamese Accounting Standards (VAS - Circular 133/2016/TT-BTC & Circular 200/2014/TT-BTC) and electronic invoicing standards (Decree 123/2020/NĐ-CP).
 
 ---
 
-## 1. Solution Architecture
+## 1. Solution Architecture (Onion Architecture)
 
-```
+```text
 d:\accounting\
-├── src\
-│   ├── Core\
-│   │   ├── Accounting.Domain\                 # Domain-Driven Design (Aggregates, Value Objects, Domain Events, Rules, Exceptions)
-│   │   └── Accounting.Application\            # Clean Architecture CQRS (MediatR Handlers, DTOs, FluentValidation, Pipeline Behaviors)
-│   ├── Infrastructure\
-│   │   ├── Accounting.Infrastructure.Persistence\ # EF Core 10 (Dynamic SQLite/PostgreSQL provider), Dapper Connection Factory, DbInitializer
-│   │   └── Accounting.Infrastructure.Compliance\  # VAS BCTC (B01-DN, B02-DN, B03-DN), Tax Engine (PIT, VAT), HTKK XML Formatter
-│   └── UI\
-│       └── Accounting.WpfApp\                 # Keyboard-first WPF Desktop App (.NET 10), CommunityToolkit.Mvvm, Virtualized UI Grids
-└── tests\
-    └── Accounting.Domain.Tests\               # xUnit unit & integration test suite verifying double-entry, costing, PIT, seeding
+├── .agents/                 # AI skill runbooks & guidelines (5W1H decision matrix)
+├── .codegraph/              # Fast AST knowledge graph for codebase symbol navigation
+├── GEMINI.md                # Permanent project rules, context, and operational commands
+└── fingo/                   # Core application
+    ├── .env                 # Local MariaDB configuration
+    ├── go.mod               # Go module: fingo (Go 1.25+)
+    ├── wails.json           # Wails desktop configuration (Output: FinGo.exe)
+    ├── sqlc.yaml            # Compile-time safe SQL code generation config
+    │
+    ├── main.go              # Wails application entry point & lifecycle hooks
+    ├── app.go               # Seam between frontend and backend use cases
+    │
+    ├── internal/            # Private Application Architecture
+    │   ├── domain/          # THE CORE (Zero external dependencies, pure Go structs)
+    │   │   ├── system/      # User, Role, Permission, CompanyProfile, AuditLog
+    │   │   ├── catalog/     # Customer, Vendor, Item, BankAccount, Warehouse
+    │   │   ├── gl/          # Voucher, VoucherLine, Double-entry validation
+    │   │   ├── cash/        # CashReceipt (111), CashPayment (111), BankTransaction (112)
+    │   │   ├── sales/       # SalesInvoice, SalesInvoiceLine, VAT math
+    │   │   ├── purchase/    # PurchaseInvoice, PurchaseInvoiceLine
+    │   │   ├── inventory/   # StockInward, StockOutward, StockMovementLine
+    │   │   ├── asset/       # FixedAsset (211/214), Monthly straight-line depreciation
+    │   │   ├── opening/     # Account, Customer, Vendor, Inventory Opening Balances
+    │   │   ├── tax/         # VATDeclaration (Form 01/GTGT Box 40/43), EInvoice (NĐ123)
+    │   │   ├── closing/     # PeriodClosing (511 -> 911 <- 632, 642 -> 421), Lock Date
+    │   │   ├── report/      # TrialBalance (Opening + Movement = Closing), B01/B02/B03
+    │   │   ├── payroll/     # Employee, Statutory insurance (10.5% / 21.5%), Net salary
+    │   │   └── costing/     # ProductionCostCard (WIP allocation, Unit cost)
+    │   │
+    │   ├── usecase/         # APPLICATION SERVICES (Flow orchestration & transaction boundaries)
+    │   │
+    │   └── adapter/         # INFRASTRUCTURE & EXTERNAL ADAPTERS
+    │       ├── mariadb/     # Database repository implementations & sqlc generated queries
+    │       └── wails/       # Desktop bindings & UI event handling
+    │
+    ├── pkg/
+    │   └── logger/          # Context-aware structured logger (Standard library log/slog)
+    │
+    ├── db/
+    │   ├── migrations/      # Goose versioned SQL migrations
+    │   └── queries/         # sqlc type-safe query templates
+    │
+    └── frontend/            # DESKTOP UI (Vue 3 + Vite + TypeScript)
+        ├── src/             # Views, accounting grids, and components
+        └── wailsjs/         # Auto-generated Go-to-TypeScript runtime bridge
 ```
 
 ---
 
-## 2. Dynamic Database Switching (Zero-Churn Database Strategy)
+## 2. Tech Stack
 
-The system supports seamless switching between embedded SQLite (for single-user / branch stations / offline setups) and client-server PostgreSQL (for multi-user enterprise deployments) via `appsettings.json` without requiring any code changes.
+- **Backend Language**: Go (v1.25+)
+- **Desktop Runtime**: Wails v2 (`github.com/wailsapp/wails/v2`)
+- **Frontend Framework**: Vue 3 + Vite + TypeScript
+- **Database**: MariaDB 12.3 (On-premise / Local LAN)
+  - Driver: `github.com/go-sql-driver/mysql`
+  - Generator: `sqlc` (raw SQL to type-safe Go code)
+  - Migrations: `goose` (`db/migrations`)
+- **Arbitrary Precision Math**: `github.com/shopspring/decimal` (Zero floating point errors)
+- **Logging**: `log/slog` (Standard library structured logging with `trace_id` and `user_id`)
+- **Knowledge Graph**: CodeGraph (`.codegraph/`) for instant AST exploration
 
-```json
-{
-  "DatabaseProvider": "Sqlite",
-  "ConnectionStrings": {
-    "SqliteConnection": "Data Source=accounting.db",
-    "PostgreSqlConnection": "Host=localhost;Port=5432;Database=accounting;Username=postgres;Password=postgres"
-  }
-}
+---
+
+## 3. Database & Dev Environment
+
+- **Database Name**: `fingo`
+- **Default Dev Connection**: `dev:123456@tcp(127.0.0.1:3306)/fingo?parseTime=true`
+- **Configuration**: `.env` located in `d:\accounting\fingo\.env`
+
+---
+
+## 4. Essential CLI Commands
+
+Execute all commands from `d:\accounting\fingo`:
+
+```powershell
+# Run Live Dev Desktop Server
+wails dev
+
+# Compile Production Executable (FinGo.exe)
+wails build
+
+# Run All Domain Unit Tests (14 Packages)
+go test -v ./internal/domain/...
+
+# Run Logger Unit Tests
+go test -v ./pkg/logger/...
+
+# Generate Type-Safe SQLC Go Queries
+sqlc generate
+
+# Run Database Migrations
+goose -dir db/migrations mysql "dev:123456@tcp(127.0.0.1:3306)/fingo?parseTime=true" up
+
+# Create New Database Migration
+goose -dir db/migrations create <migration_name> sql
 ```
 
-* **SQLite v3+:** Zero-configuration embedded storage. Automatically initializes schema and seeds circular 200/133 Chart of Accounts on first launch.
-* **PostgreSQL v16+:** Switch `DatabaseProvider` to `"PostgreSql"` to route EF Core and Dapper to enterprise PostgreSQL instances.
-
----
-
-## 3. Core Accounting Modules
-
-1. **General Ledger & Double-Entry Journal Engine (Sổ Cái & Định Khoản):**
-   - Tiered Chart of Accounts (COA) compliant with Circulars 200 & 133 (TK 111, 112, 131, 133, 152, 156, 211, 214, 242, 331, 333, 334, 338, 411, 421, 511, 632, 641, 642, 811, 911).
-   - Strict `SUM(Debit) == SUM(Credit)` validation before persistence.
-   - Voucher lifecycle (`Draft` -> `Pending` -> `Approved` -> `Posted`).
-   - Immutable posted vouchers with automated reversing entries (`CreateReversal`).
-   - Fiscal period soft/hard locking and automated revenue/expense clearance (`TK 911`).
-
-2. **Cash & Treasury (Quỹ Tiền Mặt & Tiền Gửi Ngân Hàng):**
-   - Receipts (Phiếu thu), Payments (Phiếu chi), Cash counting log (Biên bản kiểm kê quỹ).
-   - Multi-bank account tracking, Payment Orders (Ủy nhiệm chi - UNC), Bank statement reconciliation (Đối chiếu sổ phụ).
-
-3. **Purchasing & Accounts Payable - AP (Mua Hàng & Phải Trả):**
-   - Purchase orders, Goods receipts (Phiếu nhập kho), Three-way matching (PO vs. GRN vs. Invoice), Vendor aging analysis.
-
-4. **Sales & Accounts Receivable - AR (Bán Hàng & Phải Thu):**
-   - Quotations, Delivery notes (Phiếu xuất kho), Sales invoices, Dynamic credit limit enforcement, Customer aging schedules.
-
-5. **Inventory Valuation & Logistics (Kho & Giá Vốn):**
-   - Multi-warehouse topology, warehouse transfers (Điều chuyển kho), stocktaking (Kiểm kê).
-   - Valuation engines: FIFO, Perpetual Moving Average (Bình quân gia quyền tức thời), Monthly Periodic Weighted Average.
-
-6. **Fixed Assets & Tool Amortization (Tài Sản Cố Định & CCDC):**
-   - Fixed asset registry, Straight-line & Accelerated depreciation, Monthly expense allocation for TK 242 (Chi phí trả trước).
-
-7. **Payroll & Statutory Deductions (Tiền Lương & Trích Theo Lương):**
-   - Employee timesheet aggregation, Statutory insurance (Employee: 8% BHXH, 1.5% BHYT, 1% BHTN; Employer: 17.5% BHXH, 3% BHYT, 1% BHTN, 2% Trade Union).
-   - Progressive Personal Income Tax (PIT) withholding calculation with statutory deductions (11M personal, 4.4M dependent).
-
-8. **Tax & Statutory Financial Statements (Thuế & BCTC):**
-   - B01-DN: Báo cáo tình hình tài chính (Statement of Financial Position).
-   - B02-DN: Báo cáo kết quả hoạt động kinh doanh (Income Statement).
-   - B03-DN: Báo cáo lưu chuyển tiền tệ (Cash Flows Statement - Direct & Indirect).
-   - Input/Output VAT ledgers and General Department of Taxation XML submission schema.
-
-9. **System, Security & Immutable Audit Trail (Hệ Thống & Nhật Ký):**
-   - Role-Based Access Control (RBAC).
-   - Append-only immutable audit trail capturing user, machine fingerprint, UTC timestamp, and delta payloads.
-   - Online database backup (SQLite VACUUM INTO / PostgreSQL pg_dump wrapper).
-
----
-
-## 4. Keyboard-First Desktop UX
-
-| Shortcut | Action | Vietnamese Description |
-|---|---|---|
-| `F2` | New Voucher | Tạo mới chứng từ kế toán |
-| `F3` | Search / Find | Tìm kiếm danh mục / chứng từ |
-| `F5` | Refresh Data | Nạp lại dữ liệu từ cơ sở dữ liệu |
-| `F8` | Post Voucher | Ghi sổ kế toán |
-| `F9` | Unpost Voucher | Bỏ ghi sổ kế toán |
-| `F12` / `Ctrl+S` | Save | Lưu chứng từ |
-| `Enter` / `Tab` | Next Field / Commit Row | Chuyển ô nhập liệu / Nhập dòng chi tiết |
-| `Esc` | Cancel | Đóng hộp thoại / Hủy thao tác |
-
----
-
-## 5. Verification & Test Execution
-
-```bash
-# Build entire solution across all 6 projects
-dotnet build Accounting.slnx -c Release
-
-# Run automated test suite (11 unit & integration tests)
-dotnet test Accounting.slnx -c Release
+To sync CodeGraph index (run from `d:\accounting`):
+```powershell
+codegraph sync
 ```
+
+---
+
+## 5. Domain Invariants Enforced
+
+1. **Double-Entry Equilibrium**: Every voucher and opening balance requires $\sum \text{Debit} == \sum \text{Credit}$.
+2. **Fixed-Point Financial Math**: All amounts, unit costs, VAT rates, and taxes use `decimal.Decimal`. No `float32`/`float64`.
+3. **Period Locking**: Modifications and new vouchers are blocked if `VoucherDate <= LockDate`.
+4. **VAS Compliance**: Automated P&L transfer paths ($511/515/711 \rightarrow 911 \leftarrow 632/635/641/642/811 \rightarrow 421$) and Statutory VAT declaration calculations.
