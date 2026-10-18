@@ -1,0 +1,84 @@
+{{define "opening.html"}}<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Số dư đầu kỳ — FinGo</title>
+  <link rel="stylesheet" href="/static/vendor/tabler.min.css">
+</head>
+<body class="antialiased">
+<div class="page">
+  <header class="navbar navbar-expand d-print-none">
+    <div class="container-xl">
+      <span class="navbar-brand">FinGo</span>
+      <span class="navbar-text ms-3">{{.Client}}</span>
+      <nav class="ms-4">
+        <a class="btn btn-sm btn-ghost-secondary" href="/sales">Bán hàng</a>
+        <a class="btn btn-sm btn-ghost-secondary" href="/receipt">Thu tiền</a>
+        <a class="btn btn-sm btn-ghost-secondary" href="/partners">Danh mục</a>
+        <a class="btn btn-sm btn-ghost-secondary" href="/reports">Cân đối</a>
+      </nav>
+      <span class="navbar-text ms-auto">{{.Email}}</span>
+    </div>
+  </header>
+
+  <div class="page-wrapper">
+    <div class="page-body">
+      <div class="container-xl">
+
+        {{if .Posted}}
+        <div class="alert alert-success" role="status">Đã ghi sổ số dư đầu kỳ: <strong>{{.Posted}}</strong>.</div>
+        {{end}}
+        {{if .Error}}
+        <div class="alert alert-danger" role="alert">{{.Error}}</div>
+        {{end}}
+
+        {{if .Rows}}
+        <div class="card mb-3">
+          <div class="card-header"><h3 class="card-title">Dòng không đọc được</h3></div>
+          <div class="table-responsive">
+            <table class="table card-table">
+              <thead><tr><th>Dòng</th><th>Lỗi</th></tr></thead>
+              <tbody>
+                {{range .Rows}}<tr><td>{{.Row}}</td><td>{{.Message}}</td></tr>{{end}}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        {{end}}
+
+        <form method="post" action="/opening" enctype="multipart/form-data" class="card">
+          <div class="card-header">
+            <h3 class="card-title">Nhập số dư đầu kỳ</h3>
+            <div class="card-subtitle ms-auto">Một lần cho mỗi khách hàng, trước khi ghi sổ kỳ đầu tiên.</div>
+          </div>
+          <div class="card-body">
+            <div class="row g-3">
+              <div class="col-md-3">
+                <label class="form-label" for="date">Ngày mở sổ</label>
+                <input class="form-control" id="date" name="date" type="date" value="{{.Date}}" required>
+              </div>
+              <div class="col-md-9">
+                <label class="form-label" for="file">Tệp Excel (.xlsx)</label>
+                <input class="form-control" id="file" name="file" type="file" accept=".xlsx" required>
+              </div>
+            </div>
+
+            <p class="text-secondary mt-3 mb-0">
+              Mỗi dòng: <code>tài khoản</code> · <code>Nợ</code> · <code>Có</code> (hoặc chỉ một cột số tiền, hiểu là Nợ).
+              Dòng tiêu đề được bỏ qua. Tổng Nợ phải bằng tổng Có — nếu không, chứng từ bị từ chối và không có gì được ghi.
+              Nhập lại cùng một tệp sẽ bị từ chối: mỗi tệp là một chứng từ.
+            </p>
+          </div>
+          <div class="card-footer text-end">
+            <button class="btn btn-primary" type="submit">Ghi sổ số dư</button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
+{{end}}

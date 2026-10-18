@@ -227,3 +227,17 @@ Three defects, each a schema or layering fact:
 1. **`document.Validate` requires a period**, and our `documents` table had no `period_id`. Migration `00006` adds it and backfills from the date's period.
 2. **The domain derives readable ids** (`allocation-<uuid>`, `credit-<uuid>`) that are not uuids. The adapter generates the database key, as the ledger already does for vouchers.
 3. **A receipt is two steps**: post the voucher, then apply the payment. A crash between them leaves an unallocated receipt — visible in the ledger, never a document marked paid by money that was not recorded. Retry-safe: the voucher id is derived from (client, document, amount, date), so a retry collides with itself.
+## Phase 6 — opening balances from Excel
+
+`GET /opening` uploads a workbook; `POST /opening` posts one voucher.
+
+| Rule | Where it is enforced |
+| :--- | :--- |
+| totals must agree | `gl.Voucher.Post` — the same check every voucher gets |
+| accounts must be postable leaves | `gl.PostingRules.Chart` |
+| period must be open | `gl.PostingRules.Periods` |
+| same file twice is refused | voucher id derived from a sha256 of the workbook |
+
+Three tests: import (4 lines, 800.000.000 each side) · unbalanced refused with **nothing written** · same file twice leaves exactly one voucher.
+
+One defect worth recording: the first test used account `411`, and the engine refused it — `411` is a heading in the TT133 chart with postable children. The test was wrong; the engine was right. A user would have seen the same clear refusal.

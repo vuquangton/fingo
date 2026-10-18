@@ -70,6 +70,8 @@ func run() error {
 	protected.GET("/books", func(c *gin.Context) { c.String(http.StatusOK, "books") })
 	protected.GET("/accounts", auth.ShowAccounts)
 	protected.GET("/journal", auth.ShowJournal)
+	protected.GET("/opening", auth.ShowOpening)
+	protected.POST("/opening", auth.PostOpening)
 	protected.GET("/receipt", auth.ShowReceipts)
 	protected.POST("/receipt", auth.PostReceipt)
 	protected.GET("/sales", auth.ShowSales)
