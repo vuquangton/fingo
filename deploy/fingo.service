@@ -1,0 +1,37 @@
+# FinGo v2 — systemd unit.
+#
+# Install:
+#   sudo useradd --system --home /var/lib/fingo --shell /usr/sbin/nologin fingo
+#   sudo install -m 0755 fingo /usr/local/bin/fingo
+#   sudo install -d -o fingo -g fingo /var/lib/fingo /etc/fingo
+#   sudo install -m 0600 cert.pem key.pem /etc/fingo/
+#   sudo install -m 0644 deploy/fingo.service /etc/systemd/system/
+#   sudo systemctl enable --now fingo
+#
+# The DSN is read from the environment file, never from this unit: a unit file
+# is world-readable, and a password in it is a password in `systemctl cat`.
+[Unit]
+Description=FinGo v2 accounting server
+After=network-online.target postgresql.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=fingo
+Group=fingo
+EnvironmentFile=/etc/fingo/fingo.env
+ExecStart=/usr/local/bin/fingo -addr 127.0.0.1:8443 -cert /etc/fingo/cert.pem -key /etc/fingo/key.pem
+Restart=on-failure
+RestartSec=2s
+
+# Hardening: the process needs its certificate, its key and a socket. Nothing else.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/fingo
+CapabilityBoundingSet=
+AmbientCapabilities=
+
+[Install]
+WantedBy=multi-user.target

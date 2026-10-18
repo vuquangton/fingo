@@ -9,6 +9,7 @@
 package web
 
 import (
+	"crypto/tls"
 	"errors"
 	"net/http"
 	"time"
@@ -76,6 +77,7 @@ func (a *Auth) Sessions() *scs.SessionManager { return a.sessions }
 func (a *Auth) Handler(engine http.Handler) http.Handler {
 	return http.NewCrossOriginProtection().Handler(a.sessions.LoadAndSave(engine))
 }
+
 // UserFrom returns the signed-in user's identity.
 func UserFrom(c *gin.Context) (email string, role Role, ok bool) {
 	email = ""
@@ -233,4 +235,11 @@ func (a *Auth) SelectClient(c *gin.Context) {
 // ClientFrom returns the client the session is scoped to.
 func (a *Auth) ClientFrom(c *gin.Context) string {
 	return a.sessions.GetString(c.Request.Context(), keyClient)
+}
+
+// TLSConfig is the server's TLS policy: TLS 1.2 is the floor, and the
+// certificate is one this deployment generated or installed — there is no
+// plaintext fallback and no self-signed trust prompt to click through.
+func TLSConfig() *tls.Config {
+	return &tls.Config{MinVersion: tls.VersionTLS12}
 }

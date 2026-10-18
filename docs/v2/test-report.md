@@ -112,3 +112,27 @@ Gate: `REQUIRE_DB=1 go test ./...` → **18 packages ok, 0 failures, 0 skips**.
 Auth surface, 8 tests: unauthenticated 401 · login then protected 200 · wrong password 401 and recorded in `failed_logins` · unknown email indistinguishable from wrong password (same status) · viewer allowed to read, refused 403 on an admin route · logout ends the session · missing credentials 400.
 
 Libraries doing the work: `gin` (routing), `scs` + `scs/pgxstore` (sessions), `x/crypto/argon2` (hashing), `net/http.CrossOriginProtection` (CSRF), `pg_dump`/`pg_restore` (backup). Hand-written: the middleware that decides who is allowed, and the audit insert.
+## Phase 2 close-out — the server binary
+
+`cmd/fingo` now exists and was smoke-tested on 2026-10-18:
+
+```
+$ go run ./cmd/fingo -addr 127.0.0.1:18443
+{"level":"INFO","msg":"listening","addr":"127.0.0.1:18443"}
+
+$ curl -k https://127.0.0.1:18443/healthz     → 200 "ok"
+$ curl -k https://127.0.0.1:18443/books       → 401   (no session)
+$ curl    http://127.0.0.1:18443/books        → connection refused (TLS only)
+```
+
+TLS certificate comes from `cmd/devcert` (standard library `crypto/x509`), because a
+Secure session cookie over plain HTTP is a cookie the browser never sends back.
+`internal/web.TLSConfig` sets TLS 1.2 as the floor.
+
+`deploy/fingo.service` is the systemd unit; it reads the DSN from
+`/etc/fingo/fingo.env`, never from the unit itself, because a unit file is
+world-readable and appears in `systemctl cat`.
+
+**Not implemented:** a Windows SCM service. `sc.exe create` with a plain executable
+does not work — the binary must call `svc.Run` — and that wrapper is not written. Windows
+deployments therefore run the binary under a scheduled task or manually until it is.
