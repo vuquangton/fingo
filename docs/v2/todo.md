@@ -17,7 +17,7 @@ Conventions:
 
 | Now (this fortnight) | Next (4–6 weeks) | Later |
 | :--- | :--- | :--- |
-| A1 pilot client · A2 parallel run · A4 CI green · A5 production host · B3 test isolation | B1 aging · B2 report tie-out · C1 stock transfer · C3 bill from receipt | C2 three-way match · D1 grid spike · D2 keyboard entry · E2 scale guard |
+| A1 pilot client · A2 parallel run · A4 CI green · A5 production host · B3 test isolation · ~~B2 tie-out~~ | B1 aging · B2 report tie-out · C1 stock transfer · C3 bill from receipt | C2 three-way match · D1 grid spike · D2 keyboard entry · E2 scale guard |
 
 ---
 
@@ -71,7 +71,7 @@ Conventions:
 - **Done:** a test with three invoices at 10, 45 and 100 days produces the expected
   bucket totals; totals reconcile to the 131/331 control accounts.
 
-### B2 · Report tie-out
+### B2 · Report tie-out — **DONE**
 - **Work:** property-style tests asserting the reports agree with each other:
   trial balance debits = credits; balance sheet assets = liabilities + equity;
   P&L net profit = change in 4212 for the period; ledger rows sum to the trial

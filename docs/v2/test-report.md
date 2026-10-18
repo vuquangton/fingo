@@ -347,3 +347,16 @@ Three tests added for the failure modes that would otherwise appear in productio
 | `TestFailedLoginsAreRecordedAndCostNothing` (30 unknown emails) | 2 ms each, all recorded, no argon2 work |
 
 Numbers and extrapolations are in `docs/v2/performance.md`. The volume test is skipped under `-short`; CI runs it.
+## Tie-out — the reports agree with each other
+
+`TestReportsAgreeWithEachOther` posts capital, a sale with output VAT, its collection, a cost with input VAT and its payment, then asserts five things:
+
+1. trial balance period debits/credits equal the ledger's own sum;
+2. the period balances, and closing balances;
+3. every account with movements has exactly one row, and no row invents an account;
+4. net profit = revenue − expenses, and equals the balance sheet's unclosed `Result`;
+5. assets = liabilities + equity, with the unclosed result inside equity.
+
+Expected figures are computed by hand in the test (profit 700,000; assets 5,800,000) so the assertions are not merely self-consistent.
+
+The first version expected assets of 5,770,000 and failed: **the test forgot the 30,000 input VAT still sitting on 1331.** The balance sheet was right, the test was wrong — the same kind of error the test exists to catch in the code.
