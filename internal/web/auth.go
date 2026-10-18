@@ -21,6 +21,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"fingo/internal/auth"
+	"fingo/internal/store"
 )
 
 // Session keys. Constants, not literals, so a typo is a compile error.
@@ -44,11 +45,14 @@ const (
 type Auth struct {
 	sessions *scs.SessionManager
 	pool     *pgxpool.Pool
+	store    *store.Store
 }
 
 // NewAuth builds the session manager. Sessions live in PostgreSQL, so a restart
 // does not sign everybody out and the operations team has one store to back up.
-func NewAuth(pool *pgxpool.Pool) *Auth {
+func NewAuth(st *store.Store) *Auth {
+	pool := st.Pool()
+
 	sessions := scs.New()
 	sessions.Store = pgxstore.New(pool)
 	sessions.Lifetime = 8 * time.Hour
@@ -58,7 +62,7 @@ func NewAuth(pool *pgxpool.Pool) *Auth {
 	sessions.Cookie.SameSite = http.SameSiteLaxMode
 	sessions.Cookie.Path = "/"
 
-	return &Auth{sessions: sessions, pool: pool}
+	return &Auth{sessions: sessions, pool: pool, store: st}
 }
 
 // Sessions exposes the manager for Gin middleware and tests.

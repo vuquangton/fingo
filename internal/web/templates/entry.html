@@ -1,0 +1,90 @@
+{{define "entry.html"}}<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nhập chứng từ — FinGo</title>
+  <link rel="stylesheet" href="/static/vendor/tabler.min.css">
+  <script src="/static/vendor/htmx.min.js" defer></script>
+</head>
+<body class="antialiased">
+<div class="page">
+  <header class="navbar navbar-expand d-print-none">
+    <div class="container-xl">
+      <span class="navbar-brand">FinGo</span>
+      <span class="navbar-text ms-3">{{.ClientName}}</span>
+      <span class="navbar-text ms-auto">{{.Email}}</span>
+    </div>
+  </header>
+
+  <div class="page-wrapper">
+    <div class="page-body">
+      <div class="container-xl">
+
+        {{if .Posted}}
+        <div class="alert alert-success" role="status">Đã ghi sổ chứng từ <strong>{{.Posted}}</strong>.</div>
+        {{end}}
+
+        {{if .Error}}
+        <div class="alert alert-danger" role="alert">{{.Error}}</div>
+        {{end}}
+
+        <form method="post" action="/entry" class="card">
+          <div class="card-header"><h3 class="card-title">Chứng từ nghiệp vụ khác</h3></div>
+          <div class="card-body">
+            <div class="row g-3">
+              <div class="col-md-3">
+                <label class="form-label" for="date">Ngày chứng từ</label>
+                <input class="form-control" id="date" name="date" type="date" value="{{.Date}}" required>
+              </div>
+              <div class="col-md-9">
+                <label class="form-label" for="description">Diễn giải</label>
+                <input class="form-control" id="description" name="description" value="{{.Description}}"
+                       placeholder="Bán hàng cho khách" required>
+              </div>
+            </div>
+
+            <table class="table table-sm mt-4">
+              <thead>
+                <tr><th style="width:22%">Tài khoản</th><th style="width:14%">Bên</th><th style="width:20%">Số tiền</th></tr>
+              </thead>
+              <tbody>
+                {{range .Rows}}
+                <tr>
+                  <td>
+                    <input class="form-control" name="account" list="accounts" value="{{.Account}}" autocomplete="off">
+                  </td>
+                  <td>
+                    <select class="form-select" name="side">
+                      <option value="DEBIT"  {{if eq .Side "DEBIT"}}selected{{end}}>Nợ</option>
+                      <option value="CREDIT" {{if eq .Side "CREDIT"}}selected{{end}}>Có</option>
+                    </select>
+                  </td>
+                  <td><input class="form-control text-end" name="amount" value="{{.Amount}}" inputmode="numeric" placeholder="1.100.000"></td>
+                </tr>
+                {{end}}
+              </tbody>
+            </table>
+
+            <datalist id="accounts">
+              {{range .Accounts}}<option value="{{.Code}}">{{.Code}} — {{.Name}}</option>{{end}}
+            </datalist>
+
+            <p class="text-secondary">
+              Số tiền là đồng chẵn. Dấu chấm phân cách hàng nghìn; không nhập phần lẻ.
+              Tổng Nợ phải bằng tổng Có thì chứng từ mới ghi sổ được.
+            </p>
+          </div>
+          <div class="card-footer d-flex">
+            <a class="btn btn-link" href="/books">Sổ sách</a>
+            <button class="btn btn-primary ms-auto" type="submit">Ghi sổ</button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
+{{end}}

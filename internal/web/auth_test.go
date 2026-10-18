@@ -13,6 +13,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"fingo/internal/auth"
+	"fingo/internal/store"
 	"fingo/internal/testdb"
 	"fingo/internal/web"
 )
@@ -31,7 +32,13 @@ func newHarness(t *testing.T) *harness {
 	cfg := testdb.Load(t)
 	pool := testdb.Open(t, cfg)
 
-	a := web.NewAuth(pool)
+	st, err := store.Open(t.Context(), store.Config{DSN: cfg.DSN()})
+	if err != nil {
+		t.Fatalf("open store: %v", err)
+	}
+	t.Cleanup(st.Close)
+
+	a := web.NewAuth(st)
 
 	router := gin.New()
 	router.POST("/login", a.Login)
@@ -39,6 +46,10 @@ func newHarness(t *testing.T) *harness {
 
 	protected := router.Group("/", a.RequireUser())
 	protected.GET("/books", func(c *gin.Context) { c.String(http.StatusOK, "books") })
+	protected.POST("/clients/:id/select", a.SelectClient)
+	protected.GET("/entry", a.ShowEntry)
+	protected.POST("/entry", a.PostEntry)
+	router.StaticFS("/static", http.FS(web.Static()))
 
 	admin := protected.Group("/admin", a.RequireRole(web.RoleAdmin))
 	admin.POST("/periods/lock", func(c *gin.Context) { c.String(http.StatusOK, "locked") })

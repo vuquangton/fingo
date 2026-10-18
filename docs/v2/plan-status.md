@@ -9,7 +9,7 @@ Updated 2026-10-18 (Phase 1 foundation). One row per phase; a phase is only `DON
 | **0 — Save and decide** | **DONE** | archive tag exists · `git status` clean · ADRs 0006–0008 written · pushed |
 | 1 — Foundation | **DONE** | `go build` rc=0 · `go vet` rc=0 · `REQUIRE_DB=1 go test ./...` rc=0 (16 packages ok, 0 fail, 0 skip) · schema v1 · 11 database tests |
 | 2 — Security and operations | **DONE (gate met)** | login/session/roles · audit · backup · restore drill · TLS server binary · systemd unit. Windows SCM service not implemented (recorded). |
-| 3 — Spike, then core screens | NOT STARTED | — |
+| 3 — Spike, then core screens | **PARTIAL — first vertical done** | posting service + entry screen (server-rendered, htmx/Tabler vendored) work end to end; Tabulator keyboard spike outstanding |
 | 4 — Trading cycle | NOT STARTED | — |
 | 5 — Period close | NOT STARTED | — |
 | 6 — Pilot readiness | NOT STARTED | — |

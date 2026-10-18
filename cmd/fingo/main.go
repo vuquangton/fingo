@@ -57,7 +57,7 @@ func run() error {
 	}
 	defer st.Close()
 
-	auth := web.NewAuth(st.Pool())
+	auth := web.NewAuth(st)
 
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
@@ -68,6 +68,10 @@ func run() error {
 
 	protected := router.Group("/", auth.RequireUser())
 	protected.GET("/books", func(c *gin.Context) { c.String(http.StatusOK, "books") })
+	protected.GET("/entry", auth.ShowEntry)
+	protected.POST("/entry", auth.PostEntry)
+
+	router.StaticFS("/static", http.FS(web.Static()))
 
 	srv := &http.Server{
 		Addr:              *addr,
