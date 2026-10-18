@@ -69,7 +69,7 @@ func (b *Books) VATSummary(ctx context.Context, periodID string) (VATSummary, er
 			SELECT d.vat_rate_id, COALESCE(SUM(dl.base_amount), 0), COALESCE(SUM(dl.vat_amount), 0)
 			  FROM documents d
 			  JOIN document_lines dl ON dl.document_id = d.id
-			 WHERE d.kind = 'SALES_INVOICE'
+			 WHERE d.kind IN ('SALES_INVOICE', 'PURCHASE_BILL')
 			   AND d.vat_rate_id IS NOT NULL
 			   AND d.document_date BETWEEN $1 AND $2
 			 GROUP BY d.vat_rate_id
