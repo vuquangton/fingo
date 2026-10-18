@@ -12,7 +12,7 @@ Updated 2026-10-18 (Phase 1 foundation). One row per phase; a phase is only `DON
 | 3 — Spike, then core screens | **PARTIAL — 9 screens live** | entry, chart of accounts, journal, trial balance, login. Trial balance reads through `internal/reports` over pgx. Tabulator keyboard spike outstanding. |
 | 4 — Trading cycle | **PARTIAL — COGS live** | partners · sales invoice · receipt with allocation · supplier bill (expense → 1331 → 331) · supplier payment (331/1111) settling the bill. Item master data · goods receipt (156/331) with moving-average valuation · stock list. Cost of sales on a stocked line (632/156, issued from the stock ledger). Three-way match outstanding. |
 | 5 — Period close | **DONE (gate met)** — plus one-action reversal (mirror entry, refused twice) | `POST /close` runs `internal/close`: result carried through 911 into 4212, period locked, report stored; a later voucher into the period is refused. Provisions not wired (fixed assets are out of v2 scope). |
-| 6 — Pilot readiness | **PARTIAL — deliverables complete, gate unrun** | operations: CI workflow, scheduled backup with pgpass, restore drill | onboarding · handover export · operator guide (Vietnamese) · installer notes. The parallel run against a live client's current software needs a human and a client. |
+| 6 — Pilot readiness | **PARTIAL — deliverables complete, gate unrun** | validation: 50k-line reports ~0.8 s, 20 parallel posts with distinct numbers, failed-login cost 2 ms | operations: CI workflow, scheduled backup with pgpass, restore drill | onboarding · handover export · operator guide (Vietnamese) · installer notes. The parallel run against a live client's current software needs a human and a client. |
 
 ## 2. Baseline: the v1 tree is green before the port
 

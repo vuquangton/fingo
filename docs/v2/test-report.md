@@ -336,3 +336,14 @@ The refusal is by description lookup, which is the ledger's own record of what t
 `scripts/install-backup-task.ps1` registers the nightly dump as a Windows scheduled task. No password is on the task's command line — `backup.ps1` falls back to the libpq password file, which is the standard mechanism and keeps the secret out of process listings.
 
 Both scripts are syntax-checked by the PowerShell parser; the task registration itself was not executed on this machine (it would add a scheduled task), so it is reviewed, not proven.
+## Validation — volume, numbering under load, unauthenticated cost
+
+Three tests added for the failure modes that would otherwise appear in production:
+
+| Test | Result |
+| :--- | :--- |
+| `TestVolumeIsSurvivable` (25,000 vouchers / 50,000 lines) | trial balance 767 ms, P&L 759 ms, journal 690 ms |
+| `TestParallelPostsGetDistinctNumbers` (20 concurrent posts) | 20/20 succeeded, 20 distinct numbers and sequences, debits = credits |
+| `TestFailedLoginsAreRecordedAndCostNothing` (30 unknown emails) | 2 ms each, all recorded, no argon2 work |
+
+Numbers and extrapolations are in `docs/v2/performance.md`. The volume test is skipped under `-short`; CI runs it.
