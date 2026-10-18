@@ -1,111 +1,83 @@
-﻿# Battle-Tested On-Premise Enterprise Accounting Desktop Application (.NET 10 LTS)
+# FinGo v2
 
-Production-grade architectural scaffolding and complete module contracts for a high-reliability, on-premise Desktop Accounting System running on **.NET 10 (LTS)**, fully compliant with the Vietnamese Accounting System (VAS - Circular 200/2014/TT-BTC & Circular 133/2016/TT-BTC).
+On-premise, multi-user, browser-based accounting for Vietnamese SMEs (TT133/2016/TT-BTC, as amended by TT 46/2025), built for an accounting practice that serves many client companies.
 
----
+**Status: Phase 0 complete — v2 in progress.** The v1 application (a Windows desktop binary) is archived at tag `archive/pre-rewrite` and is not built from this branch. See [`docs/v2/plan-status.md`](docs/v2/plan-status.md) for the live phase status.
 
-## 1. Solution Architecture
+## Stack
+
+| Layer | Choice |
+| :--- | :--- |
+| Language | Go 1.27 |
+| HTTP | Gin |
+| Database | PostgreSQL 16 |
+| DB access | `pgx` v5 + `sqlc` |
+| Migrations | `goose`, embedded; triggers live in migrations |
+| Tenancy | one database, `client_id NOT NULL`, PostgreSQL row-level security |
+| Money | `int64` đồng in Go, `bigint` in PostgreSQL, string on the wire |
+| UI | server-rendered `html/template` + Tabler (vendored), htmx + Alpine.js |
+| Entry grid | Tabulator, on the journal-entry screen only |
+| Sessions | `scs` in PostgreSQL, argon2id passwords |
+| Deploy | one Go binary with embedded templates and assets + PostgreSQL. No Docker, no Node, no CDN |
+
+## Quick start (development)
+
+```powershell
+# 1. A local PostgreSQL cluster, no administrator rights needed (port 55432)
+.\scripts\devdb.ps1
+
+# 2. Build and run
+cd fingo
+go build ./...
+go run ./cmd/fingo            # serves https://localhost:8443
+
+# 3. Tests (never skip the database path)
+$env:REQUIRE_DB='1'
+go test ./...
+```
+
+The gate for every change is:
+
+```powershell
+go build ./... ; go vet ./... ; $env:REQUIRE_DB='1' ; go test ./...
+```
+
+## Layout
 
 ```
-d:\accounting\
-├── src\
-│   ├── Core\
-│   │   ├── Accounting.Domain\                 # Domain-Driven Design (Aggregates, Value Objects, Domain Events, Rules, Exceptions)
-│   │   └── Accounting.Application\            # Clean Architecture CQRS (MediatR Handlers, DTOs, FluentValidation, Pipeline Behaviors)
-│   ├── Infrastructure\
-│   │   ├── Accounting.Infrastructure.Persistence\ # EF Core 10 (Dynamic SQLite/PostgreSQL provider), Dapper Connection Factory, DbInitializer
-│   │   └── Accounting.Infrastructure.Compliance\  # VAS BCTC (B01-DN, B02-DN, B03-DN), Tax Engine (PIT, VAT), HTKK XML Formatter
-│   └── UI\
-│       └── Accounting.WpfApp\                 # Keyboard-first WPF Desktop App (.NET 10), CommunityToolkit.Mvvm, Virtualized UI Grids
-└── tests\
-    └── Accounting.Domain.Tests\               # xUnit unit & integration test suite verifying double-entry, costing, PIT, seeding
+cmd/fingo/            the server: config, router, startup
+internal/
+  domain/gl/          journal model, TT133 chart, posting rules
+  money/ vat/ posting/ period/ document/ partner/ inventory/
+  trading/ close/ reports/            the accounting engine
+  client/             tenant scope
+  store/              pgx pool, scoped transactions, RLS
+  web/                Gin handlers, middleware, templates
+db/migrations/        goose migrations (schema, triggers, policies, COA seed)
+db/queries/           sqlc source
+web/                  templates, static, vendored assets
+scripts/              devdb.ps1, backup.ps1, restore-drill.ps1, service install
+docs/                 requirements, legal basis, ADRs, v2 plan and reports
 ```
 
----
+## Scope
 
-## 2. Dynamic Database Switching (Zero-Churn Database Strategy)
+**In:** login and roles · chart of accounts · journal entry and posting · journal list · ledger with drill-down · trial balance · P&L · balance sheet · sales invoice with COGS · receipt and allocation · purchase order → receipt → invoice · supplier payment · stock list · period close (911 → 4212/4211) · Excel export · scheduled backup and a scripted restore drill · opening-balance import · per-client handover export.
 
-The system supports seamless switching between embedded SQLite (for single-user / branch stations / offline setups) and client-server PostgreSQL (for multi-user enterprise deployments) via `appsettings.json` without requiring any code changes.
+**Out:** payroll · fixed assets · CCDC/TK 242 · e-invoice · bank reconciliation · B03 cash flow · landed cost · statutory filing (`mã số`) · multi-currency · cross-client reporting.
 
-```json
-{
-  "DatabaseProvider": "Sqlite",
-  "ConnectionStrings": {
-    "SqliteConnection": "Data Source=accounting.db",
-    "PostgreSqlConnection": "Host=localhost;Port=5432;Database=accounting;Username=postgres;Password=postgres"
-  }
-}
-```
+## Documents
 
-* **SQLite v3+:** Zero-configuration embedded storage. Automatically initializes schema and seeds circular 200/133 Chart of Accounts on first launch.
-* **PostgreSQL v16+:** Switch `DatabaseProvider` to `"PostgreSql"` to route EF Core and Dapper to enterprise PostgreSQL instances.
+| Document | What it is |
+| :--- | :--- |
+| [`docs/v2/decisions.md`](docs/v2/decisions.md) | The plan of record: stack, tenancy, scope, port order, gates |
+| [`docs/v2/plan-status.md`](docs/v2/plan-status.md) | Phase status and gate evidence |
+| [`docs/v2/open-questions.md`](docs/v2/open-questions.md) | Open questions, defaults taken, who can answer |
+| [`docs/requirements-v1.md`](docs/requirements-v1.md) | Business requirements (still the baseline for *what*) |
+| [`docs/legal-basis.md`](docs/legal-basis.md) | Which legal instrument governs which figure; confidence marks |
+| [`docs/adr/`](docs/adr/) | Architecture decisions; 0006–0008 are v2 |
+| [`discovery/`](discovery/) | The read-only discovery report on v1 |
 
----
+## A note on v1
 
-## 3. Core Accounting Modules
-
-1. **General Ledger & Double-Entry Journal Engine (Sổ Cái & Định Khoản):**
-   - Tiered Chart of Accounts (COA) compliant with Circulars 200 & 133 (TK 111, 112, 131, 133, 152, 156, 211, 214, 242, 331, 333, 334, 338, 411, 421, 511, 632, 641, 642, 811, 911).
-   - Strict `SUM(Debit) == SUM(Credit)` validation before persistence.
-   - Voucher lifecycle (`Draft` -> `Pending` -> `Approved` -> `Posted`).
-   - Immutable posted vouchers with automated reversing entries (`CreateReversal`).
-   - Fiscal period soft/hard locking and automated revenue/expense clearance (`TK 911`).
-
-2. **Cash & Treasury (Quỹ Tiền Mặt & Tiền Gửi Ngân Hàng):**
-   - Receipts (Phiếu thu), Payments (Phiếu chi), Cash counting log (Biên bản kiểm kê quỹ).
-   - Multi-bank account tracking, Payment Orders (Ủy nhiệm chi - UNC), Bank statement reconciliation (Đối chiếu sổ phụ).
-
-3. **Purchasing & Accounts Payable - AP (Mua Hàng & Phải Trả):**
-   - Purchase orders, Goods receipts (Phiếu nhập kho), Three-way matching (PO vs. GRN vs. Invoice), Vendor aging analysis.
-
-4. **Sales & Accounts Receivable - AR (Bán Hàng & Phải Thu):**
-   - Quotations, Delivery notes (Phiếu xuất kho), Sales invoices, Dynamic credit limit enforcement, Customer aging schedules.
-
-5. **Inventory Valuation & Logistics (Kho & Giá Vốn):**
-   - Multi-warehouse topology, warehouse transfers (Điều chuyển kho), stocktaking (Kiểm kê).
-   - Valuation engines: FIFO, Perpetual Moving Average (Bình quân gia quyền tức thời), Monthly Periodic Weighted Average.
-
-6. **Fixed Assets & Tool Amortization (Tài Sản Cố Định & CCDC):**
-   - Fixed asset registry, Straight-line & Accelerated depreciation, Monthly expense allocation for TK 242 (Chi phí trả trước).
-
-7. **Payroll & Statutory Deductions (Tiền Lương & Trích Theo Lương):**
-   - Employee timesheet aggregation, Statutory insurance (Employee: 8% BHXH, 1.5% BHYT, 1% BHTN; Employer: 17.5% BHXH, 3% BHYT, 1% BHTN, 2% Trade Union).
-   - Progressive Personal Income Tax (PIT) withholding calculation with statutory deductions (11M personal, 4.4M dependent).
-
-8. **Tax & Statutory Financial Statements (Thuế & BCTC):**
-   - B01-DN: Báo cáo tình hình tài chính (Statement of Financial Position).
-   - B02-DN: Báo cáo kết quả hoạt động kinh doanh (Income Statement).
-   - B03-DN: Báo cáo lưu chuyển tiền tệ (Cash Flows Statement - Direct & Indirect).
-   - Input/Output VAT ledgers and General Department of Taxation XML submission schema.
-
-9. **System, Security & Immutable Audit Trail (Hệ Thống & Nhật Ký):**
-   - Role-Based Access Control (RBAC).
-   - Append-only immutable audit trail capturing user, machine fingerprint, UTC timestamp, and delta payloads.
-   - Online database backup (SQLite VACUUM INTO / PostgreSQL pg_dump wrapper).
-
----
-
-## 4. Keyboard-First Desktop UX
-
-| Shortcut | Action | Vietnamese Description |
-|---|---|---|
-| `F2` | New Voucher | Tạo mới chứng từ kế toán |
-| `F3` | Search / Find | Tìm kiếm danh mục / chứng từ |
-| `F5` | Refresh Data | Nạp lại dữ liệu từ cơ sở dữ liệu |
-| `F8` | Post Voucher | Ghi sổ kế toán |
-| `F9` | Unpost Voucher | Bỏ ghi sổ kế toán |
-| `F12` / `Ctrl+S` | Save | Lưu chứng từ |
-| `Enter` / `Tab` | Next Field / Commit Row | Chuyển ô nhập liệu / Nhập dòng chi tiết |
-| `Esc` | Cancel | Đóng hộp thoại / Hủy thao tác |
-
----
-
-## 5. Verification & Test Execution
-
-```bash
-# Build entire solution across all 6 projects
-dotnet build Accounting.slnx -c Release
-
-# Run automated test suite (11 unit & integration tests)
-dotnet test Accounting.slnx -c Release
-```
+v1 is preserved at `archive/pre-rewrite` with its full history: a Go accounting engine with 848 tests, a Win32 desktop shell, a bundled MariaDB, and a legal register. The engine is being ported; the shell is being replaced. Nothing from v1 is deleted from history.
