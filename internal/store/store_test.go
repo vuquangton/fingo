@@ -352,7 +352,7 @@ func TestEveryBusinessTableIsClientScoped(t *testing.T) {
 		  JOIN pg_namespace n ON n.oid = c.relnamespace
 		 WHERE n.nspname = 'public'
 		   AND c.relkind = 'r'
-		   AND c.relname NOT IN ('clients', 'chart_template', 'users', 'goose_db_version')
+		   AND c.relname NOT IN ('clients', 'chart_template', 'users', 'sessions', 'failed_logins', 'goose_db_version')
 		   AND NOT EXISTS (
 		       SELECT 1 FROM information_schema.columns col
 		        WHERE col.table_schema = 'public'

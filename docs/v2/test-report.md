@@ -87,3 +87,16 @@ Tests changed (no assertion weakened, four obsolete tests removed because the st
 | `internal/reports/statutory/review_test.go` | fractional JSON case and obsolete `roundDong` test removed; `money(...)`→`dong(...)` |
 
 Gate re-run after the conversion: `go build` rc=0 · `go vet` rc=0 · `REQUIRE_DB=1 go test ./...` **16 packages ok, 0 failures, 0 skips**.
+## Phase 2 slice — auth and audit (gate green, phase partial)
+
+Added and tested:
+
+| Piece | Library / mechanism | Tests |
+| :--- | :--- | :--- |
+| Password hashing | `golang.org/x/crypto/argon2` (argon2id, 64 MiB, t=3, p=2), PHC string, `crypto/subtle` comparison | right password, wrong password, per-call salt, seven malformed-hash refusals |
+| Audit record | `audit_log` table (append-only trigger), one row inside the changing transaction | written with the change, rolled back with the change, UPDATE refused, missing actor refused |
+| Session table | `scs` schema for its pgxstore, migration `00002` | migration applies |
+
+Gate: `REQUIRE_DB=1 go test ./...` → **18 packages ok, 0 failures, 0 skips**.
+
+**Still outstanding in Phase 2** (deliberately not faked): Gin login/logout handlers and session middleware, HTTPS with a generated certificate, `pg_dump` backup schedule with retention, the scripted restore drill, and the Windows service / systemd unit files. The gate items "unauthenticated request rejected" and "restore drill succeeds" therefore remain **open**.
