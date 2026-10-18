@@ -31,7 +31,7 @@ func (h *harness) currentPeriod(t *testing.T, clientID string) string {
 func TestCloseScreenListsThePeriod(t *testing.T) {
 	h := newHarness(t)
 	email := newEmail()
-	h.user(t, email, "correct-horse", "accountant")
+	h.user(t, email, "correct-horse", "admin")
 	h.login(t, email, "correct-horse")
 	client := h.newClient(t)
 	h.pickClient(t, client)
@@ -48,7 +48,7 @@ func TestCloseScreenListsThePeriod(t *testing.T) {
 func TestCloseCarriesTheResultAndLocksThePeriod(t *testing.T) {
 	h := newHarness(t)
 	email := newEmail()
-	h.user(t, email, "correct-horse", "accountant")
+	h.user(t, email, "correct-horse", "admin")
 	h.login(t, email, "correct-horse")
 	client := h.newClient(t)
 	h.pickClient(t, client)
@@ -118,7 +118,7 @@ func TestCloseCarriesTheResultAndLocksThePeriod(t *testing.T) {
 func TestClosedPeriodRefusesANewVoucher(t *testing.T) {
 	h := newHarness(t)
 	email := newEmail()
-	h.user(t, email, "correct-horse", "accountant")
+	h.user(t, email, "correct-horse", "admin")
 	h.login(t, email, "correct-horse")
 	client := h.newClient(t)
 	h.pickClient(t, client)
