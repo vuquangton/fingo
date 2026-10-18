@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PROTOTYPE — Dashboard</title>
+<!-- The app's real stylesheet, so a variant is judged at the app's density. -->
+<link rel="stylesheet" href="../static/app.css">
+<link rel="stylesheet" href="prototype.css">
+<script src="switcher.js" defer></script>
+</head>
+<body>
+
+<!--
+  PROTOTYPE. Throwaway. Not production code.
+
+  Question: what does the accountant see when they open a client's books?
+
+  The current / dashboard is numbers-first: period, cash, open invoices, a
+  balance check. It answers "where do the books stand". It does not answer
+  "what should I do next", which is what an accountant opening a client at
+  9am actually has in front of them.
+
+  Three structurally different answers:
+    A — Numbers first.    Position is the headline; work is a list below it.
+    B — Work queue first. The outstanding jobs are the page; position is a strip.
+    C — Ledger first.     Recent entries are the page; everything else is a footer.
+
+  The header is inert here (no server behind file://) but is the app's own markup.
+-->
+
+<header class="top">
+  <span class="brand">FinGo</span>
+  <nav>
+    <a class="on" href="#">Dashboard</a>
+    <a href="#">Documents</a>
+    <a href="#">Chart of accounts</a>
+    <a href="#">Reports</a>
+    <a href="#">Settings</a>
+  </nav>
+</header>
+
+<div class="proto-frame">
+  <p class="proto-note">PROTOTYPE — dashboard. Flip variants with the bar below, or <code>?variant=A|B|C</code>.</p>
+
+  <!-- ================= A: numbers first ================= -->
+  <section data-variant="A" data-variant-name="Numbers first" hidden>
+    <h1>Công ty Bình Minh</h1>
+    <p class="muted">FY2026 · 1 Jan – 31 Dec 2026 · <span class="badge">period open</span></p>
+
+    <div class="stat-row">
+      <div class="stat"><div class="k">Cash &amp; bank</div><div class="v">412.500.000</div></div>
+      <div class="stat"><div class="k">Owed to us</div><div class="v">186.000.000</div></div>
+      <div class="stat"><div class="k">We owe</div><div class="v">94.200.000</div></div>
+      <div class="stat"><div class="k">Profit to date</div><div class="v">73.400.000</div></div>
+    </div>
+
+    <h2>Needs attention</h2>
+    <ul class="queue">
+      <li><span class="count">3</span><span class="what">Invoices past due<div class="why">Oldest 41 days · Công ty Đông Á</div></span><button>Chase</button></li>
+      <li><span class="count">2</span><span class="what">Receipts not matched to an invoice<div class="why">Money in the bank with nothing saying what it settled</div></span><button>Match</button></li>
+      <li><span class="count">1</span><span class="what">VAT rate changed mid-period<div class="why">8% window ended 31/12/2026</div></span><button>Review</button></li>
+    </ul>
+
+    <h2>Recent</h2>
+    <table>
+      <thead><tr><th>Document</th><th>Customer</th><th>Date</th><th class="n">Total</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>inv-0041</td><td>Công ty Bình Minh</td><td>2026-03-18</td><td class="n">110.000.000</td><td><span class="badge balanced">paid</span></td></tr>
+        <tr><td>inv-0042</td><td>Công ty Đông Á</td><td>2026-03-21</td><td class="n">76.000.000</td><td><span class="badge">open</span></td></tr>
+      </tbody>
+    </table>
+    <p class="proto-why">Why this shape: the four numbers are the answer to "how are the books", and an accountant who only wants that is done in two seconds.</p>
+  </section>
+
+  <!-- ================= B: work queue first ================= -->
+  <section data-variant="B" data-variant-name="Work queue first" hidden>
+    <h1>Today</h1>
+    <p class="muted">Công ty Bình Minh · FY2026</p>
+
+    <div class="split">
+      <div class="main">
+        <div class="panel">
+          <h2 style="margin-top:0">Outstanding</h2>
+          <ul class="queue">
+            <li><span class="count">3</span><span class="what">Overdue invoices — 186.000.000<div class="why">Oldest is 41 days late</div></span><button>Chase</button></li>
+            <li><span class="count">2</span><span class="what">Unmatched receipts<div class="why">412.500.000 sitting in the bank account</div></span><button>Match</button></li>
+            <li><span class="count">4</span><span class="what">Draft vouchers not posted<div class="why">Nothing is in the ledger until they are</div></span><button>Post</button></li>
+            <li><span class="count">1</span><span class="what">Period 02/2026 not closed<div class="why">03/2026 is open, so entries can land in either</div></span><button>Close</button></li>
+            <li><span class="count">1</span><span class="what">VAT return for 02/2026 not filed<div class="why">Due 20/03/2026</div></span><button>Prepare</button></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="side">
+        <div class="panel">
+          <h2 style="margin-top:0">Position</h2>
+          <table>
+            <tbody>
+              <tr><td>Cash &amp; bank</td><td class="n">412.500.000</td></tr>
+              <tr><td>Owed to us</td><td class="n">186.000.000</td></tr>
+              <tr><td>We owe</td><td class="n">94.200.000</td></tr>
+              <tr><td>Profit to date</td><td class="n">73.400.000</td></tr>
+            </tbody>
+          </table>
+          <p class="hint" style="margin:12px 0 0">Debits equal credits.</p>
+        </div>
+        <div class="panel">
+          <h2 style="margin-top:0">Recent</h2>
+          <div class="muted" style="font-size:13px">
+            inv-0042 · Đông Á · 76.000.000<br>
+            rcp-0017 · Bình Minh · 110.000.000<br>
+            jnl-0009 · bank transfer · 40.000.000
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="proto-why">Why this shape: it treats the app as a workbench, not a report. The list is the page and every row ends in a verb, so the first click is the work itself.</p>
+  </section>
+
+  <!-- ================= C: ledger first ================= -->
+  <section data-variant="C" data-variant-name="Ledger first" hidden>
+    <h1>Công ty Bình Minh — FY2026</h1>
+
+    <div class="panel">
+      <h2 style="margin-top:0">Posted to the ledger</h2>
+      <table>
+        <thead><tr><th>Date</th><th>Voucher</th><th>Description</th><th>Account</th><th class="n">Debit</th><th class="n">Credit</th></tr></thead>
+        <tbody>
+          <tr><td>2026-03-21</td><td>inv-0042</td><td>Bán hàng cho Đông Á</td><td>131</td><td class="n">76.000.000</td><td class="n"></td></tr>
+          <tr><td>2026-03-21</td><td>inv-0042</td><td>Bán hàng cho Đông Á</td><td>511</td><td class="n"></td><td class="n">69.090.909</td></tr>
+          <tr><td>2026-03-21</td><td>inv-0042</td><td>Thuế GTGT đầu ra</td><td>33311</td><td class="n"></td><td class="n">6.909.091</td></tr>
+          <tr><td>2026-03-18</td><td>rcp-0017</td><td>Thu tiền Bình Minh</td><td>1121</td><td class="n">110.000.000</td><td class="n"></td></tr>
+          <tr><td>2026-03-18</td><td>rcp-0017</td><td>Thu tiền Bình Minh</td><td>131</td><td class="n"></td><td class="n">110.000.000</td></tr>
+        </tbody>
+        <tfoot>
+          <tr class="checkbar"><td colspan="4">Movement this period</td><td class="n">186.000.000</td><td class="n">186.000.000</td></tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat"><div class="k">Accounts touched</div><div class="v">9</div></div>
+      <div class="stat"><div class="k">Vouchers posted</div><div class="v">17</div></div>
+      <div class="stat"><div class="k">Balance check</div><div class="v on" style="color:var(--ok);font-size:18px">debits = credits</div></div>
+      <div class="stat"><div class="k">Next action</div><div class="v" style="font-size:18px"><a href="#">Chase 3 overdue</a></div></div>
+    </div>
+    <p class="proto-why">Why this shape: it is the only one where every number on the screen traces to a row you can see. An accountant who does not trust the totals can check them without leaving the page.</p>
+  </section>
+</div>
+
+<div id="protoSwitch"></div>
+</body>
+</html>

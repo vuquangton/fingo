@@ -1,0 +1,55 @@
+{{define "trial_balance"}}{{template "head" .}}{{template "nav" .}}
+<main id="content">
+{{template "trial_balance_content" .}}
+</main>
+{{template "foot" .}}{{end}}
+
+{{define "trial_balance_content"}}
+{{template "messages" .}}
+{{with .Data}}
+<h1>Trial balance</h1>
+<p class="muted">Period {{.Period.Label}}</p>
+
+{{if .Balanced}}
+<p class="alert ok" data-balanced="1">Debits equal credits.</p>
+{{else}}
+<p class="alert error" data-balanced="0">Debits do not equal credits. The ledger does not hold together.</p>
+{{end}}
+
+<table>
+  <thead>
+    <tr>
+      <th>Code</th><th>Account</th>
+      <th class="n">Debit</th><th class="n">Credit</th>
+      <th class="n">Balance Dr</th><th class="n">Balance Cr</th>
+      <th class="n">Vouchers</th>
+    </tr>
+  </thead>
+  <tbody>
+  {{range .Rows}}
+    <tr>
+      <td>{{.Code}}</td>
+      <td>{{.Name}}</td>
+      <td class="n" data-amount="{{num .Debit}}">{{.Debit.Text}}</td>
+      <td class="n" data-amount="{{num .Credit}}">{{.Credit.Text}}</td>
+      <td class="n" data-amount="{{num .ClosingDebit}}">{{.ClosingDebit.Text}}</td>
+      <td class="n" data-amount="{{num .ClosingCredit}}">{{.ClosingCredit.Text}}</td>
+      <td class="n">{{.Vouchers}}</td>
+    </tr>
+  {{else}}
+    <tr><td colspan="7" class="muted">Nothing has been posted this period.</td></tr>
+  {{end}}
+  </tbody>
+  <tfoot>
+    <tr class="total">
+      <td colspan="2">Totals</td>
+      <td class="n" data-total-debits="{{num .Debits}}">{{.Debits.Text}}</td>
+      <td class="n" data-total-credits="{{num .Credits}}">{{.Credits.Text}}</td>
+      <td class="n" data-total-closing-debits="{{num .ClosingDebits}}">{{.ClosingDebits.Text}}</td>
+      <td class="n" data-total-closing-credits="{{num .ClosingCredits}}">{{.ClosingCredits.Text}}</td>
+      <td></td>
+    </tr>
+  </tfoot>
+</table>
+{{end}}
+{{end}}

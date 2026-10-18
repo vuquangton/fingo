@@ -1,0 +1,47 @@
+{{define "head"}}<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{.Title}} — FinGo</title>
+<link rel="stylesheet" href="/static/app.css">
+<script src="/static/htmx.min.js" defer></script>
+</head>
+<body>
+{{end}}
+
+{{define "nav"}}<header class="top">
+  <span class="brand">FinGo</span>
+  <nav>
+    <a href="/"{{if eq .Nav "dashboard"}} class="on"{{end}}>Dashboard</a>
+    <a href="/documents"{{if eq .Nav "documents"}} class="on"{{end}}>Documents</a>
+    <a href="/accounts"{{if eq .Nav "accounts"}} class="on"{{end}}>Chart of accounts</a>
+    <a href="/reports/trial-balance"{{if eq .Nav "reports"}} class="on"{{end}}>Reports</a>
+    <a href="/settings"{{if eq .Nav "settings"}} class="on"{{end}}>Settings</a>
+  </nav>
+</header>
+{{end}}
+
+{{define "foot"}}
+<script>
+// Progressive enhancement, and only that.
+//
+// Every form works without this script: the server has already put a usable
+// idempotency key in the hidden field. What the script adds is that two tabs of
+// the same form mint two different keys, so a retry of one cannot be mistaken
+// for the other.
+document.addEventListener('submit', function (event) {
+  var field = event.target.querySelector('input[name="idempotency_key"]');
+  if (!field || !window.crypto || !window.crypto.randomUUID) { return; }
+  if (field.dataset.fresh === '1') { return; }
+  field.dataset.fresh = '1';
+  field.value = window.crypto.randomUUID();
+}, true);
+</script>
+</body>
+</html>
+{{end}}
+
+{{define "messages"}}{{if .Error}}<p class="alert error" role="alert" data-error="1">{{.Error}}</p>{{end}}{{if .Flash}}<p class="alert ok" role="status" data-flash="1">{{.Flash}}</p>{{end}}{{end}}
+
+{{define "key"}}<input type="hidden" name="idempotency_key" value="{{.Key}}">{{end}}

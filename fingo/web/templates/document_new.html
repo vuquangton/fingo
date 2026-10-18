@@ -1,0 +1,120 @@
+{{define "document_new"}}{{template "head" .}}{{template "nav" .}}
+<main id="content">
+{{template "document_new_content" .}}
+</main>
+{{template "foot" .}}{{end}}
+
+{{define "document_new_content"}}
+{{template "messages" .}}
+{{with .Data}}
+{{$values := .Values}}
+<h1>New document</h1>
+<p class="muted">Kind: <strong>{{.Kind}}</strong> — <a href="/documents/new?type=invoice">invoice</a> · <a href="/documents/new?type=payment">payment</a> · <a href="/documents/new?type=journal">journal</a></p>
+
+{{if eq .Kind "invoice"}}
+<form class="grid card" method="post" action="/documents/invoice"
+      hx-post="/documents/invoice" hx-target="#content" hx-swap="innerHTML">
+  {{template "key" $}}
+  <div>
+    <label for="customer">Customer</label>
+    <input id="customer" name="customer" value="{{$values.Get "customer"}}" required>
+  </div>
+  <div class="row">
+    <div>
+      <label for="date">Date</label>
+      <input id="date" type="date" name="date" value="{{or ($values.Get "date") .Today}}" required>
+    </div>
+    <div>
+      <label for="net_amount">Value before VAT (đồng)</label>
+      <input id="net_amount" name="net_amount" value="{{$values.Get "net_amount"}}" required>
+    </div>
+  </div>
+  <div>
+    <label for="vat_rate_id">VAT rate</label>
+    <select id="vat_rate_id" name="vat_rate_id">
+      <option value="">No VAT</option>
+      {{range .VATRates}}
+      <option value="{{.ID}}"{{if eq .ID ($values.Get "vat_rate_id")}} selected{{end}}>{{.ID}} — {{.Rate}}</option>
+      {{end}}
+    </select>
+  </div>
+  <div>
+    <label for="description">Description</label>
+    <input id="description" name="description" value="{{$values.Get "description"}}">
+  </div>
+  <div><button type="submit">Record invoice</button></div>
+</form>
+{{end}}
+
+{{if eq .Kind "payment"}}
+<form class="grid card" method="post" action="/documents/payment"
+      hx-post="/documents/payment" hx-target="#content" hx-swap="innerHTML">
+  {{template "key" $}}
+  <input type="hidden" name="against" value="{{.Against}}">
+  {{if .Against}}<p class="muted">Settling <a href="/documents/{{.Against}}">{{.Against}}</a> — {{.Label}}</p>{{end}}
+  <div>
+    <label for="customer">Customer</label>
+    <input id="customer" name="customer" value="{{$values.Get "customer"}}" required>
+  </div>
+  <div class="row">
+    <div>
+      <label for="date">Date</label>
+      <input id="date" type="date" name="date" value="{{or ($values.Get "date") .Today}}" required>
+    </div>
+    <div>
+      <label for="amount">Amount (đồng)</label>
+      <input id="amount" name="amount" value="{{$values.Get "amount"}}" required>
+    </div>
+  </div>
+  <div>
+    <label for="account_code">Paid into</label>
+    <select id="account_code" name="account_code" required>
+      {{range .Cash}}
+      <option value="{{.Code}}"{{if eq .Code ($values.Get "account_code")}} selected{{end}}>{{.Code}} — {{.Name}}</option>
+      {{end}}
+    </select>
+  </div>
+  <div><button type="submit">Record payment</button></div>
+</form>
+{{end}}
+
+{{if eq .Kind "journal"}}
+<form class="grid card" method="post" action="/documents/journal"
+      hx-post="/documents/journal" hx-target="#content" hx-swap="innerHTML">
+  {{template "key" $}}
+  <div class="row">
+    <div>
+      <label for="date">Date</label>
+      <input id="date" type="date" name="date" value="{{or ($values.Get "date") .Today}}" required>
+    </div>
+    <div>
+      <label for="description">Description</label>
+      <input id="description" name="description" value="{{$values.Get "description"}}">
+    </div>
+  </div>
+  <table>
+    <thead><tr><th>Account</th><th>Side</th><th class="n">Amount (đồng)</th></tr></thead>
+    <tbody>
+    {{range .Lines}}
+      {{$row := printf "%d" .}}
+      <tr>
+        <td><input name="account_{{$row}}" list="chart" value="{{$values.Get (printf "account_%s" $row)}}"></td>
+        <td>
+          <label><input type="radio" name="side_{{$row}}" value="debit"{{if eq ($values.Get (printf "side_%s" $row)) "debit"}} checked{{end}}> Debit</label>
+          <label><input type="radio" name="side_{{$row}}" value="credit"{{if eq ($values.Get (printf "side_%s" $row)) "credit"}} checked{{end}}> Credit</label>
+        </td>
+        <td><input name="amount_{{$row}}" value="{{$values.Get (printf "amount_%s" $row)}}"></td>
+      </tr>
+    {{end}}
+    </tbody>
+  </table>
+  <p class="muted">A journal entry needs at least two lines and must balance. Leave a row blank to skip it.</p>
+  <div><button type="submit">Record journal</button></div>
+</form>
+{{end}}
+
+<datalist id="chart">
+  {{range .Accounts}}<option value="{{.Code}}">{{.Code}} — {{.Name}}</option>{{end}}
+</datalist>
+{{end}}
+{{end}}

@@ -1,0 +1,81 @@
+{{define "dashboard"}}{{template "head" .}}{{template "nav" .}}
+<main id="content">
+{{template "dashboard_content" .}}
+</main>
+{{template "foot" .}}{{end}}
+
+{{define "dashboard_content"}}
+{{template "messages" .}}
+{{with .Data}}
+<h1>Dashboard</h1>
+
+{{if .HasPeriod}}
+<p class="muted">
+  {{.Period.ID}} · {{.Period.From}} – {{.Period.To}}
+  {{if .Period.Locked}}<span class="pill void">locked</span>{{else}}<span class="pill open">period open</span>{{end}}
+</p>
+{{else}}
+<p class="alert error">The books have no accounting period. Add one in Settings before posting anything.</p>
+{{end}}
+
+<div class="stat-row">
+  <div class="stat">
+    <div class="k">Cash &amp; bank</div>
+    <div class="v" data-cash-total="{{num .CashTotal}}">{{.CashTotal.Text}}</div>
+  </div>
+  <div class="stat">
+    <div class="k">Owed to us</div>
+    <div class="v" data-receivable="{{num .Receivable}}">{{.Receivable.Text}}</div>
+  </div>
+  <div class="stat">
+    <div class="k">We owe</div>
+    <div class="v" data-payable="{{num .Payable}}">{{.Payable.Text}}</div>
+  </div>
+  <div class="stat">
+    <div class="k">Profit to date</div>
+    <div class="v" data-profit="{{num .Profit}}">{{.Profit.Text}}</div>
+  </div>
+</div>
+
+<h2>Needs attention</h2>
+{{if .Attention}}
+<ul class="queue">
+  {{range .Attention}}
+  <li>
+    <span class="count">{{.Count}}</span>
+    <span class="what">{{.What}}<span class="why">{{.Why}}</span></span>
+    {{if .Href}}<a class="button" href="{{.Href}}">{{.Action}}</a>{{end}}
+  </li>
+  {{end}}
+</ul>
+{{else}}
+<p class="muted">Nothing the ledger can see is outstanding.</p>
+{{end}}
+
+<h2>Recent</h2>
+<table>
+  <thead><tr><th>Document</th><th>Counterparty</th><th>Date</th><th class="n">Total</th><th>Status</th></tr></thead>
+  <tbody>
+  {{range .Recent}}
+    <tr>
+      <td><a href="/documents/{{.ID}}">{{.ID}}</a></td>
+      <td>{{.Partner}}</td>
+      <td>{{.Date}}</td>
+      <td class="n">{{.Total.Text}}</td>
+      <td><span class="pill {{.Status}}" data-status="{{.Status}}">{{.Status}}</span></td>
+    </tr>
+  {{else}}
+    <tr><td colspan="5" class="muted">Nothing has been posted yet.</td></tr>
+  {{end}}
+  </tbody>
+</table>
+
+<p class="muted">
+  {{if .Balanced}}<span class="pill paid">debits equal credits</span>{{else}}<span class="pill void">the ledger does not balance</span>{{end}}
+  Period debits <span data-amount="{{num .Debits}}">{{.Debits.Text}}</span>
+  against credits <span data-amount="{{num .Credits}}">{{.Credits.Text}}</span> —
+  <a href="/reports/trial-balance">trial balance</a> ·
+  <a href="/documents">all documents</a>
+</p>
+{{end}}
+{{end}}

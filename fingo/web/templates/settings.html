@@ -1,0 +1,110 @@
+{{define "settings"}}{{template "head" .}}{{template "nav" .}}
+<main id="content">
+{{template "settings_content" .}}
+</main>
+{{template "foot" .}}{{end}}
+
+{{define "settings_content"}}
+{{template "messages" .}}
+{{with .Data}}
+<h1>Settings</h1>
+<p class="muted">Today is {{.Today}}</p>
+
+<h2>Accounting periods</h2>
+<table>
+  <thead><tr><th>Period</th><th>From</th><th>To</th><th>Locked</th><th>Current</th></tr></thead>
+  <tbody>
+  {{range .Periods}}
+    <tr>
+      <td>{{.ID}}</td>
+      <td>{{.From}}</td>
+      <td>{{.To}}</td>
+      <td>{{if .Locked}}yes{{else}}<span class="muted">no</span>{{end}}</td>
+      <td>{{if .Current}}<span class="pill paid">current</span>{{end}}</td>
+    </tr>
+  {{else}}
+    <tr><td colspan="5" class="muted">There are no periods. Nothing can be posted.</td></tr>
+  {{end}}
+  </tbody>
+</table>
+
+<form class="grid card" method="post" action="/settings/periods"
+      hx-post="/settings/periods" hx-target="#content" hx-swap="innerHTML">
+  {{template "key" $}}
+  <div class="row">
+    <div>
+      <label for="period_id">Period id</label>
+      <input id="period_id" name="id" placeholder="FY2027" required>
+    </div>
+    <div>
+      <label for="period_from">Start</label>
+      <input id="period_from" type="date" name="from" required>
+    </div>
+    <div>
+      <label for="period_to">End</label>
+      <input id="period_to" type="date" name="to" required>
+    </div>
+  </div>
+  <p class="muted">Periods must be consecutive and must not overlap. The calendar refuses a set that is not complete.</p>
+  <div><button type="submit">Add period</button></div>
+</form>
+
+<h2>VAT rates</h2>
+<table>
+  <thead><tr><th>Id</th><th>Rate</th><th>From</th><th>To</th><th>In force</th></tr></thead>
+  <tbody>
+  {{range .VATRates}}
+    <tr>
+      <td>{{.ID}}</td>
+      <td class="n">{{.Rate}}</td>
+      <td>{{.From}}</td>
+      <td>{{if .To}}{{.To}}{{else}}<span class="muted">open</span>{{end}}</td>
+      <td>{{if .Current}}<span class="pill paid">yes</span>{{end}}</td>
+    </tr>
+  {{else}}
+    <tr><td colspan="5" class="muted">There are no VAT rates.</td></tr>
+  {{end}}
+  </tbody>
+</table>
+
+<form class="grid card" method="post" action="/settings/vat-rates"
+      hx-post="/settings/vat-rates" hx-target="#content" hx-swap="innerHTML">
+  {{template "key" $}}
+  <div class="row">
+    <div>
+      <label for="rate_id">Rate id</label>
+      <input id="rate_id" name="id" placeholder="VAT8" required>
+    </div>
+    <div>
+      <label for="rate">Percent</label>
+      <input id="rate" name="rate" placeholder="8" required>
+    </div>
+  </div>
+  <div class="row">
+    <div>
+      <label for="rate_from">Effective from</label>
+      <input id="rate_from" type="date" name="from" required>
+    </div>
+    <div>
+      <label for="rate_to">Effective to (optional)</label>
+      <input id="rate_to" type="date" name="to">
+    </div>
+  </div>
+  <p class="muted">Whole percent. The rate is stored in basis points, never as a float.</p>
+  <div><button type="submit">Add VAT rate</button></div>
+</form>
+
+<h2>Posting rules</h2>
+<p class="muted">The TT133 rule set: which account a decision posts to. Read-only here.</p>
+<table>
+  <thead><tr><th>Document</th><th>Side</th><th>Decision</th><th>Posts to</th></tr></thead>
+  <tbody>
+  {{range .PostingRules}}
+    <tr><td>{{.Document}}</td><td>{{.Side}}</td><td>{{.Account}}</td><td>{{.Posts}}</td></tr>
+  {{else}}
+    <tr><td colspan="4" class="muted">No posting rules are loaded.</td></tr>
+  {{end}}
+  </tbody>
+</table>
+{{end}}
+{{end}}

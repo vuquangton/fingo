@@ -1,0 +1,229 @@
+/*
+ * Prototype chrome. THROWAWAY.
+ *
+ * Only what the switcher and the variant scaffolding need. The screens
+ * themselves use ../static/app.css, so a variant is judged against the app's
+ * real density and palette and not against a designer's blank page.
+ */
+
+body {
+  /* Room for the floating bar, so it never covers the last row of a table. */
+  padding-bottom: 96px;
+}
+
+.proto-frame {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* ---- The floating switcher -------------------------------------------- */
+
+#protoSwitch {
+  position: fixed;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: #0d1420;
+  color: #eef3fa;
+  border: 1px solid #3d5170;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+  font: 13px/1.4 "Segoe UI", system-ui, sans-serif;
+  z-index: 9999;
+}
+
+#protoSwitch button {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid #3d5170;
+  background: #1b2636;
+  color: #eef3fa;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+#protoSwitch button:hover {
+  background: #2f6fd0;
+  border-color: #2f6fd0;
+}
+
+#protoSwitch .proto-label {
+  min-width: 190px;
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+
+/* ---- Variant scaffolding ----------------------------------------------- */
+
+.proto-note {
+  font-size: 12px;
+  color: var(--muted);
+  border-left: 2px solid var(--line);
+  padding-left: 10px;
+  margin: 0 0 18px;
+}
+
+.proto-why {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 6px;
+}
+
+/* Variant-specific bits that are not worth adding to the app's stylesheet. */
+
+.stat-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.stat {
+  flex: 1 1 180px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+}
+
+.stat .k {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+
+.stat .v {
+  font-size: 26px;
+  font-variant-numeric: tabular-nums;
+  margin-top: 4px;
+}
+
+.split {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.split > .main { flex: 2 1 520px; min-width: 0; }
+.split > .side { flex: 1 1 260px; min-width: 0; }
+
+.queue {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.queue li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.queue li:last-child { border-bottom: 0; }
+
+.queue .what { flex: 1; min-width: 0; }
+.queue .why { font-size: 12px; color: var(--muted); }
+
+.count {
+  min-width: 34px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.client-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.client-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.client-card h3 { margin: 0; font-size: 16px; }
+.client-card .meta2 { font-size: 12px; color: var(--muted); }
+
+.palette {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 10px;
+}
+
+.palette input {
+  font-size: 18px;
+  padding: 14px 16px;
+}
+
+.palette ul {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+}
+
+.palette li {
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.palette li.sel { background: var(--surface-2); }
+.palette li .hint2 { color: var(--muted); font-size: 12px; }
+
+.steps {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.step {
+  flex: 1 1 120px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.step.done { border-color: #2f6b45; color: var(--ok); }
+.step.now { border-color: #2f6fd0; color: var(--ink); background: var(--surface-2); }
+
+.money-input { text-align: right; font-variant-numeric: tabular-nums; }
+
+.checkbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 12px;
+  border-top: 2px solid var(--ink);
+  font-weight: 600;
+}
+
+.checkbar .off { color: var(--danger); }
+.checkbar .on { color: var(--ok); }
+
+.diff-add { color: var(--ok); }
+.diff-del { color: var(--danger); }

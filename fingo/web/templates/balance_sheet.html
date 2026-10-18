@@ -1,0 +1,60 @@
+{{define "balance_sheet"}}{{template "head" .}}{{template "nav" .}}
+<main id="content">
+{{template "balance_sheet_content" .}}
+</main>
+{{template "foot" .}}{{end}}
+
+{{define "balance_sheet_content"}}
+{{template "messages" .}}
+{{with .Data}}
+<h1>Balance sheet</h1>
+<p class="muted">As at {{.Period.To}}</p>
+
+{{if .Balanced}}
+<p class="alert ok" data-balanced="1">Assets equal liabilities plus equity.</p>
+{{else}}
+<p class="alert error" data-balanced="0">Assets do not equal liabilities plus equity.</p>
+{{end}}
+
+{{$sheet := .}}
+
+<h2>Assets</h2>
+<table>
+  <thead><tr><th>Code</th><th>Account</th><th class="n">Amount</th><th class="n">Vouchers</th></tr></thead>
+  <tbody>
+  {{range .Assets}}
+    <tr><td>{{.Code}}</td><td>{{.Name}}</td><td class="n" data-amount="{{num .Amount}}">{{.Amount.Text}}</td><td class="n">{{.Vouchers}}</td></tr>
+  {{else}}
+    <tr><td colspan="4" class="muted">Nothing is held.</td></tr>
+  {{end}}
+  </tbody>
+  <tfoot><tr class="total"><td colspan="2">Total assets</td><td class="n" data-total-assets="{{num $sheet.TotalAssets}}">{{$sheet.TotalAssets.Text}}</td><td></td></tr></tfoot>
+</table>
+
+<h2>Liabilities</h2>
+<table>
+  <thead><tr><th>Code</th><th>Account</th><th class="n">Amount</th><th class="n">Vouchers</th></tr></thead>
+  <tbody>
+  {{range .Liabilities}}
+    <tr><td>{{.Code}}</td><td>{{.Name}}</td><td class="n" data-amount="{{num .Amount}}">{{.Amount.Text}}</td><td class="n">{{.Vouchers}}</td></tr>
+  {{else}}
+    <tr><td colspan="4" class="muted">Nothing is owed.</td></tr>
+  {{end}}
+  </tbody>
+  <tfoot><tr class="total"><td colspan="2">Total liabilities</td><td class="n" data-total-liabilities="{{num $sheet.TotalLiabilities}}">{{$sheet.TotalLiabilities.Text}}</td><td></td></tr></tfoot>
+</table>
+
+<h2>Equity</h2>
+<table>
+  <thead><tr><th>Code</th><th>Account</th><th class="n">Amount</th><th class="n">Vouchers</th></tr></thead>
+  <tbody>
+  {{range .Equity}}
+    <tr><td>{{.Code}}</td><td>{{.Name}}</td><td class="n" data-amount="{{num .Amount}}">{{.Amount.Text}}</td><td class="n">{{.Vouchers}}</td></tr>
+  {{else}}
+    <tr><td colspan="4" class="muted">Nothing is left for the owners.</td></tr>
+  {{end}}
+  </tbody>
+  <tfoot><tr class="total"><td colspan="2">Total equity</td><td class="n" data-total-equity="{{num $sheet.TotalEquity}}">{{$sheet.TotalEquity.Text}}</td><td></td></tr></tfoot>
+</table>
+{{end}}
+{{end}}

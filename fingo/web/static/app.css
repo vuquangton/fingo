@@ -1,0 +1,183 @@
+/* FinGo admin UI.
+   Hand-written and small on purpose: the application is a desktop build that may
+   have no network, so there is no CDN and no build step. */
+
+:root {
+  --ink: #1c2530;
+  --mute: #5d6b7a;
+  --line: #d8dee6;
+  --bg: #f4f6f8;
+  --card: #ffffff;
+  --accent: #1f6feb;
+  --ok: #1a7f43;
+  --error: #b3261e;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font: 14px/1.5 "Segoe UI", system-ui, sans-serif;
+  color: var(--ink);
+  background: var(--bg);
+}
+
+header.top {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 10px 20px;
+  background: #1c2530;
+  color: #fff;
+}
+
+header.top .brand { font-weight: 600; letter-spacing: .04em; }
+
+header.top nav { display: flex; gap: 4px; }
+
+header.top nav a {
+  color: #c8d2dd;
+  text-decoration: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+}
+
+header.top nav a:hover { background: #2c3947; color: #fff; }
+header.top nav a.on { background: var(--accent); color: #fff; }
+
+main { max-width: 1100px; margin: 0 auto; padding: 20px; }
+
+h1 { font-size: 20px; margin: 0 0 12px; }
+h2 { font-size: 15px; margin: 24px 0 8px; color: var(--mute); text-transform: uppercase; letter-spacing: .04em; }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+table { border-collapse: collapse; width: 100%; background: var(--card); }
+
+th, td { border-bottom: 1px solid var(--line); padding: 6px 10px; text-align: left; }
+
+th { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--mute); }
+
+td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
+
+tr.total td { font-weight: 600; border-top: 2px solid var(--ink); border-bottom: none; }
+
+tr.heading td { font-weight: 600; }
+
+tr:hover td { background: #fafbfc; }
+
+.indent-1 { padding-left: 26px; }
+.indent-2 { padding-left: 42px; }
+.indent-3 { padding-left: 58px; }
+
+.alert { padding: 10px 12px; border-radius: 4px; margin: 0 0 16px; }
+.alert.error { background: #fdecea; border: 1px solid #f3c2bd; color: var(--error); white-space: pre-wrap; }
+.alert.ok { background: #e8f5ec; border: 1px solid #bde0c8; color: var(--ok); }
+
+.pill { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 12px; background: #eef1f5; color: var(--mute); }
+.pill.open { background: #e8f0fd; color: #1f4faf; }
+.pill.paid { background: #e8f5ec; color: var(--ok); }
+.pill.partially_paid { background: #fff4e0; color: #8a5a00; }
+.pill.void { background: #f2f2f2; color: #777; }
+
+form.grid { display: grid; gap: 12px; }
+
+label { display: block; font-size: 12px; color: var(--mute); margin-bottom: 4px; }
+
+input, select, textarea {
+  font: inherit;
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: #fff;
+  width: 100%;
+}
+
+input[type=radio] { width: auto; }
+
+button {
+  font: inherit;
+  padding: 8px 16px;
+  border: 0;
+  border-radius: 4px;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+}
+
+button:hover { filter: brightness(1.08); }
+
+.row { display: flex; gap: 12px; align-items: end; }
+.row > * { flex: 1; }
+
+.muted { color: var(--mute); }
+.actions { margin-top: 16px; display: flex; gap: 12px; align-items: center; }
+a.button { display: inline-block; padding: 8px 16px; border-radius: 4px; background: var(--accent); color: #fff; text-decoration: none; }
+
+/* The dashboard's position figures.
+   Sized to be read at a glance: this is the answer to "how are the books", and
+   it is the first thing on the page, so it carries the largest type in the
+   application. */
+.stat-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin: 16px 0 8px;
+}
+
+.stat {
+  flex: 1 1 180px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 14px 16px;
+}
+
+.stat .k {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--mute);
+}
+
+.stat .v {
+  font-size: 24px;
+  font-variant-numeric: tabular-nums;
+  margin-top: 4px;
+}
+
+/* The work list. Each row ends in a verb, so the first click is the work. */
+.queue {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.queue li {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.queue li:last-child { border-bottom: 0; }
+.queue .what { flex: 1; min-width: 0; }
+.queue .why { display: block; font-size: 12px; color: var(--mute); }
+
+.count {
+  min-width: 32px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  font-size: 18px;
+}

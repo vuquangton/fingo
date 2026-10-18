@@ -1,0 +1,60 @@
+{{define "account_new"}}{{template "head" .}}{{template "nav" .}}
+<main id="content">
+{{template "account_new_content" .}}
+</main>
+{{template "foot" .}}{{end}}
+
+{{define "account_new_content"}}
+{{template "messages" .}}
+{{with .Data}}
+{{$values := .Values}}
+<h1>New account</h1>
+
+<form class="grid card" method="post" action="/accounts"
+      hx-post="/accounts" hx-target="#content" hx-swap="innerHTML">
+  {{template "key" $}}
+  <div class="row">
+    <div>
+      <label for="code">Code</label>
+      <input id="code" name="code" value="{{$values.Get "code"}}" required>
+    </div>
+    <div>
+      <label for="parent_code">Parent (optional)</label>
+      <input id="parent_code" name="parent_code" list="chart" value="{{$values.Get "parent_code"}}">
+    </div>
+  </div>
+  <div>
+    <label for="name">Name</label>
+    <input id="name" name="name" value="{{$values.Get "name"}}" required>
+  </div>
+  <div class="row">
+    <div>
+      <label for="type">Type</label>
+      <select id="type" name="type" required>
+        {{$type := $values.Get "type"}}
+        <option value="ASSET"{{if eq $type "ASSET"}} selected{{end}}>ASSET</option>
+        <option value="LIABILITY"{{if eq $type "LIABILITY"}} selected{{end}}>LIABILITY</option>
+        <option value="EQUITY"{{if eq $type "EQUITY"}} selected{{end}}>EQUITY</option>
+        <option value="REVENUE"{{if eq $type "REVENUE"}} selected{{end}}>REVENUE</option>
+        <option value="EXPENSE"{{if eq $type "EXPENSE"}} selected{{end}}>EXPENSE</option>
+      </select>
+    </div>
+    <div>
+      <label for="nature">Nature</label>
+      <select id="nature" name="nature" required>
+        {{$nature := $values.Get "nature"}}
+        <option value="DEBIT"{{if eq $nature "DEBIT"}} selected{{end}}>DEBIT</option>
+        <option value="CREDIT"{{if eq $nature "CREDIT"}} selected{{end}}>CREDIT</option>
+        <option value="DUAL"{{if eq $nature "DUAL"}} selected{{end}}>DUAL</option>
+      </select>
+    </div>
+  </div>
+  <p class="muted">A contra account is a real thing: accumulated depreciation is an ASSET account with a CREDIT nature.</p>
+  <div><button type="submit">Add account</button></div>
+</form>
+
+<datalist id="chart">
+  {{range .Accounts}}<option value="{{.Code}}">{{.Code}} — {{.Name}}</option>{{end}}
+</datalist>
+{{end}}
+{{end}}

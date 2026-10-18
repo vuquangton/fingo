@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PROTOTYPE — Practice home / client switcher</title>
+<link rel="stylesheet" href="../static/app.css">
+<link rel="stylesheet" href="prototype.css">
+<script src="switcher.js" defer></script>
+</head>
+<body>
+
+<!--
+  PROTOTYPE. Throwaway. Not production code.
+
+  Question: how does the operator move between the N clients they keep books
+  for?
+
+  There is no screen for this. internal/client holds the registry — a client
+  list with an id, a name, a tax code and an active flag — and the app opens
+  exactly one client at startup. requirements-v1.md calls the operator "one
+  operator serving N client companies" and names client switching as a
+  first-class function (5.5: "Switch client in <1 s with 50 clients").
+
+  Three structurally different answers:
+    A — Table.     Dense, scannable, one row per client, sorted by urgency.
+    B — Cards.     One card per client, showing where its books stand.
+    C — Palette.   One search box. Keyboard-first, for someone who knows the
+                   client's name and nothing else.
+
+  Fifty clients is the number to hold in your head while flipping.
+-->
+
+<header class="top">
+  <span class="brand">FinGo</span>
+  <nav>
+    <a class="on" href="#">Clients</a>
+    <a href="#">Documents</a>
+    <a href="#">Chart of accounts</a>
+    <a href="#">Reports</a>
+    <a href="#">Settings</a>
+  </nav>
+</header>
+
+<div class="proto-frame">
+  <p class="proto-note">PROTOTYPE — practice home. Flip variants with the bar below, or <code>?variant=A|B|C</code>.</p>
+
+  <!-- ================= A: table ================= -->
+  <section data-variant="A" data-variant-name="Table" hidden>
+    <h1>Clients</h1>
+    <p class="muted">12 clients · 3 need attention</p>
+
+    <div class="actions">
+      <input placeholder="Filter by name or tax code" style="max-width:320px">
+      <button>Add a client</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr><th>Client</th><th>Tax code</th><th>Period</th><th>Last entry</th><th class="n">Cash</th><th class="n">Owed to us</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><a href="#">Công ty Bình Minh</a></td><td>0101234567</td><td>03/2026 open</td><td>2 days ago</td>
+          <td class="n">412.500.000</td><td class="n">186.000.000</td><td><span class="badge no">3 overdue</span></td>
+        </tr>
+        <tr>
+          <td><a href="#">Công ty Đông Á</a></td><td>0107654321</td><td>03/2026 open</td><td>today</td>
+          <td class="n">98.100.000</td><td class="n">0</td><td><span class="badge balanced">clear</span></td>
+        </tr>
+        <tr>
+          <td><a href="#">Hộ kinh doanh Tâm</a></td><td>—</td><td>12/2025 locked</td><td>4 months ago</td>
+          <td class="n">12.000.000</td><td class="n">4.500.000</td><td><span class="badge">closed</span></td>
+        </tr>
+        <tr>
+          <td><a href="#">Công ty Hải Long</a></td><td>0309876543</td><td>—</td><td>never</td>
+          <td class="n">—</td><td class="n">—</td><td><span class="badge no">setup</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="proto-why">Why this shape: 50 rows is a table, not a screenful of cards. The status column is what makes it a work list rather than an address book.</p>
+  </section>
+
+  <!-- ================= B: cards ================= -->
+  <section data-variant="B" data-variant-name="Cards" hidden>
+    <h1>Your clients</h1>
+    <p class="muted">3 need attention</p>
+
+    <div class="actions">
+      <button>Add a client</button>
+    </div>
+
+    <div class="client-grid">
+      <div class="client-card">
+        <h3>Công ty Bình Minh</h3>
+        <div class="meta2">MST 0101234567 · FY2026</div>
+        <span class="badge no">3 overdue invoices</span>
+        <table>
+          <tbody>
+            <tr><td>Cash</td><td class="n">412.500.000</td></tr>
+            <tr><td>Owed to us</td><td class="n">186.000.000</td></tr>
+          </tbody>
+        </table>
+        <button>Open books</button>
+      </div>
+
+      <div class="client-card">
+        <h3>Công ty Đông Á</h3>
+        <div class="meta2">MST 0107654321 · FY2026</div>
+        <span class="badge balanced">nothing outstanding</span>
+        <table>
+          <tbody>
+            <tr><td>Cash</td><td class="n">98.100.000</td></tr>
+            <tr><td>Owed to us</td><td class="n">0</td></tr>
+          </tbody>
+        </table>
+        <button class="ghost">Open books</button>
+      </div>
+
+      <div class="client-card">
+        <h3>Hộ kinh doanh Tâm</h3>
+        <div class="meta2">no tax code · closed 12/2025</div>
+        <span class="badge">closed</span>
+        <table>
+          <tbody>
+            <tr><td>Cash</td><td class="n">12.000.000</td></tr>
+            <tr><td>Owed to us</td><td class="n">4.500.000</td></tr>
+          </tbody>
+        </table>
+        <button class="ghost">Open books</button>
+      </div>
+
+      <div class="client-card" style="border-style:dashed;align-items:center;justify-content:center;color:var(--muted)">
+        <div style="font-size:28px">+</div>
+        <div>Add a client</div>
+      </div>
+    </div>
+    <p class="proto-why">Why this shape: it answers "how is each one doing" without a click. It stops working somewhere around 20 clients, which is the honest trade.</p>
+  </section>
+
+  <!-- ================= C: palette ================= -->
+  <section data-variant="C" data-variant-name="Search palette" hidden>
+    <h1>Open a client</h1>
+    <p class="muted">Type a name or a tax code. ↑↓ to move, Enter to open.</p>
+
+    <div class="palette" style="max-width:640px">
+      <input value="bin" autofocus placeholder="Client or tax code…">
+      <ul>
+        <li class="sel">
+          <span>Công ty Bình Minh<div class="hint2">MST 0101234567 · FY2026 · 3 overdue</div></span>
+          <span class="hint2">Enter</span>
+        </li>
+        <li>
+          <span>Công ty Bình An<div class="hint2">MST 0201112223 · FY2026</div></span>
+          <span class="hint2"></span>
+        </li>
+        <li>
+          <span>Công ty Binaco<div class="hint2">MST 0405556667 · FY2025 closed</div></span>
+          <span class="hint2"></span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="actions">
+      <button class="ghost">Add a client</button>
+      <span class="muted" style="font-size:13px">Last opened: Công ty Đông Á · today 09:12</span>
+    </div>
+    <p class="proto-why">Why this shape: switching is a habit, not a task. Someone who already knows which client they want should never see a list — and at 50 clients, typing three letters beats scanning.</p>
+  </section>
+</div>
+
+<div id="protoSwitch"></div>
+</body>
+</html>

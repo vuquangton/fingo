@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<assembly manifestVersion="1.0" xmlns="urn:schemas-microsoft-com:asm.v1" xmlns:asmv3="urn:schemas-microsoft-com:asm.v3">
+    <assemblyIdentity type="win32" name="FinGo.Desktop" version="1.0.0.0" processorArchitecture="*"/>
+
+    <!--
+      Common Controls v6. Without this dependency walk cannot create a tooltip
+      and window creation fails with "TTM_ADDTOOL failed".
+
+      This file is NOT fingo/build/windows/wails.exe.manifest and must not be
+      replaced by a copy of it. That one is a Wails *template* whose
+      assemblyIdentity carries {{.Info.ProductVersion}}, which the Wails build
+      substitutes before linking. Left unsubstituted it is an invalid version,
+      and Windows refuses to load the executable at all with "the application
+      has failed to start because its side-by-side configuration is incorrect".
+    -->
+    <dependency>
+        <dependentAssembly>
+            <assemblyIdentity type="win32" name="Microsoft.Windows.Common-Controls" version="6.0.0.0" processorArchitecture="*" publicKeyToken="6595b64144ccf1df" language="*"/>
+        </dependentAssembly>
+    </dependency>
+
+    <!-- As invoker: FinGo writes only under the user's own profile and installs
+         no service, so it has no reason to ask for elevation. -->
+    <trustInfo xmlns="urn:schemas-microsoft-com:asm.v3">
+        <security>
+            <requestedPrivileges>
+                <requestedExecutionLevel level="asInvoker" uiAccess="false"/>
+            </requestedPrivileges>
+        </security>
+    </trustInfo>
+
+    <asmv3:application>
+        <asmv3:windowsSettings>
+            <dpiAware xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">true/pm</dpiAware>
+            <dpiAwareness xmlns="http://schemas.microsoft.com/SMI/2016/WindowsSettings">permonitorv2,permonitor</dpiAwareness>
+        </asmv3:windowsSettings>
+    </asmv3:application>
+</assembly>
