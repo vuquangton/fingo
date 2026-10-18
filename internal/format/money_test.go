@@ -5,7 +5,7 @@ import (
 
 	"github.com/shopspring/decimal"
 
-	"fingo/internal/ui/format"
+	"fingo/internal/format"
 )
 
 // TestMoney_WritesNumbersTheVietnameseWay — slice P1.4.

@@ -1,13 +1,13 @@
 # FinGo v2 — plan status
 
-Updated 2026-10-18. One row per phase; a phase is only `DONE` when every line of `docs/v2/decisions.md` §9 passes and the gate below is evidenced.
+Updated 2026-10-18 (Phase 1 foundation). One row per phase; a phase is only `DONE` when every line of `docs/v2/decisions.md` §9 passes and the gate below is evidenced.
 
 ## 1. Phase table
 
 | Phase | Status | Gate result |
 | :--- | :--- | :--- |
 | **0 — Save and decide** | **DONE** | archive tag exists · `git status` clean · ADRs 0006–0008 written · pushed |
-| 1 — Foundation | NOT STARTED | — |
+| 1 — Foundation | **PARTIAL — gate green, one decision open** | `go build` rc=0 · `go vet` rc=0 · `REQUIRE_DB=1 go test ./...` rc=0 (16 packages ok, 0 fail, 0 skip) · schema v1 · 11 database tests |
 | 2 — Security and operations | NOT STARTED | — |
 | 3 — Spike, then core screens | NOT STARTED | — |
 | 4 — Trading cycle | NOT STARTED | — |
@@ -95,3 +95,33 @@ This is the number to beat or keep: **every ported package must still report `ok
 3. Port the unchanged packages; then `gl` with `int64` (ADR 0008).
 4. One squashed init migration: schema, composite keys, RLS policies, immutability and balance triggers, period-lock trigger, allocation check, TT133 chart seed.
 5. `internal/store`: pgx pool, `WithScope` transaction, and the tenant-isolation tests.
+
+## 6. Phase 1 — foundation (gate green, one item open)
+
+### Built
+
+| Piece | What it is |
+| :--- | :--- |
+| Repository root | One module `fingo` at the repo root; `fingo/` removed. Keep packages ported unchanged: `money`, `vat`, `posting`, `period`, `document`, `partner`, `inventory`, `trading`, `close`, `reports`, `domain/gl`, `domain/document`, `usecase/ledger`, `gltest`, `format`, `pkg/logger`. |
+| Dropped | MariaDB adapter and migrations, `appconfig`, `boot`, `dbhost`, `onboarding`, `singleton`, walk UI, `web/`, `idempotency`, `migrate`, `spike/`, `dist/`, `$cov`, 11 dead `internal/domain/*` packages. |
+| Schema | `db/migrations/00001_init.sql` — 13 tables, composite `(client_id, …)` keys where natural, `bigint` money, `numeric(19,4)` quantities. |
+| Tenancy | RLS `ENABLE` + **`FORCE`** on 10 tables, one `FOR ALL` policy each on `app_current_client()`; `app.client_id` set per transaction by `store.InClient`. |
+| Rules in the database | deferred balance constraint triggers; posted-voucher and line immutability; allocation ≤ document; append-only allocations, stock movements, period locks, audit log. |
+| Seed | TT133 chart generated from `gl.TT133Chart()` by `tools/genchart`, seeded through `chart_template`; `provision_client_chart(uuid)` gives each new client its own 123 accounts. |
+| Store | `internal/store`: pgx pool, `Scope`, `InClient` (`set_config(..., true)`), `ErrNoScope`. |
+| Test harness | `internal/testdb`: real database or a failure under `REQUIRE_DB=1`, app-role only, schema-version check with a runnable hint. |
+| Tooling | `scripts/pgsetup.ps1` (databases + `fingo_app` role + gitignored `.env`), `cmd/migrate`, `scripts/devdb.ps1` (fallback cluster, stopped). |
+
+### Gate evidence
+
+```
+go build ./...                         rc=0
+go vet ./...                           rc=0
+REQUIRE_DB=1 go test ./... -count=1    rc=0   16 packages ok, 0 failures, 0 skips
+```
+
+The 11 database tests in `internal/store` are the Phase 1 gate's real content: scope required, unscoped query sees zero rows, app role has neither `rolsuper` nor `rolbypassrls`, clients cannot see or address each other, a forged `client_id` is refused by `WITH CHECK`, an unbalanced voucher is refused at COMMIT, a posted voucher cannot be edited or deleted, an allocation cannot exceed its document, a period lock cannot be removed, every business table has `client_id`, and every client gets 123 accounts.
+
+### Open item (the one deviation from the stack)
+
+**`internal/domain/gl` still carries `shopspring/decimal`, and so do `reports`, `close`, `posting`, `usecase/ledger`.** ADR 0008 requires `int64` đồng everywhere. The port was done unchanged first (mission rule 3); the conversion is the next slice and is the only thing between this phase and `DONE`. It is recorded in `open-questions.md` as Q2 (was Q11) and in `test-report.md`.

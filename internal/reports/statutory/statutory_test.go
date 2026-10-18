@@ -748,12 +748,31 @@ func catalogueSpecs(t *testing.T) []statementSpec {
 func readLegalBasis(t *testing.T) string {
 	t.Helper()
 
-	held, err := os.ReadFile(filepath.Join("..", "..", "..", "..", "docs", "legal-basis.md"))
+	// Walk up to the repository root instead of counting directory levels. The
+	// v2 port moved the module from fingo/ to the repository root, and a fixed
+	// ".." chain was a fact about layout, not about the legal register. This is
+	// a layout fix, not a behaviour change: every assertion in this file still
+	// reads the same file's contents.
+	dir, err := os.Getwd()
 	if err != nil {
-		t.Fatalf("read docs/legal-basis.md: %v", err)
+		t.Fatalf("getwd: %v", err)
 	}
 
-	return string(held)
+	for range 8 {
+		held, err := os.ReadFile(filepath.Join(dir, "docs", "legal-basis.md"))
+		if err == nil {
+			return string(held)
+		}
+
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+
+	t.Fatalf("docs/legal-basis.md not found in any directory above the test's own")
+	return ""
 }
 
 // The accounts a filing reads are the chart's accounts.
