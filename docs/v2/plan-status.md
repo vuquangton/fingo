@@ -39,7 +39,7 @@ This is the number to beat or keep: **every ported package must still report `ok
 | Remote | `git@github.com:vuquangton/fingo.git`, `main` pushed `f9193d3..67b03a1` |
 | Abandoned branch | renamed `backup-before-alpha-rollback` → `archive/2026-09-20-pre-rollback`, pushed, old remote ref deleted |
 | Working tree after commit | **clean** (`git status --porcelain` = 0 entries) |
-| v2 branch | `v2` created at `67b03a1` |
+| v2 branch | `v2` created at `67b03a1`, pushed to `origin/v2` |
 
 ### Commits composing the archive
 
