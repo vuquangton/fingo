@@ -167,7 +167,7 @@ func parseSale(c *gin.Context, periodID string) (trading.InvoiceCommand, []sales
 			rateID = strings.TrimSpace(vatRates[i])
 		}
 		switch rateID {
-		case "vat0", "vat5", salesVATRateID:
+		case "vat0", "vat5", "kct", "exempt", salesVATRateID:
 		default:
 			return trading.InvoiceCommand{}, rows, fmt.Errorf("dòng %d: thuế suất không hợp lệ", i+1)
 		}

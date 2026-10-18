@@ -109,7 +109,7 @@ func (a *Auth) PostPurchase(c *gin.Context) {
 // the three statutory categories are the only ones accepted.
 func purchaseRateID(raw string) string {
 	switch strings.TrimSpace(raw) {
-	case "vat0", "vat5", salesVATRateID:
+	case "vat0", "vat5", "kct", "exempt", salesVATRateID:
 		return strings.TrimSpace(raw)
 	default:
 		return salesVATRateID
