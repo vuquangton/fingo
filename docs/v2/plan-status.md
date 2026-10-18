@@ -10,7 +10,7 @@ Updated 2026-10-18 (Phase 1 foundation). One row per phase; a phase is only `DON
 | 1 — Foundation | **DONE** | `go build` rc=0 · `go vet` rc=0 · `REQUIRE_DB=1 go test ./...` rc=0 (16 packages ok, 0 fail, 0 skip) · schema v1 · 11 database tests |
 | 2 — Security and operations | **DONE (gate met)** | login/session/roles · audit · backup · restore drill · TLS server binary · systemd unit. Windows SCM service not implemented (recorded). |
 | 3 — Spike, then core screens | **PARTIAL — 9 screens live** | entry, chart of accounts, journal, trial balance, login. Trial balance reads through `internal/reports` over pgx. Tabulator keyboard spike outstanding. |
-| 4 — Trading cycle | NOT STARTED | — |
+| 4 — Trading cycle | **PARTIAL — prerequisite built** | partners master data (customers/suppliers) with walk-in customer; sales invoice and receipt still outstanding |
 | 5 — Period close | **DONE (gate met)** | `POST /close` runs `internal/close`: result carried through 911 into 4212, period locked, report stored; a later voucher into the period is refused. Provisions not wired (fixed assets are out of v2 scope). |
 | 6 — Pilot readiness | NOT STARTED | — |
 

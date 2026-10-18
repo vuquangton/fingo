@@ -175,3 +175,15 @@ Two defects the tests forced out:
 
 1. **Closing lines carry no id.** `internal/close` builds entries as account/side/amount; the ledger inserted `''` into a `uuid` column. The ledger now issues a line id when the domain left it empty — the same rule for any domain-built voucher.
 2. **The close's `Poster` needs the ordinary posting path.** `ledger.Post` took a form `Request`; `PostVoucher` was extracted so a domain-built voucher travels the same rules, numbering, transaction and audit row. No second path to the ledger exists.
+## Phase 4 prerequisite — partners
+
+A sale cannot post without a partner: `trading` refuses an invoice with no `PartnerID`, because TK 131 is kept by customer. So the first Phase 4 slice is master data, not the invoice.
+
+| Piece | What it does |
+| :--- | :--- |
+| migration `00004` | `partners` table, RLS forced, unique `(client_id, name)`, partial unique tax id, walk-in allowed with no tax code |
+| `internal/books/partners.go` | List · Create (validated kind, duplicate refused as a readable error) · WalkIn (idempotent standing retail customer) |
+| `internal/web/partners.go` + template | list + add form on one page |
+| tests | empty state · create appears in list · duplicate 422 with a readable message · blank name 422 |
+
+Defect found by the test: the redirect carried a Vietnamese name unescaped in the query string, so the followed redirect was not a valid URL. Escaped now with `url.QueryEscape`.

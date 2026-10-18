@@ -1,0 +1,91 @@
+{{define "partners.html"}}<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Khách hàng &amp; nhà cung cấp — FinGo</title>
+  <link rel="stylesheet" href="/static/vendor/tabler.min.css">
+</head>
+<body class="antialiased">
+<div class="page">
+  <header class="navbar navbar-expand d-print-none">
+    <div class="container-xl">
+      <span class="navbar-brand">FinGo</span>
+      <span class="navbar-text ms-3">{{.Client}}</span>
+      <nav class="ms-4">
+        <a class="btn btn-sm btn-ghost-secondary" href="/entry">Nhập chứng từ</a>
+        <a class="btn btn-sm btn-ghost-secondary" href="/journal">Nhật ký</a>
+        <a class="btn btn-sm btn-ghost-secondary" href="/partners">Danh mục</a>
+        <a class="btn btn-sm btn-ghost-secondary" href="/close">Khoá sổ</a>
+      </nav>
+      <span class="navbar-text ms-auto">{{.Email}}</span>
+    </div>
+  </header>
+
+  <div class="page-wrapper">
+    <div class="page-body">
+      <div class="container-xl">
+
+        {{if .Created}}
+        <div class="alert alert-success" role="status">Đã thêm <strong>{{.Created}}</strong>.</div>
+        {{end}}
+        {{if .Error}}
+        <div class="alert alert-danger" role="alert">{{.Error}}</div>
+        {{end}}
+
+        <div class="row g-3">
+          <div class="col-lg-8">
+            <div class="card">
+              <div class="card-header"><h3 class="card-title">Danh mục đối tượng</h3></div>
+              {{if .Rows}}
+              <div class="table-responsive">
+                <table class="table table-vcenter card-table">
+                  <thead><tr><th>Tên</th><th>Mã số thuế</th><th>Loại</th></tr></thead>
+                  <tbody>
+                    {{range .Rows}}
+                    <tr><td>{{.Name}}</td><td>{{.TaxID}}</td><td>{{.Kind}}</td></tr>
+                    {{end}}
+                  </tbody>
+                </table>
+              </div>
+              {{else}}
+              <div class="card-body"><p class="text-secondary mb-0">Chưa có đối tượng nào.</p></div>
+              {{end}}
+            </div>
+          </div>
+
+          <div class="col-lg-4">
+            <form method="post" action="/partners" class="card">
+              <div class="card-header"><h3 class="card-title">Thêm đối tượng</h3></div>
+              <div class="card-body">
+                <div class="mb-3">
+                  <label class="form-label" for="name">Tên</label>
+                  <input class="form-control" id="name" name="name" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label" for="tax_id">Mã số thuế</label>
+                  <input class="form-control" id="tax_id" name="tax_id" placeholder="Bỏ trống nếu không có">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label" for="kind">Loại</label>
+                  <select class="form-select" id="kind" name="kind">
+                    <option value="CUSTOMER">Khách hàng</option>
+                    <option value="SUPPLIER">Nhà cung cấp</option>
+                    <option value="BOTH">Cả hai</option>
+                  </select>
+                </div>
+              </div>
+              <div class="card-footer text-end">
+                <button class="btn btn-primary" type="submit">Thêm</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
+{{end}}
