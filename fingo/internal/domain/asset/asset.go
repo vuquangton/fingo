@@ -8,18 +8,18 @@ import (
 )
 
 type FixedAsset struct {
-	ID                     string
-	Code                   string
-	Name                   string
-	OriginalCost           decimal.Decimal // Nguyên giá (211)
-	AccumulatedDep         decimal.Decimal // Hao mòn lũy kế (214)
-	UsefulLifeMonths       int             // Thời gian sử dụng (tháng)
-	PurchaseDate           time.Time
-	DepreciationStartDate  time.Time
-	CostAccount            string // 211
-	DepreciationAccount    string // 214
-	ExpenseAccount         string // 642, 627, 154
-	IsActive               bool
+	ID                    string
+	Code                  string
+	Name                  string
+	OriginalCost          decimal.Decimal // Nguyên giá (211)
+	AccumulatedDep        decimal.Decimal // Hao mòn lũy kế (214)
+	UsefulLifeMonths      int             // Thời gian sử dụng (tháng)
+	PurchaseDate          time.Time
+	DepreciationStartDate time.Time
+	CostAccount           string // 211
+	DepreciationAccount   string // 214
+	ExpenseAccount        string // 642, 627, 154
+	IsActive              bool
 }
 
 func NewFixedAssetStub(id, code, name string, cost decimal.Decimal, months int, purchaseDate time.Time) *FixedAsset {

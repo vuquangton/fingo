@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fingo.local/schemas/statutory-filing.json",
+  "title": "FinGo statutory filing",
+  "description": "One period's statutory statements, with the legal basis of every line. A line whose legal basis docs/legal-basis.md has not resolved is not in this document: it is in the warnings instead.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["period", "generated_at", "statements", "warnings"],
+  "properties": {
+    "period": { "$ref": "#/$defs/period" },
+    "generated_at": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}",
+      "description": "RFC 3339 in UTC."
+    },
+    "statements": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/statement" }
+    },
+    "warnings": {
+      "type": "array",
+      "description": "Everything the filing left out or could not state. The schema cannot express 'one warning per dropped line' — the emitter builds them as it drops, and TestGenerate_NoUnresolvedLineAppears checks that pairing.",
+      "items": { "$ref": "#/$defs/warning" }
+    }
+  },
+  "$defs": {
+    "period": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "start_date", "end_date", "regime"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "start_date": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+        "end_date": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+        "regime": { "type": "string", "enum": ["TT133", "TT99"] }
+      }
+    },
+    "statement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "name", "authority", "confidence", "lines", "warnings"],
+      "properties": {
+        "code": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "authority": { "type": "string", "minLength": 1 },
+        "confidence": { "type": "string", "enum": ["P", "S"] },
+        "lines": { "type": "array", "items": { "$ref": "#/$defs/line" } },
+        "warnings": { "type": "array", "items": { "$ref": "#/$defs/warning" } }
+      }
+    },
+    "line": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["statement", "indicator", "label", "reference", "confidence", "amount"],
+      "properties": {
+        "statement": { "type": "string", "minLength": 1 },
+        "indicator": { "type": "string" },
+        "label": { "type": "string", "minLength": 1 },
+        "reference": { "type": "string", "minLength": 1 },
+        "confidence": { "type": "string", "enum": ["P", "S"] },
+        "amount": {
+          "type": "string",
+          "pattern": "^-?[0-9]+$",
+          "description": "Whole đồng, as a string and not a JSON number: a JSON number is a float in most parsers, and VND has no subunit for one to lose."
+        },
+        "note": { "type": "string" }
+      }
+    },
+    "warning": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["statement", "item", "reason"],
+      "properties": {
+        "statement": { "type": "string", "minLength": 1 },
+        "item": { "type": "string", "minLength": 1 },
+        "question": { "type": "string" },
+        "reason": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

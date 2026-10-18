@@ -26,19 +26,19 @@ const (
 )
 
 type EInvoice struct {
-	ID                 string
-	VoucherID          string
-	TemplateCode       string // e.g. 1/001
-	Series             string // e.g. C26TAV
-	InvoiceNumber      string // e.g. 00000123
-	IssueDate          time.Time
-	BuyerTaxCode       string
-	BuyerLegalName     string
+	ID                    string
+	VoucherID             string
+	TemplateCode          string // e.g. 1/001
+	Series                string // e.g. C26TAV
+	InvoiceNumber         string // e.g. 00000123
+	IssueDate             time.Time
+	BuyerTaxCode          string
+	BuyerLegalName        string
 	TotalAmountWithoutVAT decimal.Decimal
-	VATAmount          decimal.Decimal
-	TotalAmountWithVAT decimal.Decimal
-	Status             EInvoiceStatus
-	TaxAuthorityCode   string // Mã CQT cấp
+	VATAmount             decimal.Decimal
+	TotalAmountWithVAT    decimal.Decimal
+	Status                EInvoiceStatus
+	TaxAuthorityCode      string // Mã CQT cấp
 }
 
 func NewEInvoiceStub(id, template, series, invNo string, issueDate time.Time) *EInvoice {

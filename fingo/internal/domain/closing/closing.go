@@ -25,13 +25,13 @@ type ClosingAccountBalance struct {
 }
 
 type PeriodClosing struct {
-	ID        string
-	Year      int
-	Month     int
-	ClosedAt  time.Time
-	Revenues  []ClosingAccountBalance // 511, 515, 711
-	Expenses  []ClosingAccountBalance // 632, 635, 641, 642, 811
-	IsClosed  bool
+	ID       string
+	Year     int
+	Month    int
+	ClosedAt time.Time
+	Revenues []ClosingAccountBalance // 511, 515, 711
+	Expenses []ClosingAccountBalance // 632, 635, 641, 642, 811
+	IsClosed bool
 }
 
 func NewPeriodClosingStub(id string, year, month int, closedAt time.Time) *PeriodClosing {

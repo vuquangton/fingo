@@ -8,14 +8,14 @@ import (
 )
 
 type CashReceipt struct {
-	ID          string
-	VoucherNo   string
-	Date        time.Time
-	PayerName   string
-	Reason      string
-	CustomerID  string
-	Amount      decimal.Decimal
-	IsPosted    bool
+	ID         string
+	VoucherNo  string
+	Date       time.Time
+	PayerName  string
+	Reason     string
+	CustomerID string
+	Amount     decimal.Decimal
+	IsPosted   bool
 }
 
 type CashPayment struct {

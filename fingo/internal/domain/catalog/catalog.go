@@ -4,6 +4,8 @@ import (
 	"context"
 
 	"github.com/shopspring/decimal"
+
+	"fingo/internal/domain/tax"
 )
 
 type ItemType string
@@ -55,11 +57,14 @@ type Item struct {
 	Barcode          string
 	ItemType         ItemType
 	BaseUOM          string
-	InventoryAccount string          // 152, 156, etc.
-	COGSAccount      string          // 632
-	RevenueAccount   string          // 511
-	DefaultVATRate   decimal.Decimal // 0, 5, 8, 10
-	IsActive         bool
+	InventoryAccount string // 152, 156, etc.
+	COGSAccount      string // 632
+	RevenueAccount   string // 511
+	// DefaultVAT is the treatment the item is normally sold under, not a
+	// percentage. A percentage here could be written as 7 and nothing could
+	// tell that it was illegal; a treatment is resolved against the sale date.
+	DefaultVAT tax.Kind
+	IsActive   bool
 }
 
 type Warehouse struct {
@@ -83,13 +88,13 @@ func NewCustomerStub(id, code, name, taxCode string) *Customer {
 
 func NewItemStub(id, code, name, uom string) *Item {
 	return &Item{
-		ID:             id,
-		Code:           code,
-		Name:           name,
-		ItemType:       ItemTypeGood,
-		BaseUOM:        uom,
-		DefaultVATRate: decimal.NewFromInt(10),
-		IsActive:       true,
+		ID:         id,
+		Code:       code,
+		Name:       name,
+		ItemType:   ItemTypeGood,
+		BaseUOM:    uom,
+		DefaultVAT: tax.KindStandard,
+		IsActive:   true,
 	}
 }
 

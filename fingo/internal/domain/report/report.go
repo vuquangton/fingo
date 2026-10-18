@@ -66,9 +66,9 @@ func (t *TrialBalance) ValidateBalance() error {
 type FinancialReportType string
 
 const (
-	ReportBalanceSheet     FinancialReportType = "B01_DNN" // Bảng cân đối kế toán
-	ReportIncomeStatement  FinancialReportType = "B02_DNN" // Báo cáo kết quả HĐKD
-	ReportCashFlowDirect   FinancialReportType = "B03_DNN" // Lưu chuyển tiền tệ
+	ReportBalanceSheet    FinancialReportType = "B01_DNN" // Bảng cân đối kế toán
+	ReportIncomeStatement FinancialReportType = "B02_DNN" // Báo cáo kết quả HĐKD
+	ReportCashFlowDirect  FinancialReportType = "B03_DNN" // Lưu chuyển tiền tệ
 )
 
 type ReportRepositoryStub interface {
