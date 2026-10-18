@@ -149,3 +149,13 @@ deployments therefore run the binary under a scheduled task or manually until it
 Three end-to-end tests: chart lists 5111/33311/911; journal shows the posted voucher and its 1.100.000 total; trial balance balances and names the period and voucher count.
 
 Defect found by the test: `accounting_periods.id` is a `uuid`, so a readable `FY2026` id failed at INSERT. The database now generates it (`RETURNING id`).
+## Phase 3 — reports, drill-down, Excel
+
+| Route | Screen | Proven by |
+| :--- | :--- | :--- |
+| `GET /reports/pnl` | Kết quả kinh doanh | revenue 1.000.000, net profit, closing vouchers excluded count |
+| `GET /reports/balance-sheet` | Bảng cân đối kế toán | three sections, totals, balances |
+| `GET /ledger?account=131` | Sổ chi tiết TK | voucher line and running balance |
+| `GET /reports/export.xlsx` | Excel export | file opened with excelize; account 131 closing debit read back as 1100000 |
+
+No figure is computed in a handler. `internal/books` exposes them from `internal/reports`, whose 88 tests were already green before PostgreSQL existed.

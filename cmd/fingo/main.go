@@ -71,6 +71,10 @@ func run() error {
 	protected.GET("/accounts", auth.ShowAccounts)
 	protected.GET("/journal", auth.ShowJournal)
 	protected.GET("/reports", auth.ShowTrialBalance)
+	protected.GET("/reports/pnl", auth.ShowProfitAndLoss)
+	protected.GET("/reports/balance-sheet", auth.ShowBalanceSheet)
+	protected.GET("/reports/export.xlsx", auth.ExportTrialBalance)
+	protected.GET("/ledger", auth.ShowLedger)
 	protected.GET("/entry", auth.ShowEntry)
 	protected.POST("/entry", auth.PostEntry)
 

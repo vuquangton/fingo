@@ -47,6 +47,41 @@ func (b *Books) TrialBalance(ctx context.Context, periodID string) (reports.Tria
 	return service.TrialBalance(ctx, periodID)
 }
 
+// ProfitAndLoss reads the period result.
+func (b *Books) ProfitAndLoss(ctx context.Context, periodID string) (reports.ProfitAndLoss, error) {
+	service, err := b.Service()
+	if err != nil {
+		return reports.ProfitAndLoss{}, err
+	}
+	return service.ProfitAndLoss(ctx, periodID)
+}
+
+// BalanceSheet reads the position at the period end.
+func (b *Books) BalanceSheet(ctx context.Context, periodID string) (reports.BalanceSheet, error) {
+	service, err := b.Service()
+	if err != nil {
+		return reports.BalanceSheet{}, err
+	}
+	return service.BalanceSheet(ctx, periodID)
+}
+
+// AccountLines returns one account's movements between two dates: the drill-down
+// a reader follows from a report row to the vouchers behind it.
+func (b *Books) AccountLines(ctx context.Context, account string, from, to time.Time) ([]reports.Line, error) {
+	lines, err := b.Lines(ctx, from, to)
+	if err != nil {
+		return nil, err
+	}
+
+	out := make([]reports.Line, 0, len(lines))
+	for _, l := range lines {
+		if l.AccountCode == account {
+			out = append(out, l)
+		}
+	}
+	return out, nil
+}
+
 // List implements reports.Periods.
 func (b *Books) List(ctx context.Context) ([]period.Period, error) {
 	var out []period.Period
