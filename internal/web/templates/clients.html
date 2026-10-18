@@ -1,0 +1,99 @@
+{{define "clients.html"}}<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Khách hàng — FinGo</title>
+  <link rel="stylesheet" href="/static/vendor/tabler.min.css">
+</head>
+<body class="antialiased">
+<div class="page">
+  <header class="navbar navbar-expand d-print-none">
+    <div class="container-xl">
+      <span class="navbar-brand">FinGo</span>
+      <nav class="ms-4">
+        <a class="btn btn-sm btn-ghost-secondary" href="/clients">Khách hàng</a>
+        <a class="btn btn-sm btn-ghost-secondary" href="/partners">Danh mục</a>
+        <a class="btn btn-sm btn-ghost-secondary" href="/reports">Cân đối</a>
+        <a class="btn btn-sm btn-ghost-secondary" href="/users">Người dùng</a>
+      </nav>
+      <span class="navbar-text ms-auto">{{.Email}}</span>
+    </div>
+  </header>
+
+  <div class="page-wrapper">
+    <div class="page-body">
+      <div class="container-xl">
+
+        {{if .Created}}
+        <div class="alert alert-success" role="status">Đã tạo khách hàng <strong>{{.Created}}</strong> và hệ thống tài khoản TT133.</div>
+        {{end}}
+        {{if .Error}}
+        <div class="alert alert-danger" role="alert">{{.Error}}</div>
+        {{end}}
+
+        <div class="row g-3">
+          <div class="col-lg-8">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Khách hàng</h3>
+                <div class="card-subtitle ms-auto">Chọn một khách hàng để mở sổ của họ.</div>
+              </div>
+              {{if .Rows}}
+              <div class="table-responsive">
+                <table class="table table-vcenter card-table">
+                  <thead><tr><th>Tên</th><th>Mã số thuế</th><th>Trạng thái</th><th></th></tr></thead>
+                  <tbody>
+                    {{range .Rows}}
+                    <tr>
+                      <td>{{.Name}}{{if .Current}} <span class="badge bg-blue-lt">đang mở</span>{{end}}</td>
+                      <td>{{.TaxID}}</td>
+                      <td>{{if .Active}}đang dùng{{else}}ngừng{{end}}</td>
+                      <td class="text-end">
+                        {{if not .Current}}
+                        <form method="post" action="/clients/{{.ID}}/select" class="d-inline">
+                          <button class="btn btn-sm btn-primary" type="submit">Mở sổ</button>
+                        </form>
+                        {{end}}
+                      </td>
+                    </tr>
+                    {{end}}
+                  </tbody>
+                </table>
+              </div>
+              {{else}}
+              <div class="card-body"><p class="text-secondary mb-0">Chưa có khách hàng nào.</p></div>
+              {{end}}
+            </div>
+          </div>
+
+          <div class="col-lg-4">
+            <form method="post" action="/clients" class="card">
+              <div class="card-header"><h3 class="card-title">Thêm khách hàng</h3></div>
+              <div class="card-body">
+                <div class="mb-3">
+                  <label class="form-label" for="name">Tên doanh nghiệp</label>
+                  <input class="form-control" id="name" name="name" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label" for="tax_id">Mã số thuế</label>
+                  <input class="form-control" id="tax_id" name="tax_id" required>
+                </div>
+                <p class="text-secondary mb-0">
+                  Mỗi khách hàng có sổ riêng: hệ thống tài khoản TT133 (123 tài khoản) được tạo ngay khi thêm.
+                </p>
+              </div>
+              <div class="card-footer text-end">
+                <button class="btn btn-primary" type="submit">Tạo khách hàng</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
+{{end}}

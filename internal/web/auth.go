@@ -207,6 +207,14 @@ func (a *Auth) recordFailure(c *gin.Context, email string) {
 		email, c.ClientIP())
 }
 
+// RequireWriter admits the roles that may change the books.
+//
+// A viewer may read every screen; the moment a viewer could post, "viewer" would
+// mean "accountant who does not feel like it".
+func (a *Auth) RequireWriter() gin.HandlerFunc {
+	return a.RequireRole(RoleAdmin, RoleAccountant)
+}
+
 // RequireClient refuses a request that has not selected a client.
 //
 // A financial handler needs the tenant scope that becomes app.client_id; a

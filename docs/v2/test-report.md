@@ -306,3 +306,16 @@ Ordering is deliberate: the sale posts first, then its cost. A crash between the
 | surplus | Dr 156 / Cr 711 at the current average | the goods exist and nobody paid for them; calling it revenue would be a fiction |
 
 Test: 10 on hand, count 7 → 632 debit 300.000, 156 credit 300.000, on hand 7. A count that matches the ledger is refused 422 — there is nothing to adjust, and posting a zero voucher would be noise.
+## Operable milestone — clients and users
+
+| Screen | Route | Who |
+| :--- | :--- | :--- |
+| Client registry | `GET /clients`, `POST /clients`, `POST /clients/:id/select` | any user lists/selects; **admin** creates |
+| Users | `GET /users`, `POST /users` | **admin only** |
+| Own password | `POST /password` | any signed-in user, current password required |
+
+Creating a client also provisions its 123-account TT133 chart, inside a transaction scoped to the new client — row-level security permits exactly those rows.
+
+Four tests: create client → chart provisioned → switch → empty books · accountant cannot create a client (403) · admin creates a user who can sign in, and a viewer cannot post (403) · password change refuses a wrong current password (403) and works with the right one.
+
+**Authorization bug found and fixed:** write routes had no role check, so a `viewer` reached handlers and failed with 409 (no client selected) instead of 403. A `RequireWriter` middleware (admin + accountant) now guards every mutating route, and period close is admin-only.

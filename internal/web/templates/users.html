@@ -1,0 +1,115 @@
+{{define "users.html"}}<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Người dùng — FinGo</title>
+  <link rel="stylesheet" href="/static/vendor/tabler.min.css">
+</head>
+<body class="antialiased">
+<div class="page">
+  <header class="navbar navbar-expand d-print-none">
+    <div class="container-xl">
+      <span class="navbar-brand">FinGo</span>
+      <nav class="ms-4">
+        <a class="btn btn-sm btn-ghost-secondary" href="/clients">Khách hàng</a>
+        <a class="btn btn-sm btn-ghost-secondary" href="/reports">Cân đối</a>
+        <a class="btn btn-sm btn-ghost-secondary" href="/users">Người dùng</a>
+      </nav>
+      <span class="navbar-text ms-auto">{{.Email}}</span>
+    </div>
+  </header>
+
+  <div class="page-wrapper">
+    <div class="page-body">
+      <div class="container-xl">
+
+        {{if .Created}}
+        <div class="alert alert-success" role="status">Đã tạo tài khoản <strong>{{.Created}}</strong>.</div>
+        {{end}}
+        {{if .Changed}}
+        <div class="alert alert-success" role="status">Đã đổi mật khẩu.</div>
+        {{end}}
+        {{if .Error}}
+        <div class="alert alert-danger" role="alert">{{.Error}}</div>
+        {{end}}
+
+        <div class="row g-3">
+          <div class="col-lg-7">
+            <div class="card">
+              <div class="card-header"><h3 class="card-title">Tài khoản</h3></div>
+              <div class="table-responsive">
+                <table class="table table-vcenter card-table">
+                  <thead><tr><th>Email</th><th>Tên</th><th>Quyền</th><th>Trạng thái</th></tr></thead>
+                  <tbody>
+                    {{range .Rows}}
+                    <tr>
+                      <td>{{.Email}}{{if .Current}} <span class="badge bg-blue-lt">bạn</span>{{end}}</td>
+                      <td>{{.DisplayName}}</td>
+                      <td>{{.Role}}</td>
+                      <td>{{if .Active}}đang dùng{{else}}khoá{{end}}</td>
+                    </tr>
+                    {{end}}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-5">
+            <form method="post" action="/users" class="card">
+              <div class="card-header"><h3 class="card-title">Thêm tài khoản (quản trị)</h3></div>
+              <div class="card-body">
+                <div class="mb-3">
+                  <label class="form-label" for="email">Email</label>
+                  <input class="form-control" id="email" name="email" type="email" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label" for="display_name">Tên hiển thị</label>
+                  <input class="form-control" id="display_name" name="display_name" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label" for="role">Quyền</label>
+                  <select class="form-select" id="role" name="role">
+                    <option value="accountant">Kế toán</option>
+                    <option value="viewer">Chỉ xem</option>
+                    <option value="admin">Quản trị</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label" for="password">Mật khẩu ban đầu</label>
+                  <input class="form-control" id="password" name="password" type="password" minlength="12" required>
+                  <small class="form-hint">Tối thiểu 12 ký tự. Người dùng nên đổi ngay sau lần đăng nhập đầu.</small>
+                </div>
+              </div>
+              <div class="card-footer text-end">
+                <button class="btn btn-primary" type="submit">Tạo tài khoản</button>
+              </div>
+            </form>
+
+            <form method="post" action="/password" class="card mt-3">
+              <div class="card-header"><h3 class="card-title">Đổi mật khẩu của bạn</h3></div>
+              <div class="card-body">
+                <div class="mb-3">
+                  <label class="form-label" for="current">Mật khẩu hiện tại</label>
+                  <input class="form-control" id="current" name="current" type="password" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label" for="next">Mật khẩu mới</label>
+                  <input class="form-control" id="next" name="next" type="password" minlength="12" required>
+                </div>
+              </div>
+              <div class="card-footer text-end">
+                <button class="btn btn-primary" type="submit">Đổi mật khẩu</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
+{{end}}
