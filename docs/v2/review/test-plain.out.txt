@@ -1,0 +1,29 @@
+﻿?   	fingo/cmd/devcert	[no test files]
+?   	fingo/cmd/fingo	[no test files]
+?   	fingo/cmd/migrate	[no test files]
+?   	fingo/db	[no test files]
+ok  	fingo/internal/audit	5.332s
+ok  	fingo/internal/auth	5.010s
+ok  	fingo/internal/books	46.124s
+ok  	fingo/internal/close	1.736s
+ok  	fingo/internal/document	1.480s
+ok  	fingo/internal/domain/document	1.501s
+ok  	fingo/internal/domain/gl	1.284s
+?   	fingo/internal/domain/gl/gltest	[no test files]
+ok  	fingo/internal/format	1.270s
+ok  	fingo/internal/inventory	2.248s
+ok  	fingo/internal/ledger	26.497s
+ok  	fingo/internal/money	1.985s
+ok  	fingo/internal/partner	2.844s
+ok  	fingo/internal/period	3.531s
+ok  	fingo/internal/posting	2.164s
+ok  	fingo/internal/reports	1.380s
+ok  	fingo/internal/reports/statutory	2.845s
+ok  	fingo/internal/store	7.899s
+?   	fingo/internal/testdb	[no test files]
+ok  	fingo/internal/trading	2.457s
+?   	fingo/internal/usecase/ledger	[no test files]
+ok  	fingo/internal/vat	2.250s
+ok  	fingo/internal/web	77.269s
+ok  	fingo/pkg/logger	1.382s
+?   	fingo/tools/genchart	[no test files]

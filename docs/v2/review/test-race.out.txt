@@ -1,0 +1,7 @@
+﻿go : go: -race requires cgo; enable cgo by setting CGO_ENABLED=1
+At line:1 char:193
++ ... GS='-mod=mod'; go test ./... -race -count=1 -timeout=20m 2>&1 | Out-F ...
++                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (go: -race requi...g CGO_ENABLED=1:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

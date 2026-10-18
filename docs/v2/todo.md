@@ -152,6 +152,14 @@ Conventions:
 
 ---
 
+## Review outcome (2026-10-18)
+
+An independent production-readiness review returned **NO-GO** with two blockers: the
+period lock is not enforced by PostgreSQL, and the toolchain (Go 1.27.0) has ten reachable
+standard-library vulnerabilities. Full report: [`review/00-verdict.md`](review/00-verdict.md).
+The accounting invariants (balance, immutability, allocation, tenancy) held under direct
+SQL attack.
+
 ## Decisions owed (block items)
 
 | # | Decision | Blocks | Default if undecided by the pilot |
