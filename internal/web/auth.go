@@ -12,6 +12,7 @@ import (
 	"crypto/tls"
 	"errors"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/alexedwards/scs/pgxstore"
@@ -136,15 +137,62 @@ type LoginRequest struct {
 	Password string `form:"password" json:"password" binding:"required"`
 }
 
+type loginData struct {
+	Error string
+	Email string
+}
+
+// ShowLogin renders the sign-in page.
+//
+// Without it the only way in is a POST: the operator guide tells somebody to open
+// the address and sign in, and there was nothing there to sign in with.
+func (a *Auth) ShowLogin(c *gin.Context) {
+	if a.sessions.Exists(c.Request.Context(), keyUserID) {
+		c.Redirect(http.StatusSeeOther, "/clients")
+		return
+	}
+
+	a.renderLogin(c, http.StatusOK, loginData{})
+}
+
+// Home sends a visitor to the right place: the sign-in page, or the client list.
+func (a *Auth) Home(c *gin.Context) {
+	if a.sessions.Exists(c.Request.Context(), keyUserID) {
+		c.Redirect(http.StatusSeeOther, "/clients")
+		return
+	}
+	c.Redirect(http.StatusSeeOther, "/login")
+}
+
+// wantsHTML reports whether the request came from a browser form rather than a
+// program. A browser sends Accept: text/html; http.Client does not.
+func wantsHTML(c *gin.Context) bool {
+	return strings.Contains(c.GetHeader("Accept"), "text/html")
+}
+
+func (a *Auth) renderLogin(c *gin.Context, status int, data loginData) {
+	c.Status(status)
+	if err := templates.ExecuteTemplate(c.Writer, "login.html", data); err != nil {
+		c.String(http.StatusInternalServerError, "không dựng được trang đăng nhập: %v", err)
+	}
+}
+
 // Login verifies a password and starts a session.
 //
 // The error for an unknown email and the error for a wrong password are the same
 // status and the same body: distinguishing them tells an attacker which addresses
 // exist. The failure is still recorded, with the address, so brute force is
 // visible in the log even though the response says nothing.
+//
+// A browser form gets a page: the form again with a message, or a redirect into
+// the application. A program gets the bare status it can assert on.
 func (a *Auth) Login(c *gin.Context) {
 	var req LoginRequest
 	if err := c.ShouldBind(&req); err != nil {
+		if wantsHTML(c) {
+			a.renderLogin(c, http.StatusBadRequest, loginData{Error: "Hãy nhập email và mật khẩu."})
+			return
+		}
 		c.Status(http.StatusBadRequest)
 		return
 	}
@@ -162,7 +210,7 @@ func (a *Auth) Login(c *gin.Context) {
 
 	if errors.Is(err, pgx.ErrNoRows) {
 		a.recordFailure(c, req.Email)
-		c.Status(http.StatusUnauthorized)
+		a.rejectLogin(c, req.Email)
 		return
 	}
 	if err != nil {
@@ -172,7 +220,7 @@ func (a *Auth) Login(c *gin.Context) {
 
 	if !active || auth.Verify(hash, req.Password) != nil {
 		a.recordFailure(c, req.Email)
-		c.Status(http.StatusUnauthorized)
+		a.rejectLogin(c, req.Email)
 		return
 	}
 
@@ -187,7 +235,24 @@ func (a *Auth) Login(c *gin.Context) {
 	a.sessions.Put(c.Request.Context(), keyEmail, req.Email)
 	a.sessions.Put(c.Request.Context(), keyRole, role)
 
+	if wantsHTML(c) {
+		c.Redirect(http.StatusSeeOther, "/clients")
+		return
+	}
 	c.Status(http.StatusNoContent)
+}
+
+// rejectLogin answers a failed sign-in without saying which half was wrong.
+func (a *Auth) rejectLogin(c *gin.Context, email string) {
+	if wantsHTML(c) {
+		// The address is not echoed back: two failures must render identically, or
+		// the page itself says which addresses exist. The cost is retyping an email.
+		a.renderLogin(c, http.StatusUnauthorized, loginData{
+			Error: "Email hoặc mật khẩu không đúng.",
+		})
+		return
+	}
+	c.Status(http.StatusUnauthorized)
 }
 
 // Logout destroys the session.

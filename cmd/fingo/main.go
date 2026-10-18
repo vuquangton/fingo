@@ -63,11 +63,12 @@ func run() error {
 	router := gin.New()
 	router.Use(gin.Recovery())
 	router.GET("/healthz", func(c *gin.Context) { c.String(http.StatusOK, "ok") })
+	router.GET("/", auth.Home)
+	router.GET("/login", auth.ShowLogin)
 	router.POST("/login", auth.Login)
 	router.POST("/logout", auth.Logout)
 
 	protected := router.Group("/", auth.RequireUser())
-	protected.GET("/books", func(c *gin.Context) { c.String(http.StatusOK, "books") })
 	protected.GET("/clients", auth.ShowClients)
 	protected.POST("/clients", auth.RequireRole(web.RoleAdmin), auth.PostClient)
 	protected.POST("/clients/:id/select", auth.SelectClient)

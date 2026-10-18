@@ -48,8 +48,8 @@ func TestAgingBucketsByDaysOverdueAndTiesToTheLedger(t *testing.T) {
 
 	for _, want := range []string{
 		"Phải thu khách hàng",
-		"khớp",              // subledger equals the 131 control account
-		"3.300.000",         // three invoices of 1.100.000
+		"khớp",      // subledger equals the 131 control account
+		"3.300.000", // three invoices of 1.100.000
 		"Công ty Đông Á",
 	} {
 		if !strings.Contains(body, want) {

@@ -7,7 +7,7 @@ Mỗi mục là một việc, theo đúng thứ tự thường làm.
 
 ## 1. Đăng nhập và chọn khách hàng
 
-1. Mở `https://<máy chủ>:8443` bằng trình duyệt.
+1. Mở `https://<máy chủ>:8443/` — hệ thống đưa bạn tới trang đăng nhập.
 2. Nhập email và mật khẩu được quản trị viên cấp.
 3. Hệ thống chỉ mở sổ của **một khách hàng tại một thời điểm**. Nếu tài khoản phụ trách nhiều
    khách hàng, phiên làm việc phải chỉ rõ đang mở sổ của ai — FinGo không tự chọn thay bạn.

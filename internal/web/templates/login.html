@@ -1,0 +1,50 @@
+{{define "login.html"}}<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Đăng nhập — FinGo</title>
+  <link rel="stylesheet" href="/static/vendor/tabler.min.css">
+</head>
+<body class="antialiased">
+<div class="page page-center">
+  <div class="container container-tight py-4">
+    <div class="text-center mb-4">
+      <span class="navbar-brand navbar-brand-autodark">FinGo</span>
+      <div class="text-secondary">Kế toán doanh nghiệp — TT133</div>
+    </div>
+
+    <form method="post" action="/login" class="card card-md">
+      <div class="card-body">
+        <h2 class="card-title text-center mb-4">Đăng nhập</h2>
+
+        {{if .Error}}
+        <div class="alert alert-danger" role="alert">{{.Error}}</div>
+        {{end}}
+
+        <div class="mb-3">
+          <label class="form-label" for="email">Email</label>
+          <input class="form-control" id="email" name="email" type="email"
+                 value="{{.Email}}" autocomplete="username" autofocus required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="password">Mật khẩu</label>
+          <input class="form-control" id="password" name="password" type="password"
+                 autocomplete="current-password" required>
+        </div>
+
+        <div class="form-footer">
+          <button class="btn btn-primary w-100" type="submit">Vào sổ</button>
+        </div>
+      </div>
+    </form>
+
+    <div class="text-center text-secondary mt-3">
+      Quên mật khẩu? Liên hệ quản trị viên của văn phòng.
+    </div>
+  </div>
+</div>
+</body>
+</html>
+{{end}}

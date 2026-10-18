@@ -9,6 +9,7 @@ import (
 
 	"github.com/jackc/pgx/v5"
 
+	"fingo/internal/audit"
 	"fingo/internal/close"
 	"fingo/internal/document"
 	"fingo/internal/domain/gl"
@@ -28,12 +29,44 @@ func (b *Books) CloseService() (*close.Service, error) {
 }
 
 // ClosePeriod closes one period and records its report.
+//
+// The lock row itself records the operation, not a person: the engine's Lock port
+// does not carry the operator. The audit row is written here, where the command's
+// operator is known, so "every post and lock is audited" is true rather than
+// nearly true.
 func (b *Books) ClosePeriod(ctx context.Context, cmd close.Command) (close.Report, error) {
 	service, err := b.CloseService()
 	if err != nil {
 		return close.Report{}, err
 	}
-	return service.ClosePeriod(ctx, cmd)
+
+	report, err := service.ClosePeriod(ctx, cmd)
+	if err != nil {
+		return close.Report{}, err
+	}
+
+	after, err := json.Marshal(map[string]string{
+		"period_id": cmd.PeriodID,
+		"locked_at": time.Now().UTC().Format(time.RFC3339),
+	})
+	if err != nil {
+		return report, fmt.Errorf("books: encode the lock audit: %w", err)
+	}
+
+	if err := b.store.InClient(ctx, b.scope, func(tx pgx.Tx) error {
+		return audit.Record(ctx, tx, audit.Event{
+			ClientID: b.scope.ID(),
+			Actor:    cmd.Operator,
+			Action:   audit.ActionLock,
+			Entity:   "accounting_period",
+			EntityID: cmd.PeriodID,
+			After:    after,
+		})
+	}); err != nil {
+		return report, fmt.Errorf("books: the period is closed but the lock was not audited: %w", err)
+	}
+
+	return report, nil
 }
 
 // ClosingReport reads back what a close recorded.

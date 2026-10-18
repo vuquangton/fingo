@@ -96,7 +96,7 @@ func Open(t *testing.T, cfg Config) *pgxpool.Pool {
 
 	if err := checkSchema(ctx, pool); err != nil {
 		pool.Close()
-		t.Fatalf("%v\n\nApply the schema first:  $env:PGADMIN_PASSWORD='...'; .\\scripts\\migrate.cmd", err)
+		t.Fatalf("%v\n\nApply the schema first:  $env:PGADMIN_PASSWORD='...'; go run ./cmd/migrate -database fingo_test", err)
 	}
 
 	return pool

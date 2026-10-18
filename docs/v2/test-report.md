@@ -370,3 +370,19 @@ Two decisions worth recording:
 2. **The control figure comes from the voucher lines, not from the documents.** Subledger and control account are two independent records of the same debt; the screen prints both and marks them `khớp` or `lệch <amount>`. An aging report that cannot disagree with the ledger is not a check.
 
 Test: three invoices at 149, 76 and 10 days before 30 June 2026 land in over-90, 31–60 and current; the total is 3.300.000 and equals the 131 balance. A malformed `as_of` is refused 422.
+## Sign-in page — the defect that made everything else unreachable
+
+The drift report found that only `POST /login` existed: `GET /` answered 404 and there was no form, so a human could not create the session every screen requires. The tests passed because the harness posts directly — the suite had a door the product lacked.
+
+| Route | Behaviour |
+| :--- | :--- |
+| `GET /` | redirect to `/login` when anonymous, `/clients` when signed in |
+| `GET /login` | the form; a signed-in visitor goes to `/clients` |
+| `POST /login` (browser, `Accept: text/html`) | 303 to `/clients`, or the form again with a message on failure |
+| `POST /login` (program) | 204 / 401, unchanged, so existing tests keep proving the API contract |
+
+A wrong password and an unknown email render **byte-identical** pages: the address is deliberately not echoed back, or the page itself would say which addresses exist.
+
+Also fixed while here: the period lock now writes a `PERIOD_LOCK` audit row (the Phase 2 claim was false), the `GET /books` stub is gone, and the missing-migration hint names a command that exists.
+
+Tests: root redirects to the form · form sign-in reaches `/clients` · identical bodies for both failure kinds · one audit row per lock.

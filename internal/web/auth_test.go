@@ -41,11 +41,12 @@ func newHarness(t *testing.T) *harness {
 	a := web.NewAuth(st)
 
 	router := gin.New()
+	router.GET("/", a.Home)
+	router.GET("/login", a.ShowLogin)
 	router.POST("/login", a.Login)
 	router.POST("/logout", a.Logout)
 
 	protected := router.Group("/", a.RequireUser())
-	protected.GET("/books", func(c *gin.Context) { c.String(http.StatusOK, "books") })
 	protected.POST("/clients/:id/select", a.SelectClient)
 	protected.GET("/clients", a.ShowClients)
 	protected.POST("/clients", a.RequireRole(web.RoleAdmin), a.PostClient)
@@ -143,7 +144,7 @@ func (h *harness) get(t *testing.T, path string) *http.Response {
 func TestUnauthenticatedRequestIsRejected(t *testing.T) {
 	h := newHarness(t)
 
-	if got := h.get(t, "/books").StatusCode; got != http.StatusUnauthorized {
+	if got := h.get(t, "/clients").StatusCode; got != http.StatusUnauthorized {
 		t.Fatalf("GET /books without a session = %d, want 401", got)
 	}
 }
@@ -157,7 +158,7 @@ func TestLoginThenReachAProtectedRoute(t *testing.T) {
 		t.Fatalf("login = %d, want 204", got)
 	}
 
-	if got := h.get(t, "/books").StatusCode; got != http.StatusOK {
+	if got := h.get(t, "/clients").StatusCode; got != http.StatusOK {
 		t.Fatalf("GET /books with a session = %d, want 200", got)
 	}
 }
@@ -170,7 +171,7 @@ func TestWrongPasswordIsRefusedAndRecorded(t *testing.T) {
 	if got := h.post(t, "/login", url.Values{"email": {email}, "password": {"wrong"}}).StatusCode; got != http.StatusUnauthorized {
 		t.Fatalf("wrong password = %d, want 401", got)
 	}
-	if got := h.get(t, "/books").StatusCode; got != http.StatusUnauthorized {
+	if got := h.get(t, "/clients").StatusCode; got != http.StatusUnauthorized {
 		t.Fatalf("GET /books after a failed login = %d, want 401", got)
 	}
 
@@ -207,7 +208,7 @@ func TestRoleIsEnforced(t *testing.T) {
 		t.Fatalf("login = %d, want 204", got)
 	}
 
-	if got := h.get(t, "/books").StatusCode; got != http.StatusOK {
+	if got := h.get(t, "/clients").StatusCode; got != http.StatusOK {
 		t.Fatalf("viewer reading /books = %d, want 200", got)
 	}
 
@@ -222,7 +223,7 @@ func TestLogoutEndsTheSession(t *testing.T) {
 	h.user(t, email, "correct-horse", web.RoleAccountant)
 
 	h.post(t, "/login", url.Values{"email": {email}, "password": {"correct-horse"}})
-	if got := h.get(t, "/books").StatusCode; got != http.StatusOK {
+	if got := h.get(t, "/clients").StatusCode; got != http.StatusOK {
 		t.Fatalf("before logout = %d, want 200", got)
 	}
 
@@ -230,7 +231,7 @@ func TestLogoutEndsTheSession(t *testing.T) {
 		t.Fatalf("logout = %d, want 204", got)
 	}
 
-	if got := h.get(t, "/books").StatusCode; got != http.StatusUnauthorized {
+	if got := h.get(t, "/clients").StatusCode; got != http.StatusUnauthorized {
 		t.Fatalf("after logout = %d, want 401", got)
 	}
 }
