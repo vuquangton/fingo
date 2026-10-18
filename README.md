@@ -73,6 +73,8 @@ docs/                 requirements, legal basis, ADRs, v2 plan and reports
 | [`docs/v2/decisions.md`](docs/v2/decisions.md) | The plan of record: stack, tenancy, scope, port order, gates |
 | [`docs/v2/plan-status.md`](docs/v2/plan-status.md) | Phase status and gate evidence |
 | [`docs/v2/open-questions.md`](docs/v2/open-questions.md) | Open questions, defaults taken, who can answer |
+| [`docs/v2/operator-guide.md`](docs/v2/operator-guide.md) | Hướng dẫn sử dụng cho kế toán (tiếng Việt) |
+| [`docs/v2/installer-notes.md`](docs/v2/installer-notes.md) | Install, run, back up, upgrade, and what never to do |
 | [`docs/requirements-v1.md`](docs/requirements-v1.md) | Business requirements (still the baseline for *what*) |
 | [`docs/legal-basis.md`](docs/legal-basis.md) | Which legal instrument governs which figure; confidence marks |
 | [`docs/adr/`](docs/adr/) | Architecture decisions; 0006–0008 are v2 |

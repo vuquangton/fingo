@@ -267,3 +267,8 @@ The three-way match is deliberately **not** used here: `trading.Purchasing.Invoi
 | settled bill | paying it again is refused 422 |
 
 Bills and sales invoices share `document.TypeInvoice`, so the payable list reads the stored `kind` (`PURCHASE_BILL`) rather than guessing from the domain type — the same distinction the export adapter already makes.
+## Phase 6 — documentation closed
+
+`operator-guide.md` is the Vietnamese task guide (13 sections, ending with the explicit list of what the product does **not** do yet). `installer-notes.md` is the operations note: prerequisites, provisioning, TLS, service install, backup, upgrade, and the five things that must never be done.
+
+No code changed, so the gate is unchanged: 21 packages ok, 0 failures, 0 skips. The Phase 6 **gate** — a parallel run against one client's current software — is not something this repository can execute; it needs a client, a period of real data, and a human to compare output.
