@@ -199,7 +199,7 @@ func TestRequestValidation(t *testing.T) {
 	f := setup(t)
 
 	tests := []struct {
-		name string
+		name  string
 		spoil func(*ledger.Request)
 	}{
 		{"no id", func(r *ledger.Request) { r.ID = "" }},

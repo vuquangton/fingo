@@ -66,16 +66,6 @@ func Post(ctx context.Context, st *store.Store, scope store.Scope, req Request) 
 	var out Posted
 
 	err := st.InClient(ctx, scope, func(tx pgx.Tx) error {
-		chart, err := loadChart(ctx, tx)
-		if err != nil {
-			return err
-		}
-
-		periods, err := loadPeriods(ctx, tx)
-		if err != nil {
-			return err
-		}
-
 		v := gl.NewVoucher(req.ID, req.Description, req.Type, req.Date)
 		for i, line := range req.Lines {
 			if err := v.AddLine(gl.VoucherLine{
@@ -90,39 +80,9 @@ func Post(ctx context.Context, st *store.Store, scope store.Scope, req Request) 
 			}
 		}
 
-		book, err := gl.BookFor(req.Type)
-		if err != nil {
-			return err
-		}
-		year := req.Date.UTC().Year()
-
-		seq, err := nextSeq(ctx, tx, scope, book, year)
-		if err != nil {
-			return err
-		}
-
-		number := gl.Number{Book: book, Year: year, Seq: seq}
-		if err := v.Post(gl.PostingRules{Chart: chart, Periods: periods}, number, time.Now(), req.Actor); err != nil {
-			return err
-		}
-
-		if err := insert(ctx, tx, scope, v, req); err != nil {
-			return err
-		}
-
-		if err := audit.Record(ctx, tx, audit.Event{
-			ClientID: scope.ID(),
-			Actor:    req.Actor,
-			Action:   audit.ActionPost,
-			Entity:   "voucher",
-			EntityID: v.ID(),
-			After:    []byte(fmt.Sprintf(`{"voucher_no":%q,"book":%q,"seq":%d}`, v.VoucherNo(), book, seq)),
-		}); err != nil {
-			return err
-		}
-
-		out = Posted{ID: v.ID(), VoucherNo: v.VoucherNo(), Seq: seq}
-		return nil
+		var postErr error
+		out, postErr = postInTx(ctx, tx, scope, v, req.Actor)
+		return postErr
 	})
 	if err != nil {
 		return Posted{}, err
@@ -144,6 +104,73 @@ func validate(req Request) error {
 		return fmt.Errorf("%w: a voucher needs at least two lines", ErrInvalidRequest)
 	}
 	return nil
+}
+
+// PostVoucher posts a voucher the caller built itself.
+//
+// The period close builds one — revenue and expenses carried through 911 into
+// retained earnings — and it must travel the same rules and the same transaction
+// as a hand-entered voucher. A second path to the ledger is a second set of
+// rules, and the two would disagree.
+func PostVoucher(ctx context.Context, st *store.Store, scope store.Scope, v *gl.Voucher, actor string) (Posted, error) {
+	var out Posted
+
+	err := st.InClient(ctx, scope, func(tx pgx.Tx) error {
+		var postErr error
+		out, postErr = postInTx(ctx, tx, scope, v, actor)
+		return postErr
+	})
+	if err != nil {
+		return Posted{}, err
+	}
+	return out, nil
+}
+
+// postInTx is the whole posting path, inside a scoped transaction: the rules, the
+// number, the rows, and the audit record.
+func postInTx(ctx context.Context, tx pgx.Tx, scope store.Scope, v *gl.Voucher, actor string) (Posted, error) {
+	chart, err := loadChart(ctx, tx)
+	if err != nil {
+		return Posted{}, err
+	}
+
+	periods, err := loadPeriods(ctx, tx)
+	if err != nil {
+		return Posted{}, err
+	}
+
+	book, err := gl.BookFor(v.VoucherType())
+	if err != nil {
+		return Posted{}, err
+	}
+	year := v.VoucherDate().UTC().Year()
+
+	seq, err := nextSeq(ctx, tx, scope, book, year)
+	if err != nil {
+		return Posted{}, err
+	}
+
+	number := gl.Number{Book: book, Year: year, Seq: seq}
+	if err := v.Post(gl.PostingRules{Chart: chart, Periods: periods}, number, time.Now(), actor); err != nil {
+		return Posted{}, err
+	}
+
+	if err := insert(ctx, tx, scope, v); err != nil {
+		return Posted{}, err
+	}
+
+	if err := audit.Record(ctx, tx, audit.Event{
+		ClientID: scope.ID(),
+		Actor:    actor,
+		Action:   audit.ActionPost,
+		Entity:   "voucher",
+		EntityID: v.ID(),
+		After:    []byte(fmt.Sprintf(`{"voucher_no":%q,"book":%q,"seq":%d}`, v.VoucherNo(), book, seq)),
+	}); err != nil {
+		return Posted{}, err
+	}
+
+	return Posted{ID: v.ID(), VoucherNo: v.VoucherNo(), Seq: seq}, nil
 }
 
 // loadChart reads the client's chart. Row-level security already limits the rows
@@ -234,7 +261,7 @@ func nextSeq(ctx context.Context, tx pgx.Tx, scope store.Scope, book gl.Book, ye
 	return seq, nil
 }
 
-func insert(ctx context.Context, tx pgx.Tx, scope store.Scope, v *gl.Voucher, req Request) error {
+func insert(ctx context.Context, tx pgx.Tx, scope store.Scope, v *gl.Voucher) error {
 	// The header is written as a DRAFT, then its lines, then it is marked posted.
 	//
 	// That order is not cosmetic: the immutability triggers refuse to attach lines
@@ -248,17 +275,23 @@ func insert(ctx context.Context, tx pgx.Tx, scope store.Scope, v *gl.Voucher, re
 			 description, created_by)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
 		v.ID(), scope.ID(), v.VoucherNo(), string(v.Number().Book), v.Number().Year, v.Number().Seq,
-		req.Date, v.Description(), req.Actor)
+		v.VoucherDate(), v.Description(), v.PostedBy())
 	if err != nil {
 		return fmt.Errorf("write the voucher: %w", err)
 	}
 
 	for _, line := range v.Lines() {
+		// A voucher built by the domain may carry no line ids: the closing entries
+		// are constructed as account, side, amount. The id is the ledger's to issue.
+		lineID := line.ID
+		if lineID == "" {
+			lineID = newUUID()
+		}
 		if _, err := tx.Exec(ctx, `
 			INSERT INTO voucher_lines
 				(id, client_id, voucher_id, line_order, account_code, side, amount, note)
 			VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-			line.ID, scope.ID(), v.ID(), line.LineOrder, line.AccountCode,
+			lineID, scope.ID(), v.ID(), line.LineOrder, line.AccountCode,
 			string(line.Side), line.Amount.Int64(), line.Note); err != nil {
 			return fmt.Errorf("write line %d: %w", line.LineOrder, err)
 		}

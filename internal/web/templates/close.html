@@ -1,0 +1,92 @@
+{{define "close.html"}}<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Khoá sổ kỳ kế toán — FinGo</title>
+  <link rel="stylesheet" href="/static/vendor/tabler.min.css">
+  <script src="/static/vendor/htmx.min.js" defer></script>
+</head>
+<body class="antialiased">
+<div class="page">
+  <header class="navbar navbar-expand d-print-none">
+    <div class="container-xl">
+      <span class="navbar-brand">FinGo</span>
+      <span class="navbar-text ms-3">{{.Client}}</span>
+      <nav class="ms-4">
+        <a class="btn btn-sm btn-ghost-secondary" href="/entry">Nhập chứng từ</a>
+        <a class="btn btn-sm btn-ghost-secondary" href="/journal">Nhật ký</a>
+        <a class="btn btn-sm btn-ghost-secondary" href="/reports">Cân đối</a>
+        <a class="btn btn-sm btn-ghost-secondary" href="/close">Khoá sổ</a>
+      </nav>
+      <span class="navbar-text ms-auto">{{.Email}}</span>
+    </div>
+  </header>
+
+  <div class="page-wrapper">
+    <div class="page-body">
+      <div class="container-xl">
+
+        {{if .Closed}}
+        <div class="alert alert-success" role="status">Đã khoá sổ. Kết quả kỳ: <strong>{{.Closed}}</strong>.</div>
+        {{end}}
+        {{if .Error}}
+        <div class="alert alert-danger" role="alert">{{.Error}}</div>
+        {{end}}
+
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Khoá sổ kỳ kế toán</h3>
+            <div class="card-subtitle ms-auto">
+              Khoá sổ chuyển doanh thu và chi phí qua TK 911 vào TK 4212, rồi khoá kỳ — không mở lại được.
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-vcenter card-table">
+              <thead>
+                <tr><th>Kỳ</th><th>Từ ngày</th><th>Đến ngày</th><th>Trạng thái</th><th class="text-end">Kết quả kỳ</th><th></th></tr>
+              </thead>
+              <tbody>
+                {{range .Periods}}
+                <tr>
+                  <td>{{.Name}}</td>
+                  <td>{{.Start}}</td>
+                  <td>{{.End}}</td>
+                  <td>
+                    {{if .Locked}}
+                      <span class="badge bg-secondary-lt">Đã khoá</span>
+                    {{else}}
+                      <span class="badge bg-green-lt">Đang mở</span>
+                    {{end}}
+                  </td>
+                  <td class="text-end">{{if .HasReport}}{{.NetProfit}}{{else}}—{{end}}</td>
+                  <td class="text-end">
+                    {{if not .Locked}}
+                    <form method="post" action="/close" class="d-inline">
+                      <input type="hidden" name="period_id" value="{{.ID}}">
+                      <button class="btn btn-sm btn-primary" type="submit">Khoá sổ kỳ này</button>
+                    </form>
+                    {{end}}
+                  </td>
+                </tr>
+                {{end}}
+              </tbody>
+            </table>
+          </div>
+
+          <div class="card-body">
+            <p class="text-secondary mb-0">
+              Một kỳ chỉ khoá được khi không còn chứng từ nào chưa tất toán. Chứng từ đã ghi sổ là bất biến;
+              sửa sai bằng bút toán đảo, không sửa lại chứng từ cũ.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
+{{end}}

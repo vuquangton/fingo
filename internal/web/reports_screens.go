@@ -99,7 +99,6 @@ func (a *Auth) ShowBalanceSheet(c *gin.Context) {
 		Empty:    "Chưa có số dư nào.",
 	}
 
-
 	view.Rows = append(view.Rows, []string{"TÀI SẢN", "", ""})
 	for _, r := range bs.Assets {
 		view.Rows = append(view.Rows, []string{"  " + r.AccountName, r.AccountCode, format.Money(r.Amount)})

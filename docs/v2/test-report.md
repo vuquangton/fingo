@@ -159,3 +159,19 @@ Defect found by the test: `accounting_periods.id` is a `uuid`, so a readable `FY
 | `GET /reports/export.xlsx` | Excel export | file opened with excelize; account 131 closing debit read back as 1100000 |
 
 No figure is computed in a handler. `internal/books` exposes them from `internal/reports`, whose 88 tests were already green before PostgreSQL existed.
+## Phase 5 — period close (gate met)
+
+`GET /close` lists periods and their lock state; `POST /close` runs `internal/close`.
+
+Three end-to-end tests:
+
+| Test | Assertion |
+| :--- | :--- |
+| screen | period listed as open, with the close button |
+| close | after the close, **revenue nets to zero**, the period row is locked, and exactly one report is stored |
+| after close | a voucher dated inside the locked period is refused with 422 |
+
+Two defects the tests forced out:
+
+1. **Closing lines carry no id.** `internal/close` builds entries as account/side/amount; the ledger inserted `''` into a `uuid` column. The ledger now issues a line id when the domain left it empty — the same rule for any domain-built voucher.
+2. **The close's `Poster` needs the ordinary posting path.** `ledger.Post` took a form `Request`; `PostVoucher` was extracted so a domain-built voucher travels the same rules, numbering, transaction and audit row. No second path to the ledger exists.
