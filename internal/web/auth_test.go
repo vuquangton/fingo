@@ -52,6 +52,7 @@ func newHarness(t *testing.T) *harness {
 	protected.GET("/stock", a.ShowStock)
 	protected.POST("/stock/item", a.PostItem)
 	protected.POST("/stock/receive", a.PostStockReceipt)
+	protected.POST("/stock/count", a.PostStocktake)
 	protected.GET("/payment", a.ShowPayments)
 	protected.POST("/payment", a.PostPayment)
 	protected.GET("/purchase", a.ShowPurchase)

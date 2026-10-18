@@ -296,3 +296,13 @@ The stock check happens **before** the sale is posted: a sale the warehouse cann
 | sale of 5 from 3 | 422, **zero** revenue lines posted |
 
 Ordering is deliberate: the sale posts first, then its cost. A crash between them leaves a sale whose cost can be posted by hand — visible — rather than revenue silently carrying no cost.
+## Phase 4 — stocktake adjustment
+
+`POST /stock/count` brings an item to what a physical count found.
+
+| Direction | Posting | Why |
+| :--- | :--- | :--- |
+| shortage | Dr 632 / Cr 156 at the moving average | goods are gone; the cost is a cost |
+| surplus | Dr 156 / Cr 711 at the current average | the goods exist and nobody paid for them; calling it revenue would be a fiction |
+
+Test: 10 on hand, count 7 → 632 debit 300.000, 156 credit 300.000, on hand 7. A count that matches the ledger is refused 422 — there is nothing to adjust, and posting a zero voucher would be noise.

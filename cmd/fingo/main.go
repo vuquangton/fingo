@@ -73,6 +73,7 @@ func run() error {
 	protected.GET("/stock", auth.ShowStock)
 	protected.POST("/stock/item", auth.PostItem)
 	protected.POST("/stock/receive", auth.PostStockReceipt)
+	protected.POST("/stock/count", auth.PostStocktake)
 	protected.GET("/payment", auth.ShowPayments)
 	protected.POST("/payment", auth.PostPayment)
 	protected.GET("/purchase", auth.ShowPurchase)

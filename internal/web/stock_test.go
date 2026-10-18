@@ -118,3 +118,65 @@ func TestStockReceiptNeedsASourceDocument(t *testing.T) {
 		t.Fatalf("receipt with no source document = %d, want 422", resp.StatusCode)
 	}
 }
+
+func TestStocktakeAdjustsToTheCountedQuantity(t *testing.T) {
+	h := newHarness(t)
+	email := newEmail()
+	h.user(t, email, "correct-horse", "accountant")
+	h.login(t, email, "correct-horse")
+	client := h.newClient(t)
+	h.pickClient(t, client)
+
+	itemID := h.addItem(t, client, "HH-03", "Hàng hóa 03")
+	h.receiveStock(t, itemID, "10", "100.000", "2026-03-05", "HĐ 0009")
+
+	resp, err := h.client.PostForm(h.server.URL+"/stock/count", url.Values{
+		"item_id": {itemID}, "counted": {"7"}, "date": {"2026-12-31"}, "source_doc": {"BB kiểm kê 31/12"},
+	})
+	if err != nil {
+		t.Fatalf("stocktake: %v", err)
+	}
+	defer func() { _ = resp.Body.Close() }()
+
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("POST /stock/count = %d\n%s", resp.StatusCode, readAll(t, resp))
+	}
+
+	st := h.storeOf(t)
+	scope := h.scopeOf(t, client)
+
+	var cogs, inventoryCredit int64
+	var onHand int
+	if err := st.InClient(t.Context(), scope, func(tx pgx.Tx) error {
+		if err := tx.QueryRow(t.Context(), `
+			SELECT COALESCE(SUM(CASE WHEN account_code = '632' AND side = 'DEBIT'  THEN amount END), 0),
+			       COALESCE(SUM(CASE WHEN account_code = '156' AND side = 'CREDIT' THEN amount END), 0)
+			  FROM voucher_lines`).Scan(&cogs, &inventoryCredit); err != nil {
+			return err
+		}
+		return tx.QueryRow(t.Context(),
+			`SELECT COALESCE(SUM(CASE WHEN kind = 'RECEIPT' THEN quantity ELSE -quantity END), 0)::int
+			   FROM stock_movements`).Scan(&onHand)
+	}); err != nil {
+		t.Fatalf("read the books: %v", err)
+	}
+
+	if cogs != 300_000 || inventoryCredit != 300_000 {
+		t.Fatalf("shortage cost %d / inventory credit %d, want 300,000 each", cogs, inventoryCredit)
+	}
+	if onHand != 7 {
+		t.Fatalf("stock on hand = %d, want 7", onHand)
+	}
+
+	again, err := h.client.PostForm(h.server.URL+"/stock/count", url.Values{
+		"item_id": {itemID}, "counted": {"7"}, "date": {"2026-12-31"},
+	})
+	if err != nil {
+		t.Fatalf("stocktake again: %v", err)
+	}
+	defer func() { _ = again.Body.Close() }()
+
+	if again.StatusCode != http.StatusUnprocessableEntity {
+		t.Fatalf("a count that matches = %d, want 422 (nothing to adjust)", again.StatusCode)
+	}
+}

@@ -151,8 +151,8 @@ Giao cho kế toán kế nhiệm khi khách hàng rời đi.
 
 | Chưa có | Ảnh hưởng |
 | :--- | :--- |
-| Điều chuyển kho, kiểm kê | Chỉ nhập kho được; chưa điều chuyển hay kiểm kê trên phần mềm |
-| Mua hàng theo luồng ba chiều | Chỉ ghi được hóa đơn chi phí |
+| Điều chuyển kho | Chưa điều chuyển hàng giữa các kho trên phần mềm |
+| Mua hàng theo luồng ba chiều | Nhập kho và hóa đơn mua là hai bước riêng |
 | Nhiều thuế suất (0/5/8/10) | Chỉ áp dụng 10% |
 | Bút toán đảo bằng một cú bấm | Phải tự nhập bút toán đảo |
 | Sao lưu theo lịch trong ứng dụng | Phải đặt lịch bằng công cụ hệ điều hành |

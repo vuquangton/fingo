@@ -69,6 +69,43 @@ func (a *Auth) PostItem(c *gin.Context) {
 	c.Redirect(http.StatusSeeOther, "/stock?posted="+item.SKU)
 }
 
+// PostStocktake brings one item to what a physical count found.
+func (a *Auth) PostStocktake(c *gin.Context) {
+	scope, clientName, ok := a.requireScope(c)
+	if !ok {
+		return
+	}
+
+	date, err := time.Parse("2006-01-02", c.PostForm("date"))
+	if err != nil {
+		a.renderStock(c, http.StatusUnprocessableEntity, stockData{Client: clientName, Error: "ngày kiểm kê không hợp lệ"})
+		return
+	}
+
+	counted, err := strconv.Atoi(strings.TrimSpace(c.PostForm("counted")))
+	if err != nil || counted < 0 {
+		a.renderStock(c, http.StatusUnprocessableEntity, stockData{Client: clientName, Error: "số lượng kiểm kê không hợp lệ"})
+		return
+	}
+
+	email, _, _ := UserFrom(c)
+
+	posted, err := books.Open(a.store, scope).AdjustStock(c.Request.Context(), books.StocktakeCommand{
+		ItemID:   c.PostForm("item_id"),
+		Counted:  counted,
+		Date:     date,
+		Reason:   c.PostForm("reason"),
+		Actor:    email,
+		SourceID: strings.TrimSpace(c.PostForm("source_doc")),
+	})
+	if err != nil {
+		a.renderStock(c, http.StatusUnprocessableEntity, stockData{Client: clientName, Error: err.Error()})
+		return
+	}
+
+	c.Redirect(http.StatusSeeOther, "/stock?posted="+posted.VoucherNo)
+}
+
 // PostStockReceipt books goods into stock and posts Dr 156 / Cr 331.
 func (a *Auth) PostStockReceipt(c *gin.Context) {
 	scope, clientName, ok := a.requireScope(c)

@@ -120,8 +120,33 @@
                 <button class="btn btn-primary" type="submit">Thêm</button>
               </div>
             </form>
+            <form method="post" action="/stock/count" class="card mt-3">
+              <div class="card-header"><h3 class="card-title">Kiểm kê</h3></div>
+              <div class="card-body">
+                <div class="mb-3">
+                  <label class="form-label" for="count_item">Mặt hàng</label>
+                  <select class="form-select" id="count_item" name="item_id" required>
+                    {{range .Items}}<option value="{{.ID}}">{{.SKU}} — {{.Name}}</option>{{end}}
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label" for="counted">Số lượng thực tế</label>
+                  <input class="form-control text-end" id="counted" name="counted" inputmode="numeric" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label" for="count_date">Ngày kiểm kê</label>
+                  <input class="form-control" id="count_date" name="date" type="date" value="{{.Date}}" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label" for="count_source">Biên bản</label>
+                  <input class="form-control" id="count_source" name="source_doc" placeholder="BB kiểm kê 31/12">
+                </div>
+              </div>
+              <div class="card-footer text-end">
+                <button class="btn btn-primary" type="submit">Ghi sổ kiểm kê</button>
+              </div>
+            </form>
           </div>
-        </div>
 
       </div>
     </div>
