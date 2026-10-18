@@ -53,6 +53,8 @@ func newHarness(t *testing.T) *harness {
 	protected.POST("/users", a.RequireRole(web.RoleAdmin), a.PostUser)
 	protected.POST("/password", a.PostPassword)
 	protected.GET("/accounts", a.ShowAccounts)
+	protected.GET("/reverse", a.ShowReverse)
+	protected.POST("/reverse", a.RequireWriter(), a.PostReverse)
 	protected.GET("/journal", a.ShowJournal)
 	protected.GET("/stock", a.ShowStock)
 	protected.POST("/stock/item", a.RequireWriter(), a.PostItem)

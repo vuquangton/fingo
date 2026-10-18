@@ -319,3 +319,13 @@ Creating a client also provisions its 123-account TT133 chart, inside a transact
 Four tests: create client → chart provisioned → switch → empty books · accountant cannot create a client (403) · admin creates a user who can sign in, and a viewer cannot post (403) · password change refuses a wrong current password (403) and works with the right one.
 
 **Authorization bug found and fixed:** write routes had no role check, so a `viewer` reached handlers and failed with 409 (no client selected) instead of 403. A `RequireWriter` middleware (admin + accountant) now guards every mutating route, and period close is admin-only.
+## Reversal — the correction model, reachable
+
+`GET /reverse` + `POST /reverse` post the mirror of a posted voucher: same accounts, opposite sides, same amounts, dated when the mistake was noticed. The original is never touched.
+
+| Test | Assertion |
+| :--- | :--- |
+| reverse | two vouchers exist, the books net to **0**, the mirror is labelled "Đảo bút toán …" |
+| reverse twice | 422 — a second mirror would undo the correction silently |
+
+The refusal is by description lookup, which is the ledger's own record of what the entry is; no extra table was added for it.

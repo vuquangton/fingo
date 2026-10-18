@@ -75,6 +75,8 @@ func run() error {
 	protected.POST("/users", auth.RequireRole(web.RoleAdmin), auth.PostUser)
 	protected.POST("/password", auth.PostPassword)
 	protected.GET("/accounts", auth.ShowAccounts)
+	protected.GET("/reverse", auth.ShowReverse)
+	protected.POST("/reverse", auth.RequireWriter(), auth.PostReverse)
 	protected.GET("/journal", auth.ShowJournal)
 	protected.GET("/stock", auth.ShowStock)
 	protected.POST("/stock/item", auth.RequireWriter(), auth.PostItem)

@@ -17,7 +17,7 @@ func TestAdminCreatesAClientAndOpensItsBooks(t *testing.T) {
 
 	// Create the client through the screen.
 	resp, err := h.client.PostForm(h.server.URL+"/clients", url.Values{
-		"name": {"Công ty Mới"}, "tax_id": {"020"+newUUID(t)[:8]},
+		"name": {"Công ty Mới"}, "tax_id": {"020" + newUUID(t)[:8]},
 	})
 	if err != nil {
 		t.Fatalf("create client: %v", err)
