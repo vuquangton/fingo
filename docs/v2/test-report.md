@@ -213,3 +213,17 @@ Three defects surfaced, each a real design fact:
 Three tests: no partner → guidance instead of a dead form · invoice posts (131 1.100.000 / 5111 1.000.000 / 33311 100.000, one open receivable) · empty invoice refused 422.
 
 The engine still owns every figure: the handler parses a form and converts `money.Dong` to `money.Money`. No VAT arithmetic in the web layer.
+## Phase 4 — receipt and allocation (AR cycle closed)
+
+`GET /receipt` lists open invoices with the outstanding amount; `POST /receipt` posts Dr 1111 / Cr 131 and settles the invoice.
+
+| Test | Assertion |
+| :--- | :--- |
+| settle | document SETTLED, allocated 1.100.000, 1 allocation row, cash debit 1.100.000 |
+| overpayment | 2.000.000 against 1.100.000 is accepted; one credit row of 900.000 |
+
+Three defects, each a schema or layering fact:
+
+1. **`document.Validate` requires a period**, and our `documents` table had no `period_id`. Migration `00006` adds it and backfills from the date's period.
+2. **The domain derives readable ids** (`allocation-<uuid>`, `credit-<uuid>`) that are not uuids. The adapter generates the database key, as the ledger already does for vouchers.
+3. **A receipt is two steps**: post the voucher, then apply the payment. A crash between them leaves an unallocated receipt — visible in the ledger, never a document marked paid by money that was not recorded. Retry-safe: the voucher id is derived from (client, document, amount, date), so a retry collides with itself.

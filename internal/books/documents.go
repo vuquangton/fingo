@@ -2,6 +2,7 @@ package books
 
 import (
 	"context"
+	"crypto/rand"
 	"errors"
 	"fmt"
 
@@ -38,10 +39,10 @@ func (d *Documents) Create(ctx context.Context, doc document.Document, lines []d
 	return d.store.InClient(ctx, d.scope, func(tx pgx.Tx) error {
 		if _, err := tx.Exec(ctx, `
 			INSERT INTO documents
-				(id, client_id, kind, partner_id, document_date, total, allocated, status)
-			VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+				(id, client_id, kind, partner_id, document_date, period_id, total, allocated, status)
+			VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
 			doc.ID, d.scope.ID(), kindOf(doc.Type), nullUUID(doc.PartnerID), doc.Date,
-			doc.Total.Amount(), doc.Allocated.Amount(), statusToDB(doc.Status)); err != nil {
+			nullUUID(doc.PeriodID), doc.Total.Amount(), doc.Allocated.Amount(), statusToDB(doc.Status)); err != nil {
 			return fmt.Errorf("write the document: %w", err)
 		}
 
@@ -72,9 +73,9 @@ func (d *Documents) Get(ctx context.Context, id string) (document.Document, erro
 		var status string
 
 		if err := tx.QueryRow(ctx, `
-			SELECT id, kind, COALESCE(partner_id::text, ''), document_date, total, allocated, status
+			SELECT id, kind, COALESCE(partner_id::text, ''), COALESCE(period_id::text, ''), document_date, total, allocated, status
 			  FROM documents WHERE id = $1`, id).
-			Scan(&doc.ID, &kind, &doc.PartnerID, &doc.Date, &total, &allocated, &status); err != nil {
+			Scan(&doc.ID, &kind, &doc.PartnerID, &doc.PeriodID, &doc.Date, &total, &allocated, &status); err != nil {
 			return err
 		}
 
@@ -96,7 +97,7 @@ func (d *Documents) List(ctx context.Context) ([]document.Document, error) {
 
 	err := d.store.Read(ctx, d.scope, func(tx pgx.Tx) error {
 		rows, err := tx.Query(ctx, `
-			SELECT id, kind, COALESCE(partner_id::text, ''), document_date, total, allocated, status
+			SELECT id, kind, COALESCE(partner_id::text, ''), COALESCE(period_id::text, ''), document_date, total, allocated, status
 			  FROM documents ORDER BY document_date, id`)
 		if err != nil {
 			return err
@@ -108,7 +109,7 @@ func (d *Documents) List(ctx context.Context) ([]document.Document, error) {
 			var kind string
 			var total, allocated int64
 			var status string
-			if err := rows.Scan(&doc.ID, &kind, &doc.PartnerID, &doc.Date, &total, &allocated, &status); err != nil {
+			if err := rows.Scan(&doc.ID, &kind, &doc.PartnerID, &doc.PeriodID, &doc.Date, &total, &allocated, &status); err != nil {
 				return err
 			}
 			doc.Type = typeOf(kind)
@@ -166,9 +167,9 @@ func (d *Documents) Apply(ctx context.Context, app document.Application) (docume
 		var kind string
 
 		err := tx.QueryRow(ctx, `
-			SELECT id, kind, COALESCE(partner_id::text, ''), document_date, total, allocated, status
+			SELECT id, kind, COALESCE(partner_id::text, ''), COALESCE(period_id::text, ''), document_date, total, allocated, status
 			  FROM documents WHERE id = $1 FOR UPDATE`, app.DocumentID).
-			Scan(&doc.ID, &kind, &doc.PartnerID, &doc.Date, &total, &allocated, &status)
+			Scan(&doc.ID, &kind, &doc.PartnerID, &doc.PeriodID, &doc.Date, &total, &allocated, &status)
 		if errors.Is(err, pgx.ErrNoRows) {
 			return document.ErrUnknownDocument
 		}
@@ -187,20 +188,32 @@ func (d *Documents) Apply(ctx context.Context, app document.Application) (docume
 		}
 
 		if result.Allocation != nil {
+			// The domain derives readable ids ("allocation-<uuid>"); the uuid column
+			// needs one of its own, as the ledger does for vouchers.
+			allocationID := result.Allocation.ID
+			if !isUUID(allocationID) {
+				allocationID = newUUID()
+			}
+
 			if _, err := tx.Exec(ctx, `
 				INSERT INTO allocations (id, client_id, document_id, voucher_id, amount)
 				VALUES ($1, $2, $3, $4, $5)`,
-				result.Allocation.ID, d.scope.ID(), doc.ID, result.Allocation.PaymentID,
+				allocationID, d.scope.ID(), doc.ID, result.Allocation.PaymentID,
 				result.Allocation.Amount.Amount()); err != nil {
 				return fmt.Errorf("write the allocation: %w", err)
 			}
 		}
 
 		if result.Credit != nil {
+			creditID := result.Credit.ID
+			if !isUUID(creditID) {
+				creditID = newUUID()
+			}
+
 			if _, err := tx.Exec(ctx, `
 				INSERT INTO document_credits (id, client_id, partner_id, document_id, payment_id, amount)
 				VALUES ($1, $2, $3, $4, $5, $6)`,
-				result.Credit.ID, d.scope.ID(), nullUUID(doc.PartnerID), doc.ID,
+				creditID, d.scope.ID(), nullUUID(doc.PartnerID), doc.ID,
 				result.Credit.PaymentID, result.Credit.Amount.Amount()); err != nil {
 				return fmt.Errorf("write the credit: %w", err)
 			}
@@ -351,4 +364,35 @@ func nullUUID(id string) any {
 		return nil
 	}
 	return id
+}
+
+// newUUID is the RFC 4122 v4 layout, from crypto/rand.
+func newUUID() string {
+	var b [16]byte
+	if _, err := rand.Read(b[:]); err != nil {
+		panic("books: crypto/rand failed: " + err.Error())
+	}
+	b[6] = (b[6] & 0x0f) | 0x40
+	b[8] = (b[8] & 0x3f) | 0x80
+	return fmt.Sprintf("%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:16])
+}
+
+// isUUID reports whether an id is already in the form the database key needs.
+func isUUID(s string) bool {
+	if len(s) != 36 {
+		return false
+	}
+	for i, r := range s {
+		switch i {
+		case 8, 13, 18, 23:
+			if r != '-' {
+				return false
+			}
+		default:
+			if !((r >= '0' && r <= '9') || (r >= 'a' && r <= 'f') || (r >= 'A' && r <= 'F')) {
+				return false
+			}
+		}
+	}
+	return true
 }

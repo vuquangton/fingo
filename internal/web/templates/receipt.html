@@ -1,0 +1,88 @@
+{{define "receipt.html"}}<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Thu tiền khách hàng — FinGo</title>
+  <link rel="stylesheet" href="/static/vendor/tabler.min.css">
+</head>
+<body class="antialiased">
+<div class="page">
+  <header class="navbar navbar-expand d-print-none">
+    <div class="container-xl">
+      <span class="navbar-brand">FinGo</span>
+      <span class="navbar-text ms-3">{{.Client}}</span>
+      <nav class="ms-4">
+        <a class="btn btn-sm btn-ghost-secondary" href="/sales">Bán hàng</a>
+        <a class="btn btn-sm btn-ghost-secondary" href="/receipt">Thu tiền</a>
+        <a class="btn btn-sm btn-ghost-secondary" href="/journal">Nhật ký</a>
+        <a class="btn btn-sm btn-ghost-secondary" href="/reports">Cân đối</a>
+      </nav>
+      <span class="navbar-text ms-auto">{{.Email}}</span>
+    </div>
+  </header>
+
+  <div class="page-wrapper">
+    <div class="page-body">
+      <div class="container-xl">
+
+        {{if .Posted}}
+        <div class="alert alert-success" role="status">Đã ghi sổ phiếu thu <strong>{{.Posted}}</strong> — Nợ 1111 / Có 131.</div>
+        {{end}}
+        {{if .Error}}
+        <div class="alert alert-danger" role="alert">{{.Error}}</div>
+        {{end}}
+
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Công nợ phải thu</h3>
+            <div class="card-subtitle ms-auto">Thu tiền vào hóa đơn nào thì chọn hóa đơn đó.</div>
+          </div>
+
+          {{if .Rows}}
+          <div class="table-responsive">
+            <table class="table table-vcenter card-table">
+              <thead>
+                <tr><th>Ngày</th><th>Khách hàng</th><th class="text-end">Tổng</th><th class="text-end">Đã thu</th><th class="text-end">Còn nợ</th><th></th></tr>
+              </thead>
+              <tbody>
+                {{range .Rows}}
+                <tr>
+                  <td>{{.Date}}</td>
+                  <td>{{.Partner}}</td>
+                  <td class="text-end">{{.Total}}</td>
+                  <td class="text-end">{{.Allocated}}</td>
+                  <td class="text-end"><strong>{{.Outstanding}}</strong></td>
+                  <td class="text-end">
+                    <form method="post" action="/receipt" class="d-flex gap-2 justify-content-end">
+                      <input type="hidden" name="document_id" value="{{.ID}}">
+                      <input class="form-control form-control-sm text-end" style="width:9rem" name="amount"
+                             value="{{.Outstanding}}" inputmode="numeric" aria-label="Số tiền thu">
+                      <input type="hidden" name="date" value="{{$.Date}}">
+                      <button class="btn btn-sm btn-primary" type="submit">Thu tiền</button>
+                    </form>
+                  </td>
+                </tr>
+                {{end}}
+              </tbody>
+            </table>
+          </div>
+          {{else}}
+          <div class="card-body"><p class="text-secondary mb-0">Không còn hóa đơn nào chưa thu.</p></div>
+          {{end}}
+
+          <div class="card-body">
+            <p class="text-secondary mb-0">
+              Thu thừa không phải lỗi: phần vượt quá hóa đơn được ghi thành số dư có của khách hàng.
+              Phiếu thu đã ghi sổ là bất biến.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
+{{end}}
