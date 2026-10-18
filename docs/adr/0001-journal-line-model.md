@@ -1,6 +1,6 @@
 # Voucher lines carry one account and one side, not a debit–credit pair
 
-**Status:** accepted · 2026-10-08
+**Status:** accepted · 2026-10-08 · **partly superseded 2026-10-18:** the tenant clause ("one database per client, so there is no `company_id` column") is replaced by [ADR 0006](0006-postgresql-rls-tenancy.md); the money clause ("`decimal.Decimal`, integer đồng") is replaced by [ADR 0008](0008-int64-money.md). The line model itself — one account, one side, one amount — stands and is what v2 implements.
 
 ## The decision
 

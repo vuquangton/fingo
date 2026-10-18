@@ -1,6 +1,6 @@
 # The admin UI is server-rendered Go, not the Wails frontend
 
-**Status:** accepted · 2026-10-09
+**Status:** **superseded 2026-10-18 by [ADR 0007](0007-web-ui-stack.md)** · accepted 2026-10-09. Kept for the record: its central judgement — the browser, server-rendered HTML, htmx as enhancement, every figure traceable, no CDN — is carried into ADR 0007 unchanged. What changed is the surrounding decision: Gin instead of a bare `http.Server`, Tabler instead of a hand-rolled stylesheet, and no Wails desktop shell to be a "second UI" beside it.
 
 ## The decision
 

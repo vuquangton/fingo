@@ -1,6 +1,6 @@
 # A client column on every table, and a scope every repository must name
 
-**Status:** accepted · 2026-10-09
+**Status:** **superseded 2026-10-18 by [ADR 0006](0006-postgresql-rls-tenancy.md)** · accepted 2026-10-09. Kept for the record: it correctly identified the defect (a boundary in a signature that no caller implements) and half the remedy (`client_id` on every table, a scope every repository must name). ADR 0006 replaces the enforcement mechanism with PostgreSQL row-level security, makes the column `NOT NULL`, and builds the composite natural keys this ADR deferred.
 
 **Supersedes:** the "Tenant scoping" clause of [ADR 0001](0001-journal-line-model.md) — specifically *"one database per client, so there is no `company_id` column"* — and the same claim in [`requirements-v1.md`](../requirements-v1.md) §1.1.
 
