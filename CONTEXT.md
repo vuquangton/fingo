@@ -1,4 +1,4 @@
-﻿# FinGo v2 — Context
+# FinGo v2 — Context
 > Last verified: 2026-10-18 at commit `986e572` by Context Curator
 
 ## 1. What this is
@@ -19,7 +19,7 @@ Three roles: `admin`, `accountant`, `viewer`. UI copy is Vietnamese.
 | Migrations | `goose`, embedded, applied by `cmd/migrate` | 3.29.0 | `db/db.go:18-35` |
 | Tenancy | one DB, `client_id NOT NULL`, forced RLS | — | `db/migrations/00001_init.sql:407-424` |
 | Money | `int64` đồng in Go, `bigint` in PG, string in JSON | — | `internal/money/dong.go` |
-| UI | `html/template` + Tabler **1.0.0-beta21** + htmx, embedded | — | `internal/web/static/vendor/` |
+| UI | `html/template` + Tabler **1.0.0-beta21** + htmx, embedded | — | `internal/web/static/vendor/` (licence texts beside the files) |
 | Sessions/auth | `scs` in PG, argon2id | 2.9.0 | `internal/web/auth.go:53-66` |
 | CSRF | `net/http.CrossOriginProtection` | stdlib | `internal/web/auth.go:82` |
 | Excel | `excelize/v2` | 2.11.0 | `go.mod:12` |

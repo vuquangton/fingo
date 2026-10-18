@@ -4,7 +4,7 @@ On-premise, multi-user, browser-based accounting for Vietnamese SMEs (TT133/2016
 
 **Status: Phases 0–2 and 5 done; phases 3, 4 and 6 partial.** The v1 application (a Windows desktop binary) is archived at tag `archive/pre-rewrite` and is not built from this branch. See [`docs/v2/plan-status.md`](docs/v2/plan-status.md) for the live phase status, and [`CONTEXT.md`](CONTEXT.md) for the one-file briefing every contributor and agent should read first.
 
-Known gaps: there is no login page yet (login is `POST /login` only), the three-way match is not built, and the entry grid is a plain server-rendered form.
+Known gaps: the three-way match is not built, the entry grid is a plain server-rendered form (Tabulator not adopted), and stock transfer between warehouses is missing. Sign-in is a real page at `/login`.
 
 ## Stack
 
@@ -21,6 +21,7 @@ Known gaps: there is no login page yet (login is `POST /login` only), the three-
 | Entry grid | plain server-rendered rows; a Tabulator spike is still an open decision |
 | Sessions | `scs` in PostgreSQL, argon2id passwords |
 | Deploy | one Go binary with embedded templates and assets + PostgreSQL. No Docker, no Node, no CDN |
+| Vendored assets | Tabler (MIT) and htmx (BSD-2-Clause), with their licence texts, in `internal/web/static/vendor/` |
 
 ## Quick start (development)
 
@@ -87,6 +88,7 @@ docs/                 requirements, legal basis, ADRs, v2 plan and reports
 | [`docs/v2/operator-guide.md`](docs/v2/operator-guide.md) | Hướng dẫn sử dụng cho kế toán (tiếng Việt) |
 | [`docs/v2/installer-notes.md`](docs/v2/installer-notes.md) | Install, run, back up, upgrade, and what never to do |
 | [`docs/v2/todo.md`](docs/v2/todo.md) | Engineering todo: P0/P1/P2, owners, done tests, release gates |
+| [`internal/web/static/vendor/README.md`](internal/web/static/vendor/README.md) | The two vendored assets, their versions and licences |
 | [`docs/requirements-v1.md`](docs/requirements-v1.md) | Business requirements (still the baseline for *what*) |
 | [`docs/legal-basis.md`](docs/legal-basis.md) | Which legal instrument governs which figure; confidence marks |
 | [`docs/adr/`](docs/adr/) | Architecture decisions; 0006–0008 are v2 |

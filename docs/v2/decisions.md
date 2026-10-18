@@ -15,41 +15,40 @@ An **on-premise, multi-user, browser-based Vietnamese accounting system** for a 
 | Language | Go (toolchain 1.27.0 installed; `go.mod` → `go 1.27.0`) |
 | HTTP | Gin |
 | DB | PostgreSQL 16 — `fingo` (prod), `fingo_dev`, `fingo_test` |
-| DB access | `pgx` v5 + `sqlc` (pgx/v5 output) |
+| DB access | `pgx` v5, **hand-written SQL — no sqlc** (no `sqlc.yaml`, no `db/queries/`) |
 | Migrations | `goose`, embedded; triggers live **in** migrations |
 | Tenancy | one database; `client_id NOT NULL` on every business table; RLS forced; `app.client_id` per transaction |
 | Money | `int64` đồng / `bigint` / JSON string |
 | UI kit | Tabler (Bootstrap 5, MIT), vendored |
-| Interaction | htmx + Alpine.js, vendored |
-| Entry grid | Tabulator — journal entry screen only |
-| Pickers | Tom Select (accounts, partners), flatpickr (`vi`), hotkeys-js |
+| Interaction | htmx 2.0.4 vendored and **inert** — no `hx-*` attribute is used yet. No Alpine.js |
+| Entry grid | plain server-rendered form. Tabulator was **not adopted**; the spike remains an open question |
+| Pickers | none — native `<select>` elements. Tom Select, flatpickr and hotkeys-js are not vendored |
 | Sessions / auth | `scs` (pgx store), argon2id, roles `admin\|accountant\|viewer` |
 | CSRF | Go 1.27 `net/http.CrossOriginProtection` (verified available: `go doc net/http.CrossOriginProtection`) |
 | Excel | `excelize` |
-| Backup | `robfig/cron` + `pg_dump` |
+| Backup | `pg_dump` on an OS schedule (Windows Task Scheduler; `systemd` timer on Linux). No `robfig/cron` |
 | Deploy | one binary with embedded templates/static + PostgreSQL service. No Docker, no Node, no CDN |
 
 ### Dependencies and licences
 
-Verified at the point each is added; the upstream `LICENSE` is committed beside any vendored asset. [Tabulator 6.5.0 is MIT — confirmed from its licence page on 2026-10-18](https://www.tabulator.info/docs/6.x/license/).
+> **Authority:** this file records the plan as decided. Where it and the tree
+> disagree, [`CONTEXT.md`](../../CONTEXT.md) is authoritative — it is checked
+> against the code at a named commit. The stack table above was corrected on
+> 2026-10-18 to describe what exists rather than what was once intended.
+
+Verified at the point each is added; the upstream licence text is committed beside
+the asset (`internal/web/static/vendor/LICENSE.tabler`, `LICENSE.htmx`).
 
 | Dependency | Licence | Where |
 | :--- | :--- | :--- |
 | `gin-gonic/gin` | MIT | Go module |
 | `jackc/pgx/v5` | MIT | Go module |
-| `sqlc-dev/sqlc` (tool) | MIT | dev tool, not linked |
 | `pressly/goose/v3` | MIT | Go module |
 | `alexedwards/scs/v2` + `scs/pgxstore` | MIT | Go module |
 | `golang.org/x/crypto` (argon2) | BSD-3-Clause | Go module |
 | `qax-os/excelize/v2` | BSD-3-Clause | Go module |
-| `robfig/cron/v3` | MIT | Go module |
-| Tabler | MIT | `web/static/vendor/tabler/` |
-| htmx | BSD-2-Clause | `web/static/vendor/htmx.min.js` |
-| Alpine.js | MIT | `web/static/vendor/alpine.min.js` |
-| Tabulator | MIT | `web/static/vendor/tabulator/` |
-| Tom Select | Apache-2.0 | `web/static/vendor/tom-select/` |
-| flatpickr | MIT | `web/static/vendor/flatpickr/` |
-| hotkeys-js | MIT | `web/static/vendor/hotkeys.min.js` |
+| Tabler 1.0.0-beta21 | MIT | `internal/web/static/vendor/tabler.min.css` + `LICENSE.tabler` |
+| htmx 2.0.4 | BSD-2-Clause | `internal/web/static/vendor/htmx.min.js` + `LICENSE.htmx` |
 
 **Refused:** any GPL/AGPL library; any dependency that needs Node at build time; any CDN at run time; `gorilla/csrf` (superseded by the stdlib); `shopspring/decimal` (removed).
 
@@ -141,7 +140,7 @@ A phase is done only when, on branch `v2`:
 | :--- | :--- |
 | `gl` decimal→int64 touches `reports`, `close`, `posting`, `usecase/ledger` | One slice, tests as the gate, changed tests enumerated |
 | RLS + `FORCE` breaks the owner's own queries | Seed data written by migration as owner with an explicit `client_id`; tests connect as the app role |
-| sqlc/pgx output differs from the MySQL generator | Regenerate from `db/queries`; adapter is the only place types cross |
+| ~~sqlc/pgx output differs~~ | Void: no sqlc and no generator. Historical v1 risk |
 | Tabulator keyboard flow may be unacceptable | Time-boxed spike in Phase 3 with a documented fallback |
 | The statutory `mã số` is still unresolved | Filing stays out of scope; warnings preserved |
 

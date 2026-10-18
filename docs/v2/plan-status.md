@@ -9,7 +9,7 @@ Updated 2026-10-18 (Phase 1 foundation). One row per phase; a phase is only `DON
 | **0 — Save and decide** | **DONE** | archive tag exists · `git status` clean · ADRs 0006–0008 written · pushed |
 | 1 — Foundation | **DONE** | `go build` rc=0 · `go vet` rc=0 · `REQUIRE_DB=1 go test ./...` rc=0 (16 packages ok, 0 fail, 0 skip) · schema v1 · 11 database tests |
 | 2 — Security and operations | **DONE (gate met)** | client registry (create/select, chart provisioned) · user accounts (create, roles, self-service password change) · write routes restricted to admin/accountant | login/session/roles · audit · backup · restore drill · TLS server binary · systemd unit. Windows SCM service not implemented (recorded). |
-| 3 — Spike, then core screens | **PARTIAL — 9 screens live** | entry, chart of accounts, journal, trial balance, login. Trial balance reads through `internal/reports` over pgx. Tabulator keyboard spike outstanding. |
+| 3 — Spike, then core screens | **PARTIAL — 19 screens, 41 routes** | entry, chart of accounts, journal, trial balance, ledger, P&L, balance sheet, sales, receipts, purchases, payments, stock, partners, aging, close, opening, handover, clients, users. Trial balance reads through `internal/reports` over pgx. Tabulator keyboard spike outstanding. |
 | 4 — Trading cycle | **PARTIAL — COGS live** | partners · sales invoice · receipt with allocation · supplier bill (expense → 1331 → 331) · supplier payment (331/1111) settling the bill. Item master data · goods receipt (156/331) with moving-average valuation · stock list. Cost of sales on a stocked line (632/156, issued from the stock ledger). Three-way match outstanding. |
 | 5 — Period close | **DONE (gate met)** — plus one-action reversal (mirror entry, refused twice) | `POST /close` runs `internal/close`: result carried through 911 into 4212, period locked, report stored; a later voucher into the period is refused. Provisions not wired (fixed assets are out of v2 scope). |
 | 6 — Pilot readiness | **PARTIAL — deliverables complete, gate unrun** | validation: 50k-line reports ~0.8 s, 20 parallel posts with distinct numbers, failed-login cost 2 ms | operations: CI workflow, scheduled backup with pgpass, restore drill | onboarding · handover export · operator guide (Vietnamese) · installer notes. The parallel run against a live client's current software needs a human and a client. |
@@ -62,7 +62,7 @@ This is the number to beat or keep: **every ported package must still report `ok
 | :--- | :--- |
 | `docs/v2/decisions.md` | stack · tenancy · security · DB-level rules · scope · keep/replace/drop · port order · local cluster · gates · known risks · deviations |
 | `docs/adr/0006-postgresql-rls-tenancy.md` | one database, `client_id NOT NULL`, forced RLS, per-transaction `app.client_id`; supersedes ADR 0003 and the tenant clause of ADR 0001 |
-| `docs/adr/0007-web-ui-stack.md` | Gin + embedded templates + vendored Tabler/htmx/Alpine, Tabulator on entry only, stdlib CSRF; supersedes ADR 0004 and `plan-native-shell.md` |
+| `docs/adr/0007-web-ui-stack.md` | Gin + embedded templates + vendored Tabler/htmx (htmx inert), plain server-rendered entry form, stdlib CSRF; supersedes ADR 0004 and `plan-native-shell.md`. Amended 2026-10-18: no Alpine, no Tabulator |
 | `docs/adr/0008-int64-money.md` | `int64` đồng in Go, `bigint` in PostgreSQL, string on the wire; retires `decimal` and the two-regime split |
 | ADR 0001 / 0003 / 0004 | status lines amended with what supersedes them and what still stands |
 
