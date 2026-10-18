@@ -90,7 +90,7 @@ This is the number to beat or keep: **every ported package must still report `ok
 
 ## 5. Next: first tasks of Phase 1
 
-1. `scripts/devdb.ps1` — workspace-local PostgreSQL 16 cluster on port 55432 (`.local/pgdata`, `trust` auth). Unblocks `REQUIRE_DB=1`.
+1. `scripts/devdb.ps1` — workspace-local PostgreSQL 16 cluster on port 65432 (`.local/pgdata`, `trust` auth; first choice 55432 was in a Windows reserved range). Unblocks `REQUIRE_DB=1`.
 2. Remove the Replace/Drop items on `v2`; keep the archive tag as the only copy.
 3. Port the unchanged packages; then `gl` with `int64` (ADR 0008).
 4. One squashed init migration: schema, composite keys, RLS policies, immutability and balance triggers, period-lock trigger, allocation check, TT133 chart seed.

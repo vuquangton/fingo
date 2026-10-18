@@ -99,7 +99,7 @@ match, bill-from-receipt, stock transfer, entry-grid spike.
 
 1. Do not run `sqlc generate` or look for `db/queries/` — no sqlc; SQL is in Go.
 2. Do not assume Alpine/Tabulator/pickers exist — only Tabler CSS + inert htmx.
-3. Do not tell a user to open `/` and log in — no login page; `POST /login` only.
+3. Sign-in is `GET /login` (a real page since `c438176`); `GET /` redirects to it. `POST /login` still answers 204/401 to non-browser clients.
 4. Do not import `internal/client` or write to `web/` — use `store.Scope` and
    `internal/web`.
 5. Do not expect the schema to apply at startup — run `cmd/migrate` first.

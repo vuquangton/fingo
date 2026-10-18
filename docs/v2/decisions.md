@@ -149,4 +149,4 @@ A phase is done only when, on branch `v2`:
 1. **`fingo/dist/` is not committed.** It is 48 MB of reproducible build output (`*.exe` was already ignored in v1). It stays on disk and in the local copy; the archive tag holds the source and the build script.
 2. **`research/` PDFs are not committed** (they are ignored by policy and weigh 49 MB); the extracted text and scripts are, force-added, because `docs/legal-basis.md` cites them as provenance.
 3. **A second archive tag `archive/wails-skeleton`** marks `f9193d3`, the skeleton that `main` was before this archive, so the pre-Go state is reachable even after the working-tree commit.
-4. **The local PostgreSQL cluster is workspace-local on port 55432** (§8) instead of the system service, because its password is unavailable.
+4. **The local PostgreSQL cluster is workspace-local on port 65432** (§8) instead of the system service, because its password is unavailable.
