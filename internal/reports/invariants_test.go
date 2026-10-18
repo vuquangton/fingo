@@ -7,10 +7,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/shopspring/decimal"
-
 	"fingo/internal/close"
 	"fingo/internal/domain/gl"
+	"fingo/internal/money"
 	"fingo/internal/period"
 )
 
@@ -124,8 +123,8 @@ func generatedBooks(calendar []period.Period) []Line {
 			credit := creditNature[random.IntN(len(creditNature))]
 
 			lines = append(lines,
-				Line{VoucherID: id, VoucherDate: date, AccountCode: debit, Side: gl.SideDebit, Amount: decimal.NewFromInt(amount)},
-				Line{VoucherID: id, VoucherDate: date, AccountCode: credit, Side: gl.SideCredit, Amount: decimal.NewFromInt(amount)},
+				Line{VoucherID: id, VoucherDate: date, AccountCode: debit, Side: gl.SideDebit, Amount: money.FromInt(amount)},
+				Line{VoucherID: id, VoucherDate: date, AccountCode: credit, Side: gl.SideCredit, Amount: money.FromInt(amount)},
 			)
 
 			if credit == "5111" || credit == "5118" {
@@ -146,8 +145,8 @@ func generatedBooks(calendar []period.Period) []Line {
 			amount := random.Int64N(100_000) + 1
 
 			lines = append(lines,
-				Line{VoucherID: id, VoucherDate: date, AccountCode: "6422", Side: gl.SideDebit, Amount: decimal.NewFromInt(amount)},
-				Line{VoucherID: id, VoucherDate: date, AccountCode: "2141", Side: gl.SideCredit, Amount: decimal.NewFromInt(amount)},
+				Line{VoucherID: id, VoucherDate: date, AccountCode: "6422", Side: gl.SideDebit, Amount: money.FromInt(amount)},
+				Line{VoucherID: id, VoucherDate: date, AccountCode: "2141", Side: gl.SideCredit, Amount: money.FromInt(amount)},
 			)
 			expenses["6422"] += amount
 		}
@@ -158,8 +157,8 @@ func generatedBooks(calendar []period.Period) []Line {
 		for _, code := range []string{"5111", "5118"} {
 			if amount := revenue[code]; amount > 0 {
 				lines = append(lines,
-					Line{VoucherID: id, VoucherDate: date, AccountCode: code, Side: gl.SideDebit, Amount: decimal.NewFromInt(amount)},
-					Line{VoucherID: id, VoucherDate: date, AccountCode: "911", Side: gl.SideCredit, Amount: decimal.NewFromInt(amount)},
+					Line{VoucherID: id, VoucherDate: date, AccountCode: code, Side: gl.SideDebit, Amount: money.FromInt(amount)},
+					Line{VoucherID: id, VoucherDate: date, AccountCode: "911", Side: gl.SideCredit, Amount: money.FromInt(amount)},
 				)
 				net += amount
 			}
@@ -168,8 +167,8 @@ func generatedBooks(calendar []period.Period) []Line {
 		for _, code := range []string{"632", "6422"} {
 			if amount := expenses[code]; amount > 0 {
 				lines = append(lines,
-					Line{VoucherID: id, VoucherDate: date, AccountCode: "911", Side: gl.SideDebit, Amount: decimal.NewFromInt(amount)},
-					Line{VoucherID: id, VoucherDate: date, AccountCode: code, Side: gl.SideCredit, Amount: decimal.NewFromInt(amount)},
+					Line{VoucherID: id, VoucherDate: date, AccountCode: "911", Side: gl.SideDebit, Amount: money.FromInt(amount)},
+					Line{VoucherID: id, VoucherDate: date, AccountCode: code, Side: gl.SideCredit, Amount: money.FromInt(amount)},
 				)
 				net -= amount
 			}
@@ -178,13 +177,13 @@ func generatedBooks(calendar []period.Period) []Line {
 		switch {
 		case net > 0:
 			lines = append(lines,
-				Line{VoucherID: id, VoucherDate: date, AccountCode: "911", Side: gl.SideDebit, Amount: decimal.NewFromInt(net)},
-				Line{VoucherID: id, VoucherDate: date, AccountCode: "4212", Side: gl.SideCredit, Amount: decimal.NewFromInt(net)},
+				Line{VoucherID: id, VoucherDate: date, AccountCode: "911", Side: gl.SideDebit, Amount: money.FromInt(net)},
+				Line{VoucherID: id, VoucherDate: date, AccountCode: "4212", Side: gl.SideCredit, Amount: money.FromInt(net)},
 			)
 		case net < 0:
 			lines = append(lines,
-				Line{VoucherID: id, VoucherDate: date, AccountCode: "4212", Side: gl.SideDebit, Amount: decimal.NewFromInt(-net)},
-				Line{VoucherID: id, VoucherDate: date, AccountCode: "911", Side: gl.SideCredit, Amount: decimal.NewFromInt(-net)},
+				Line{VoucherID: id, VoucherDate: date, AccountCode: "4212", Side: gl.SideDebit, Amount: money.FromInt(-net)},
+				Line{VoucherID: id, VoucherDate: date, AccountCode: "911", Side: gl.SideCredit, Amount: money.FromInt(-net)},
 			)
 		}
 	}

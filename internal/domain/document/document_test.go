@@ -4,9 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/shopspring/decimal"
-
 	"fingo/internal/domain/document"
+	"fingo/internal/money"
 )
 
 func on(day string) time.Time {
@@ -25,7 +24,7 @@ func invoice(id, reference, day string, amount int64) document.Open {
 			Reference:    reference,
 			DocumentDate: on(day),
 		},
-		Outstanding: decimal.NewFromInt(amount),
+		Outstanding: money.FromInt(amount),
 	}
 }
 
@@ -38,7 +37,7 @@ func TestPlanAllocation_SettlesOldestFirst(t *testing.T) {
 		invoice("d-feb", "HD002", "2026-02-01", 200),
 	}
 
-	plan, err := document.PlanAllocation(decimal.NewFromInt(150), open)
+	plan, err := document.PlanAllocation(money.FromInt(150), open)
 	if err != nil {
 		t.Fatalf("PlanAllocation: %v", err)
 	}
@@ -46,10 +45,10 @@ func TestPlanAllocation_SettlesOldestFirst(t *testing.T) {
 	if len(plan.Allocations) != 2 {
 		t.Fatalf("allocations = %v, want the January invoice settled and February part-settled", plan.Allocations)
 	}
-	if plan.Allocations[0].DocumentID != "d-jan" || !plan.Allocations[0].Amount.Equal(decimal.NewFromInt(100)) {
+	if plan.Allocations[0].DocumentID != "d-jan" || !plan.Allocations[0].Amount.Equal(money.FromInt(100)) {
 		t.Errorf("first allocation = %v, want all of d-jan (100)", plan.Allocations[0])
 	}
-	if plan.Allocations[1].DocumentID != "d-feb" || !plan.Allocations[1].Amount.Equal(decimal.NewFromInt(50)) {
+	if plan.Allocations[1].DocumentID != "d-feb" || !plan.Allocations[1].Amount.Equal(money.FromInt(50)) {
 		t.Errorf("second allocation = %v, want 50 of d-feb", plan.Allocations[1])
 	}
 	if !plan.Unapplied.IsZero() {
@@ -65,7 +64,7 @@ func TestPlanAllocation_LeavesAnOverpaymentUnapplied(t *testing.T) {
 		invoice("d-feb", "HD002", "2026-02-01", 200),
 	}
 
-	plan, err := document.PlanAllocation(decimal.NewFromInt(500), open)
+	plan, err := document.PlanAllocation(money.FromInt(500), open)
 	if err != nil {
 		t.Fatalf("PlanAllocation: %v", err)
 	}
@@ -73,7 +72,7 @@ func TestPlanAllocation_LeavesAnOverpaymentUnapplied(t *testing.T) {
 	if len(plan.Allocations) != 2 {
 		t.Fatalf("allocations = %v, want both invoices settled", plan.Allocations)
 	}
-	if !plan.Unapplied.Equal(decimal.NewFromInt(200)) {
+	if !plan.Unapplied.Equal(money.FromInt(200)) {
 		t.Errorf("Unapplied = %s, want 200", plan.Unapplied)
 	}
 }
@@ -83,7 +82,7 @@ func TestPlanAllocation_LeavesAnOverpaymentUnapplied(t *testing.T) {
 func TestPlanAllocation_NeverExceedsWhatADocumentOwes(t *testing.T) {
 	open := []document.Open{invoice("d-jan", "HD001", "2026-01-01", 100)}
 
-	plan, err := document.PlanAllocation(decimal.NewFromInt(500), open)
+	plan, err := document.PlanAllocation(money.FromInt(500), open)
 	if err != nil {
 		t.Fatalf("PlanAllocation: %v", err)
 	}
@@ -91,7 +90,7 @@ func TestPlanAllocation_NeverExceedsWhatADocumentOwes(t *testing.T) {
 	if len(plan.Allocations) != 1 {
 		t.Fatalf("allocations = %v, want one", plan.Allocations)
 	}
-	if !plan.Allocations[0].Amount.Equal(decimal.NewFromInt(100)) {
+	if !plan.Allocations[0].Amount.Equal(money.FromInt(100)) {
 		t.Errorf("allocation = %s, want exactly 100", plan.Allocations[0].Amount)
 	}
 }
@@ -104,7 +103,7 @@ func TestPlanAllocation_SkipsSettledDocuments(t *testing.T) {
 		invoice("d-open", "HD002", "2026-02-01", 200),
 	}
 
-	plan, err := document.PlanAllocation(decimal.NewFromInt(50), open)
+	plan, err := document.PlanAllocation(money.FromInt(50), open)
 	if err != nil {
 		t.Fatalf("PlanAllocation: %v", err)
 	}
@@ -135,14 +134,14 @@ func TestPlanAllocation_AppliesExactlyWhatItAllocates(t *testing.T) {
 				"d-"+string(rune('a'+i)), "HD00"+string(rune('1'+i)), "2026-01-01", amount))
 		}
 
-		payment := decimal.NewFromInt(c.payment)
+		payment := money.FromInt(c.payment)
 
 		plan, err := document.PlanAllocation(payment, open)
 		if err != nil {
 			t.Fatalf("payment %d: %v", c.payment, err)
 		}
 
-		applied := decimal.Zero
+		applied := money.Zero
 		for _, a := range plan.Allocations {
 			applied = applied.Add(a.Amount)
 		}
@@ -160,7 +159,7 @@ func TestPlanAllocation_AppliesExactlyWhatItAllocates(t *testing.T) {
 func TestPlanAllocation_RefusesANonPositivePayment(t *testing.T) {
 	open := []document.Open{invoice("d-jan", "HD001", "2026-01-01", 100)}
 
-	for _, payment := range []decimal.Decimal{decimal.Zero, decimal.NewFromInt(-50)} {
+	for _, payment := range []money.Dong{money.Zero, money.FromInt(-50)} {
 		if _, err := document.PlanAllocation(payment, open); err == nil {
 			t.Errorf("a payment of %s must be refused, got nil", payment)
 		}
@@ -170,14 +169,14 @@ func TestPlanAllocation_RefusesANonPositivePayment(t *testing.T) {
 // Nothing open means nothing to settle, which is not an error: the payment
 // simply stays unapplied and the customer sits in credit.
 func TestPlanAllocation_WithNothingOpen(t *testing.T) {
-	plan, err := document.PlanAllocation(decimal.NewFromInt(100), nil)
+	plan, err := document.PlanAllocation(money.FromInt(100), nil)
 	if err != nil {
 		t.Fatalf("PlanAllocation: %v", err)
 	}
 	if len(plan.Allocations) != 0 {
 		t.Errorf("allocations = %v, want none", plan.Allocations)
 	}
-	if !plan.Unapplied.Equal(decimal.NewFromInt(100)) {
+	if !plan.Unapplied.Equal(money.FromInt(100)) {
 		t.Errorf("Unapplied = %s, want the whole payment", plan.Unapplied)
 	}
 }

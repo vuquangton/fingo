@@ -4,10 +4,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/shopspring/decimal"
-
 	"fingo/internal/domain/gl"
 	"fingo/internal/domain/gl/gltest"
+	"fingo/internal/money"
 )
 
 // voucherDate is fixed so assertions stay deterministic.
@@ -39,7 +38,7 @@ func testNumber(t *testing.T, v *gl.Voucher) gl.Number {
 
 func mustAdd(t *testing.T, v *gl.Voucher, account string, side gl.EntrySide, amount int64) {
 	t.Helper()
-	line := gl.VoucherLine{AccountCode: account, Side: side, Amount: decimal.NewFromInt(amount)}
+	line := gl.VoucherLine{AccountCode: account, Side: side, Amount: money.FromInt(amount)}
 	if err := v.AddLine(line); err != nil {
 		t.Fatalf("AddLine(%s, %s, %d) failed: %v", account, side, amount, err)
 	}
@@ -85,36 +84,25 @@ func TestVoucher_UnbalancedIsRejected(t *testing.T) {
 	}
 }
 
-// VND has no subunit. A line carrying a fractional đồng is rejected at entry,
-// so an illegal amount can never enter the ledger.
-func TestVoucher_FractionalDongIsRejected(t *testing.T) {
-	v := newVoucher("v-3", "PK003", gl.VoucherTypeGeneral)
-
-	err := v.AddLine(gl.VoucherLine{
-		AccountCode: "131",
-		Side:        gl.SideDebit,
-		Amount:      decimal.RequireFromString("110.5"),
-	})
-	if err == nil {
-		t.Fatal("fractional đồng (110.5) must be rejected, got nil")
-	}
-}
-
+// VND has no subunit: an amount is money.Dong, an integer, so a fractional
+// amount cannot be constructed into a line at all. The v1 test that asserted a
+// rejection here is gone because the state it described is now unrepresentable;
+// the refusal lives at the input boundary (format.Parse), not in AddLine.
 // Characterization: per-line validation. Rejected at AddLine so an invalid
 // line cannot be constructed into a voucher at all.
 func TestVoucher_InvalidLinesAreRejected(t *testing.T) {
 	cases := map[string]gl.VoucherLine{
 		"empty account": {
-			AccountCode: "", Side: gl.SideDebit, Amount: decimal.NewFromInt(100),
+			AccountCode: "", Side: gl.SideDebit, Amount: money.FromInt(100),
 		},
 		"zero amount": {
-			AccountCode: "111", Side: gl.SideDebit, Amount: decimal.Zero,
+			AccountCode: "111", Side: gl.SideDebit, Amount: money.Zero,
 		},
 		"negative amount": {
-			AccountCode: "111", Side: gl.SideDebit, Amount: decimal.NewFromInt(-100),
+			AccountCode: "111", Side: gl.SideDebit, Amount: money.FromInt(-100),
 		},
 		"unknown side": {
-			AccountCode: "111", Side: gl.EntrySide("SIDEWAYS"), Amount: decimal.NewFromInt(100),
+			AccountCode: "111", Side: gl.EntrySide("SIDEWAYS"), Amount: money.FromInt(100),
 		},
 	}
 
@@ -172,7 +160,7 @@ func TestVoucher_PostedVoucherIsImmutable(t *testing.T) {
 
 	mustPost(t, v, "operator-1")
 
-	extra := gl.VoucherLine{AccountCode: "6422", Side: gl.SideDebit, Amount: decimal.NewFromInt(50)}
+	extra := gl.VoucherLine{AccountCode: "6422", Side: gl.SideDebit, Amount: money.FromInt(50)}
 	if err := v.AddLine(extra); err == nil {
 		t.Fatal("adding a line to a posted voucher must be rejected, got nil")
 	}
@@ -232,7 +220,7 @@ func TestVoucher_ReversalMirrorsLines(t *testing.T) {
 	if got[0].AccountCode != "131" || got[0].Side != gl.SideCredit {
 		t.Fatalf("line 0 = %s/%s, want 131/CREDIT", got[0].AccountCode, got[0].Side)
 	}
-	if !got[0].Amount.Equal(decimal.NewFromInt(110)) {
+	if !got[0].Amount.Equal(money.FromInt(110)) {
 		t.Fatalf("line 0 amount = %s, want 110", got[0].Amount)
 	}
 	// Revenue and output VAT were credited; they must now be debited.
@@ -353,9 +341,9 @@ func TestRehydrate_RebuildsAPostedVoucher(t *testing.T) {
 		PostedAt:    postedAt,
 		PostedBy:    "operator-1",
 		Lines: []gl.VoucherLine{
-			{ID: "l-1", AccountCode: "131", Side: gl.SideDebit, Amount: decimal.NewFromInt(110)},
-			{ID: "l-2", AccountCode: "5111", Side: gl.SideCredit, Amount: decimal.NewFromInt(100)},
-			{ID: "l-3", AccountCode: "33311", Side: gl.SideCredit, Amount: decimal.NewFromInt(10)},
+			{ID: "l-1", AccountCode: "131", Side: gl.SideDebit, Amount: money.FromInt(110)},
+			{ID: "l-2", AccountCode: "5111", Side: gl.SideCredit, Amount: money.FromInt(100)},
+			{ID: "l-3", AccountCode: "33311", Side: gl.SideCredit, Amount: money.FromInt(10)},
 		},
 	})
 	if err != nil {
@@ -396,8 +384,8 @@ func TestRehydrate_KeepsADraftUnposted(t *testing.T) {
 		VoucherDate: voucherDate,
 		VoucherType: gl.VoucherTypeGeneral,
 		Lines: []gl.VoucherLine{
-			{ID: "l-1", AccountCode: "111", Side: gl.SideDebit, Amount: decimal.NewFromInt(100)},
-			{ID: "l-2", AccountCode: "511", Side: gl.SideCredit, Amount: decimal.NewFromInt(100)},
+			{ID: "l-1", AccountCode: "111", Side: gl.SideDebit, Amount: money.FromInt(100)},
+			{ID: "l-2", AccountCode: "511", Side: gl.SideCredit, Amount: money.FromInt(100)},
 		},
 	})
 	if err != nil {
@@ -417,23 +405,15 @@ func TestRehydrate_RejectsCorruptStoredState(t *testing.T) {
 			VoucherType: gl.VoucherTypeGeneral, IsPosted: true,
 			PostedAt: voucherDate, PostedBy: "op",
 			Lines: []gl.VoucherLine{
-				{ID: "l-1", AccountCode: "131", Side: gl.SideDebit, Amount: decimal.NewFromInt(110)},
-				{ID: "l-2", AccountCode: "511", Side: gl.SideCredit, Amount: decimal.NewFromInt(100)},
-			},
-		},
-		"fractional đồng in storage": {
-			ID: "v-103", VoucherDate: voucherDate,
-			VoucherType: gl.VoucherTypeGeneral,
-			Lines: []gl.VoucherLine{
-				{ID: "l-1", AccountCode: "111", Side: gl.SideDebit, Amount: decimal.RequireFromString("100.5")},
-				{ID: "l-2", AccountCode: "511", Side: gl.SideCredit, Amount: decimal.RequireFromString("100.5")},
+				{ID: "l-1", AccountCode: "131", Side: gl.SideDebit, Amount: money.FromInt(110)},
+				{ID: "l-2", AccountCode: "511", Side: gl.SideCredit, Amount: money.FromInt(100)},
 			},
 		},
 		"line with no account": {
 			ID: "v-104", VoucherDate: voucherDate,
 			VoucherType: gl.VoucherTypeGeneral,
 			Lines: []gl.VoucherLine{
-				{ID: "l-1", AccountCode: "", Side: gl.SideDebit, Amount: decimal.NewFromInt(100)},
+				{ID: "l-1", AccountCode: "", Side: gl.SideDebit, Amount: money.FromInt(100)},
 			},
 		},
 	}

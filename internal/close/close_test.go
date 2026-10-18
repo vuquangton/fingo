@@ -8,8 +8,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/shopspring/decimal"
-
 	"fingo/internal/document"
 	"fingo/internal/domain/gl"
 	"fingo/internal/domain/gl/gltest"
@@ -70,7 +68,7 @@ func newTestLedger(t *testing.T) *testLedger {
 func (b *testLedger) seed(code string, side gl.EntrySide, amount int64, at time.Time) *testLedger {
 	b.entries = append(b.entries, testEntry{
 		date: at,
-		line: gl.VoucherLine{AccountCode: code, Side: side, Amount: decimal.NewFromInt(amount)},
+		line: gl.VoucherLine{AccountCode: code, Side: side, Amount: money.FromInt(amount)},
 	})
 
 	return b
@@ -134,8 +132,8 @@ func (b *testLedger) voucher(id string) []gl.VoucherLine {
 // Balances is the question the close asks of the books: what do this period's
 // revenue and expense accounts stand at?
 func (b *testLedger) Balances(_ context.Context, p period.Period) ([]AccountBalance, error) {
-	debits := map[string]decimal.Decimal{}
-	credits := map[string]decimal.Decimal{}
+	debits := map[string]money.Dong{}
+	credits := map[string]money.Dong{}
 
 	for _, e := range b.entries {
 		if !p.Covers(e.date) {
@@ -158,7 +156,7 @@ func (b *testLedger) Balances(_ context.Context, p period.Period) ([]AccountBala
 			b.t.Fatalf("the books hold account %s, which the chart does not", code)
 		}
 
-		var amount decimal.Decimal
+		var amount money.Dong
 		switch account.Type {
 		case gl.AccountTypeRevenue:
 			amount = credits[code].Sub(debits[code])
@@ -179,8 +177,8 @@ func (b *testLedger) Balances(_ context.Context, p period.Period) ([]AccountBala
 }
 
 // balance is the account's position as the books hold it, debits less credits.
-func (b *testLedger) balance(code string) decimal.Decimal {
-	var amount decimal.Decimal
+func (b *testLedger) balance(code string) money.Dong {
+	var amount money.Dong
 
 	for _, e := range b.entries {
 		if e.line.AccountCode != code {
@@ -199,7 +197,7 @@ func (b *testLedger) balance(code string) decimal.Decimal {
 
 // touched returns, once each and in a stable order, every account the two sides
 // have postings against.
-func touched(sides ...map[string]decimal.Decimal) []string {
+func touched(sides ...map[string]money.Dong) []string {
 	seen := map[string]bool{}
 	out := make([]string, 0)
 
@@ -397,13 +395,13 @@ func TestClosePeriod_CarriesThePeriodsResultToRetainedEarnings(t *testing.T) {
 
 	report := f.closeIt(ctx, t)
 
-	if want := decimal.NewFromInt(400_000); report.NetProfit.Cmp(want) != 0 {
+	if want := money.FromInt(400_000); report.NetProfit.Cmp(want) != 0 {
 		t.Errorf("net profit = %s, want %s", report.NetProfit, want)
 	}
 
 	// 4212 is an equity account carrying its balance on the credit side, so the
 	// books are debits less credits: a profit of 400,000 stands as -400,000.
-	if got, want := f.ledger.balance("4212"), decimal.NewFromInt(-400_000); got.Cmp(want) != 0 {
+	if got, want := f.ledger.balance("4212"), money.FromInt(-400_000); got.Cmp(want) != 0 {
 		t.Errorf("retained earnings = %s, want %s (a credit of the period's profit)", got, want)
 	}
 }
@@ -442,10 +440,10 @@ func TestClosePeriod_CarriesALossToRetainedEarnings(t *testing.T) {
 
 	report := f.closeIt(ctx, t)
 
-	if want := decimal.NewFromInt(-150_000); report.NetProfit.Cmp(want) != 0 {
+	if want := money.FromInt(-150_000); report.NetProfit.Cmp(want) != 0 {
 		t.Errorf("net profit = %s, want %s", report.NetProfit, want)
 	}
-	if got, want := f.ledger.balance("4212"), decimal.NewFromInt(150_000); got.Cmp(want) != 0 {
+	if got, want := f.ledger.balance("4212"), money.FromInt(150_000); got.Cmp(want) != 0 {
 		t.Errorf("retained earnings = %s, want %s (a debit of the period's loss)", got, want)
 	}
 	if got := f.ledger.balance("911"); !got.IsZero() {
@@ -519,7 +517,7 @@ func TestClosePeriod_RecordsTheSnapshot(t *testing.T) {
 	if len(recorded.Expenses) != 1 || recorded.Expenses[0].AccountCode != "632" {
 		t.Errorf("report expenses = %+v, want 632 alone", recorded.Expenses)
 	}
-	if want := decimal.NewFromInt(400_000); recorded.NetProfit.Cmp(want) != 0 {
+	if want := money.FromInt(400_000); recorded.NetProfit.Cmp(want) != 0 {
 		t.Errorf("report net profit = %s, want %s", recorded.NetProfit, want)
 	}
 }
@@ -676,13 +674,13 @@ func TestClosePeriod_CanBeRetriedAfterTheLockFails(t *testing.T) {
 	if f.ledger.posts != 1 {
 		t.Errorf("the ledger holds %d posting(s), want exactly the one closing entry", f.ledger.posts)
 	}
-	if got := f.ledger.balance("4212"); got.Cmp(decimal.NewFromInt(-400_000)) != 0 {
+	if got := f.ledger.balance("4212"); got.Cmp(money.FromInt(-400_000)) != 0 {
 		t.Errorf("retained earnings = %s, want 400000 of profit carried once", got)
 	}
 	if got := f.ledger.balance("5111"); !got.IsZero() {
 		t.Errorf("revenue stands at %s, want 0", got)
 	}
-	if want := decimal.NewFromInt(400_000); report.NetProfit.Cmp(want) != 0 {
+	if want := money.FromInt(400_000); report.NetProfit.Cmp(want) != 0 {
 		t.Errorf("retried close net profit = %s, want %s", report.NetProfit, want)
 	}
 
@@ -693,7 +691,7 @@ func TestClosePeriod_CanBeRetriedAfterTheLockFails(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Report after the retry: %v", err)
 	}
-	if want := decimal.NewFromInt(400_000); recorded.NetProfit.Cmp(want) != 0 {
+	if want := money.FromInt(400_000); recorded.NetProfit.Cmp(want) != 0 {
 		t.Errorf("the retry recorded a profit of %s, want the %s it closed with", recorded.NetProfit, want)
 	}
 }
@@ -713,7 +711,7 @@ func TestClosePeriod_PostsNothingWhenTheSnapshotCannotBeRecorded(t *testing.T) {
 	if f.ledger.posts != 0 {
 		t.Errorf("the ledger holds %d posting(s), want none", f.ledger.posts)
 	}
-	if got := f.ledger.balance("5111"); got.Cmp(decimal.NewFromInt(-1_000_000)) != 0 {
+	if got := f.ledger.balance("5111"); got.Cmp(money.FromInt(-1_000_000)) != 0 {
 		t.Errorf("revenue stands at %s, want it untouched at -1000000", got)
 	}
 	if f.periods.find(f.january.ID).Locked {
@@ -746,7 +744,7 @@ func TestClosePeriod_KeepsTheSnapshotWhenRecordingTheVoucherFails(t *testing.T) 
 	f.reports.failSave = nil
 	report := f.closeIt(ctx, t)
 
-	if want := decimal.NewFromInt(400_000); report.NetProfit.Cmp(want) != 0 {
+	if want := money.FromInt(400_000); report.NetProfit.Cmp(want) != 0 {
 		t.Errorf("the retry reports a profit of %s, want the %s it closed with", report.NetProfit, want)
 	}
 	if !f.periods.find(f.january.ID).Locked {

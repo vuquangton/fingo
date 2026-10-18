@@ -5,8 +5,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/shopspring/decimal"
-
 	"fingo/internal/domain/document"
 	"fingo/internal/domain/gl"
 	"fingo/internal/money"
@@ -441,6 +439,6 @@ func returnVoucherID(moveID string) string { return "cogs-return-" + moveID }
 //
 // Every amount that reaches a voucher comes from the valuation, which is integer
 // arithmetic throughout, so this is an exact conversion and never a rounding.
-func decimalOf(amount money.Money) decimal.Decimal {
-	return decimal.NewFromInt(amount.Amount())
+func decimalOf(amount money.Money) money.Dong {
+	return money.FromInt(amount.Amount())
 }

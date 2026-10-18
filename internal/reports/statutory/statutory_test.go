@@ -12,9 +12,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/shopspring/decimal"
-
 	"fingo/internal/domain/gl"
+	"fingo/internal/money"
 	"fingo/internal/reports"
 	"fingo/internal/vat"
 	"fingo/pkg/logger"
@@ -65,7 +64,7 @@ func (l *testLedger) BalanceSheet(context.Context, string) (reports.BalanceSheet
 // testFacts is what the ledger does not hold.
 type testFacts struct {
 	pots     VATPots
-	turnover decimal.Decimal
+	turnover money.Dong
 	err      error
 }
 
@@ -77,15 +76,17 @@ func (f *testFacts) VATPots(context.Context, ReportingPeriod) (VATPots, error) {
 	return f.pots, nil
 }
 
-func (f *testFacts) YearTurnover(context.Context, ReportingPeriod) (decimal.Decimal, error) {
+func (f *testFacts) YearTurnover(context.Context, ReportingPeriod) (money.Dong, error) {
 	if f.err != nil {
-		return decimal.Zero, f.err
+		return money.Zero, f.err
 	}
 
 	return f.turnover, nil
 }
 
-func money(amount int64) decimal.Decimal { return decimal.NewFromInt(amount) }
+// dong builds an amount; the helper is named dong rather than money so it does
+// not shadow the money package at every call site.
+func dong(amount int64) money.Dong { return money.FromInt(amount) }
 
 // fixture is a service over a month that exercises every statement: VAT at both
 // rates and in the 8% window, a profit, input VAT carried in, and corporate tax
@@ -106,45 +107,45 @@ func newFixture(t *testing.T) *fixture {
 			EndDate:   januaryEnd,
 			Rows: []reports.TrialBalanceRow{
 				// Carried in from December: input VAT not yet credited.
-				{AccountCode: accountInputVAT, AccountName: "Thuế GTGT được khấu trừ", OpeningDebit: money(5_000_000), PeriodDebit: money(20_000_000)},
+				{AccountCode: accountInputVAT, AccountName: "Thuế GTGT được khấu trừ", OpeningDebit: dong(5_000_000), PeriodDebit: dong(20_000_000)},
 				// The period's output VAT, as the books recorded it: the tax on
 				// every band below and nothing else, so that the filing's own
 				// reconciliation is clean.
-				{AccountCode: accountOutputVAT, AccountName: "Thuế GTGT đầu ra", PeriodCredit: money(49_000_000)},
+				{AccountCode: accountOutputVAT, AccountName: "Thuế GTGT đầu ra", PeriodCredit: dong(49_000_000)},
 				// Corporate income tax paid during the year.
-				{AccountCode: accountCITPayable, AccountName: "Thuế thu nhập doanh nghiệp", PeriodDebit: money(5_000_000)},
+				{AccountCode: accountCITPayable, AccountName: "Thuế thu nhập doanh nghiệp", PeriodDebit: dong(5_000_000)},
 			},
-			OpeningDebit: money(5_000_000), OpeningCredit: money(5_000_000),
-			PeriodDebit: money(25_000_000), PeriodCredit: money(54_000_000),
-			ClosingDebit: money(25_000_000), ClosingCredit: money(54_000_000),
+			OpeningDebit: dong(5_000_000), OpeningCredit: dong(5_000_000),
+			PeriodDebit: dong(25_000_000), PeriodCredit: dong(54_000_000),
+			ClosingDebit: dong(25_000_000), ClosingCredit: dong(54_000_000),
 		},
 		profit: reports.ProfitAndLoss{
 			PeriodID: "2026-01",
 			// The bands below add up to this: 100m at 5%, 400m at 10% and 50m in
 			// the 8% window.
-			TotalRevenue:  money(550_000_000),
-			TotalExpenses: money(300_000_000),
-			NetProfit:     money(250_000_000),
+			TotalRevenue:  dong(550_000_000),
+			TotalExpenses: dong(300_000_000),
+			NetProfit:     dong(250_000_000),
 		},
 		sheet: reports.BalanceSheet{
 			PeriodID:         "2026-01",
 			AsOf:             januaryEnd,
-			TotalAssets:      money(700_000_000),
-			TotalLiabilities: money(200_000_000),
-			TotalEquity:      money(500_000_000),
+			TotalAssets:      dong(700_000_000),
+			TotalLiabilities: dong(200_000_000),
+			TotalEquity:      dong(500_000_000),
 		},
 	}
 
 	facts := &testFacts{
 		pots: VATPots{
 			ByRate: []VATBand{
-				{Rate: rateFivePercent, Net: money(100_000_000), Tax: money(5_000_000)},
-				{Rate: rateTenPercent, Net: money(400_000_000), Tax: money(40_000_000)},
-				{Rate: rateEightPercent, Net: money(50_000_000), Tax: money(4_000_000)},
+				{Rate: rateFivePercent, Net: dong(100_000_000), Tax: dong(5_000_000)},
+				{Rate: rateTenPercent, Net: dong(400_000_000), Tax: dong(40_000_000)},
+				{Rate: rateEightPercent, Net: dong(50_000_000), Tax: dong(4_000_000)},
 			},
 		},
 		// Above 3bn and below 50bn: the 17% band.
-		turnover: money(4_000_000_000),
+		turnover: dong(4_000_000_000),
 	}
 
 	held := &bytes.Buffer{}
@@ -235,7 +236,7 @@ func lineWith(t *testing.T, held Statement, phrase string) LineItem {
 func amount(t *testing.T, item LineItem, want int64) {
 	t.Helper()
 
-	if got := item.Amount; !got.Equal(money(want)) {
+	if got := item.Amount; !got.Equal(dong(want)) {
 		t.Errorf("%s %s = %s, want %d", item.Statement, item.Indicator, got, want)
 	}
 }
@@ -444,8 +445,8 @@ func TestGenerate_ComputesTheVATReturn(t *testing.T) {
 // invoiced.
 func TestGenerate_StatesWhatThePeriodSoldWithoutVAT(t *testing.T) {
 	f := newFixture(t)
-	f.facts.pots.NonTaxable = money(30_000_000)
-	f.facts.pots.ZeroRated = money(70_000_000)
+	f.facts.pots.NonTaxable = dong(30_000_000)
+	f.facts.pots.ZeroRated = dong(70_000_000)
 
 	returned := statement(t, f.generate(t), "01/GTGT")
 
@@ -461,7 +462,7 @@ func TestGenerate_CarriesVATForwardWhenInputExceedsOutput(t *testing.T) {
 	// The output account holds less than the credit available.
 	for i := range f.ledger().trial.Rows {
 		if f.ledger().trial.Rows[i].AccountCode == accountOutputVAT {
-			f.ledger().trial.Rows[i].PeriodCredit = money(10_000_000)
+			f.ledger().trial.Rows[i].PeriodCredit = dong(10_000_000)
 		}
 	}
 
@@ -480,7 +481,7 @@ func TestGenerate_FilesTheReducedVATAppendixOnlyWhenTheBandIsUsed(t *testing.T) 
 	}
 
 	f.facts.pots = VATPots{ByRate: []VATBand{
-		{Rate: rateTenPercent, Net: money(400_000_000), Tax: money(40_000_000)},
+		{Rate: rateTenPercent, Net: dong(400_000_000), Tax: dong(40_000_000)},
 	}}
 
 	if filed(f.generate(t), codeVATReduction) {
@@ -529,7 +530,7 @@ func TestGenerate_ComputesTheCorporateIncomeTax(t *testing.T) {
 // A loss is taxed at nothing, and the 80% test asks for nothing.
 func TestGenerate_TaxesALossAtNothing(t *testing.T) {
 	f := newFixture(t)
-	f.ledger().profit.NetProfit = money(-50_000_000)
+	f.ledger().profit.NetProfit = dong(-50_000_000)
 
 	cit := statement(t, f.generate(t), "03/TNDN")
 
@@ -837,7 +838,7 @@ func equal(got, want []string) bool {
 // A VATPots with a band is what the appendix needs; a rate the file does not
 // name is not a band the filing can file.
 func TestVATPots_UnknownRatesAreNotBanded(t *testing.T) {
-	f := figures{vat: VATPots{ByRate: []VATBand{{Rate: vat.BasisPoints(1234), Net: money(1), Tax: money(1)}}}}
+	f := figures{vat: VATPots{ByRate: []VATBand{{Rate: vat.BasisPoints(1234), Net: dong(1), Tax: dong(1)}}}}
 
 	if band := f.vatBand(rateTenPercent); !band.Net.IsZero() || !band.Tax.IsZero() {
 		t.Errorf("a rate nobody filed produced the 10%% band: %+v", band)

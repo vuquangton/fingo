@@ -7,9 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/shopspring/decimal"
-
 	"fingo/internal/domain/gl"
+	"fingo/internal/money"
 	"fingo/internal/period"
 )
 
@@ -106,8 +105,8 @@ func TestProfitAndLoss_GroupsAnAccountWhoseHeadingIsGone(t *testing.T) {
 // a report a little out that still says it balances.
 func TestMovements_RefusesALineThatIsNeitherSide(t *testing.T) {
 	posted := []Line{
-		{VoucherID: "v1", VoucherDate: januaryStart, AccountCode: "111", Side: gl.SideDebit, Amount: decimal.NewFromInt(100)},
-		{VoucherID: "v2", VoucherDate: januaryStart, AccountCode: "111", Amount: decimal.NewFromInt(50)},
+		{VoucherID: "v1", VoucherDate: januaryStart, AccountCode: "111", Side: gl.SideDebit, Amount: money.FromInt(100)},
+		{VoucherID: "v2", VoucherDate: januaryStart, AccountCode: "111", Amount: money.FromInt(50)},
 	}
 
 	if _, err := movements(posted, time.Time{}, january.EndDate, nil); !errors.Is(err, ErrUnusableLine) {
@@ -132,7 +131,7 @@ func TestMovements_RefusesALineThatIsNeitherSide(t *testing.T) {
 // refuses it rather than subtracting it from the column it was given.
 func TestMovements_RefusesANegativeAmount(t *testing.T) {
 	posted := []Line{
-		{VoucherID: "v1", VoucherDate: januaryStart, AccountCode: "111", Side: gl.SideDebit, Amount: decimal.NewFromInt(-100)},
+		{VoucherID: "v1", VoucherDate: januaryStart, AccountCode: "111", Side: gl.SideDebit, Amount: money.FromInt(-100)},
 	}
 
 	if _, err := movements(posted, time.Time{}, january.EndDate, nil); !errors.Is(err, ErrUnusableLine) {
@@ -151,8 +150,8 @@ func TestMovements_RefusesANegativeAmount(t *testing.T) {
 // counted as one, and it moves no column.
 func TestMovements_LeavesOutALineThatMovesNothing(t *testing.T) {
 	posted := []Line{
-		{VoucherID: "v1", VoucherDate: januaryStart, AccountCode: "111", Side: gl.SideDebit, Amount: decimal.NewFromInt(100)},
-		{VoucherID: "v2", VoucherDate: januaryStart, AccountCode: "111", Side: gl.SideCredit, Amount: decimal.Zero},
+		{VoucherID: "v1", VoucherDate: januaryStart, AccountCode: "111", Side: gl.SideDebit, Amount: money.FromInt(100)},
+		{VoucherID: "v2", VoucherDate: januaryStart, AccountCode: "111", Side: gl.SideCredit, Amount: money.Zero},
 	}
 
 	found, err := movements(posted, time.Time{}, january.EndDate, nil)
@@ -161,7 +160,7 @@ func TestMovements_LeavesOutALineThatMovesNothing(t *testing.T) {
 	}
 
 	held := found["111"]
-	if want := decimal.NewFromInt(100); !held.periodDebit.Equal(want) {
+	if want := money.FromInt(100); !held.periodDebit.Equal(want) {
 		t.Errorf("debits = %s, want %s", held.periodDebit, want)
 	}
 	if !held.periodCredit.IsZero() {
@@ -178,7 +177,7 @@ func TestTrialBalance_CarriesInWhatCameBeforeThePeriod(t *testing.T) {
 	f := newFixture(t)
 
 	opened := trialRow(t, f.trialBalance(t, january.ID), "111")
-	if want := decimal.NewFromInt(5_000_000); !opened.OpeningDebit.Equal(want) {
+	if want := money.FromInt(5_000_000); !opened.OpeningDebit.Equal(want) {
 		t.Errorf("January opens with %s, want %s carried in from December", opened.OpeningDebit, want)
 	}
 	if !opened.PeriodDebit.IsZero() {
@@ -189,7 +188,7 @@ func TestTrialBalance_CarriesInWhatCameBeforeThePeriod(t *testing.T) {
 	if !moved.OpeningDebit.IsZero() {
 		t.Errorf("December opens with %s, and nothing was posted before it", moved.OpeningDebit)
 	}
-	if want := decimal.NewFromInt(5_000_000); !moved.PeriodDebit.Equal(want) {
+	if want := money.FromInt(5_000_000); !moved.PeriodDebit.Equal(want) {
 		t.Errorf("December moved cash by %s, want %s", moved.PeriodDebit, want)
 	}
 }
@@ -205,24 +204,24 @@ func TestBalanceSheet_CarriesALossIntoEquity(t *testing.T) {
 			VoucherDate: time.Date(2026, 2, 20, 0, 0, 0, 0, time.UTC),
 			AccountCode: "632",
 			Side:        gl.SideDebit,
-			Amount:      decimal.NewFromInt(900_000),
+			Amount:      money.FromInt(900_000),
 		},
 		Line{
 			VoucherID:   "v-february-cost",
 			VoucherDate: time.Date(2026, 2, 20, 0, 0, 0, 0, time.UTC),
 			AccountCode: "331",
 			Side:        gl.SideCredit,
-			Amount:      decimal.NewFromInt(900_000),
+			Amount:      money.FromInt(900_000),
 		},
 	)
 
 	profit := f.profitAndLoss(t, february.ID)
-	if want := decimal.NewFromInt(-400_000); !profit.NetProfit.Equal(want) {
+	if want := money.FromInt(-400_000); !profit.NetProfit.Equal(want) {
 		t.Errorf("net profit = %s, want a loss of %s", profit.NetProfit, want)
 	}
 
 	sheet := f.balanceSheet(t, february.ID)
-	if want := decimal.NewFromInt(-400_000); !sheet.Result.Equal(want) {
+	if want := money.FromInt(-400_000); !sheet.Result.Equal(want) {
 		t.Errorf("the unclosed result is %s, want %s", sheet.Result, want)
 	}
 	if !sheet.Balanced() {
@@ -363,7 +362,7 @@ func TestReports_RefuseAPeriodThatIsNotARange(t *testing.T) {
 // sharing an empty id would be reported as one.
 func TestMovements_RefusesALineWithNoVoucher(t *testing.T) {
 	posted := []Line{
-		{VoucherDate: januaryStart, AccountCode: "111", Side: gl.SideDebit, Amount: decimal.NewFromInt(100)},
+		{VoucherDate: januaryStart, AccountCode: "111", Side: gl.SideDebit, Amount: money.FromInt(100)},
 	}
 
 	if _, err := movements(posted, time.Time{}, january.EndDate, nil); !errors.Is(err, ErrUnusableLine) {
@@ -385,21 +384,21 @@ func TestTrialBalance_ThePeriodIncludesBothItsDates(t *testing.T) {
 
 	f.journal.lines = []Line{
 		// The day before the period opens.
-		{VoucherID: "v-before", VoucherDate: january.StartDate.AddDate(0, 0, -1), AccountCode: "111", Side: gl.SideDebit, Amount: decimal.NewFromInt(100)},
+		{VoucherID: "v-before", VoucherDate: january.StartDate.AddDate(0, 0, -1), AccountCode: "111", Side: gl.SideDebit, Amount: money.FromInt(100)},
 		// The first day of it.
-		{VoucherID: "v-first", VoucherDate: january.StartDate, AccountCode: "111", Side: gl.SideDebit, Amount: decimal.NewFromInt(200)},
+		{VoucherID: "v-first", VoucherDate: january.StartDate, AccountCode: "111", Side: gl.SideDebit, Amount: money.FromInt(200)},
 		// The last day of it, at the last minute of it.
-		{VoucherID: "v-last", VoucherDate: time.Date(2026, 1, 31, 23, 59, 0, 0, time.UTC), AccountCode: "111", Side: gl.SideDebit, Amount: decimal.NewFromInt(400)},
+		{VoucherID: "v-last", VoucherDate: time.Date(2026, 1, 31, 23, 59, 0, 0, time.UTC), AccountCode: "111", Side: gl.SideDebit, Amount: money.FromInt(400)},
 		// The day the next period opens.
-		{VoucherID: "v-after", VoucherDate: january.EndDate.AddDate(0, 0, 1), AccountCode: "111", Side: gl.SideDebit, Amount: decimal.NewFromInt(800)},
+		{VoucherID: "v-after", VoucherDate: january.EndDate.AddDate(0, 0, 1), AccountCode: "111", Side: gl.SideDebit, Amount: money.FromInt(800)},
 	}
 
 	row := trialRow(t, f.trialBalance(t, january.ID), "111")
 
-	if want := decimal.NewFromInt(100); !row.OpeningDebit.Equal(want) {
+	if want := money.FromInt(100); !row.OpeningDebit.Equal(want) {
 		t.Errorf("opening = %s, want %s from the day before the period", row.OpeningDebit, want)
 	}
-	if want := decimal.NewFromInt(600); !row.PeriodDebit.Equal(want) {
+	if want := money.FromInt(600); !row.PeriodDebit.Equal(want) {
 		t.Errorf("the period moved %s, want %s: its own two dates and nothing else", row.PeriodDebit, want)
 	}
 	if got, want := row.SourceVoucherCount, 3; got != want {
@@ -414,9 +413,9 @@ func TestProfitAndLoss_CountsOnlyTheVouchersBehindItsFigures(t *testing.T) {
 
 	lines := []Line{
 		// December: revenue earned before the period the report is asked for.
-		{VoucherID: "v-december", VoucherDate: december.EndDate, AccountCode: "5111", Side: gl.SideCredit, Amount: decimal.NewFromInt(700)},
+		{VoucherID: "v-december", VoucherDate: december.EndDate, AccountCode: "5111", Side: gl.SideCredit, Amount: money.FromInt(700)},
 		// January: the period's own.
-		{VoucherID: "v-january", VoucherDate: january.EndDate, AccountCode: "5111", Side: gl.SideCredit, Amount: decimal.NewFromInt(300)},
+		{VoucherID: "v-january", VoucherDate: january.EndDate, AccountCode: "5111", Side: gl.SideCredit, Amount: money.FromInt(300)},
 	}
 
 	report, err := buildProfitAndLoss(january, lines, f.chart, ClosingAccounts{Result: "911", Retained: "4212"})
@@ -430,7 +429,7 @@ func TestProfitAndLoss_CountsOnlyTheVouchersBehindItsFigures(t *testing.T) {
 		if row.AccountCode != "5111" {
 			continue
 		}
-		if want := decimal.NewFromInt(300); !row.Amount.Equal(want) {
+		if want := money.FromInt(300); !row.Amount.Equal(want) {
 			t.Errorf("revenue = %s, want %s earned in the period", row.Amount, want)
 		}
 		if got, want := row.SourceVoucherCount, 1; got != want {
@@ -447,7 +446,7 @@ func TestProfitAndLoss_CountsOnlyTheVouchersBehindItsFigures(t *testing.T) {
 	// And an account the period did nothing to at all is no row, however much it
 	// carries in.
 	carried := []Line{
-		{VoucherID: "v-december", VoucherDate: december.EndDate, AccountCode: "5111", Side: gl.SideCredit, Amount: decimal.NewFromInt(700)},
+		{VoucherID: "v-december", VoucherDate: december.EndDate, AccountCode: "5111", Side: gl.SideCredit, Amount: money.FromInt(700)},
 	}
 
 	empty, err := buildProfitAndLoss(january, carried, f.chart, ClosingAccounts{Result: "911", Retained: "4212"})

@@ -3,9 +3,8 @@ package statutory
 import (
 	"context"
 	"errors"
+	"fingo/internal/money"
 	"testing"
-
-	"github.com/shopspring/decimal"
 )
 
 // The corporate income tax rate is the one the year's turnover selects.
@@ -25,7 +24,7 @@ func TestCITRate_FollowsTheTurnoverBands(t *testing.T) {
 
 	for name, tc := range cases {
 		t.Run(name, func(t *testing.T) {
-			f := figures{turnover: decimal.NewFromInt(tc.turnover)}
+			f := figures{turnover: money.FromInt(tc.turnover)}
 			if got := f.citRate(); int32(got) != tc.want {
 				t.Errorf("a turnover of %d selects %d basis points, want %d", tc.turnover, got, tc.want)
 			}

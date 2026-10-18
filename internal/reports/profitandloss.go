@@ -5,9 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/shopspring/decimal"
-
 	"fingo/internal/domain/gl"
+	"fingo/internal/money"
 	"fingo/internal/period"
 )
 
@@ -39,12 +38,12 @@ type ProfitAndLoss struct {
 	Revenue  []ProfitAndLossRow
 	Expenses []ProfitAndLossRow
 
-	TotalRevenue  decimal.Decimal
-	TotalExpenses decimal.Decimal
+	TotalRevenue  money.Dong
+	TotalExpenses money.Dong
 
 	// NetProfit is revenue less expenses: positive for a profit, negative for a
 	// loss, and exactly what a close would carry to retained earnings.
-	NetProfit decimal.Decimal
+	NetProfit money.Dong
 
 	// ExcludedClosingVouchers is how many vouchers the report left out because
 	// they carry the period's result into equity. It is stated rather than
@@ -73,7 +72,7 @@ type ProfitAndLossRow struct {
 	// Amount is in the account's own sense: revenue positive when earned,
 	// expenses positive when spent. A deduction posted against a revenue account
 	// comes out negative, which is what a deduction is.
-	Amount decimal.Decimal
+	Amount money.Dong
 
 	// SourceVoucherCount is how many distinct vouchers put a figure on this row.
 	SourceVoucherCount int

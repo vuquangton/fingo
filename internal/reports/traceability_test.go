@@ -4,9 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/shopspring/decimal"
-
 	"fingo/internal/domain/gl"
+	"fingo/internal/money"
 )
 
 // Every row of every report says how many vouchers it came from, and no row
@@ -113,7 +112,7 @@ func TestReports_AgreeWithTheLinesTheyRead(t *testing.T) {
 
 	// The period's revenue and expenses, added up here from the vouchers,
 	// leaving out the close exactly as the report has to.
-	var revenue, expenses decimal.Decimal
+	var revenue, expenses money.Dong
 
 	for _, v := range books() {
 		if v.id == "v-close" {

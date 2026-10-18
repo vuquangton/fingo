@@ -1,8 +1,7 @@
 package statutory
 
 import (
-	"github.com/shopspring/decimal"
-
+	"fingo/internal/money"
 	"fingo/internal/reports"
 )
 
@@ -21,14 +20,14 @@ func row(trial reports.TrialBalance, code string) reports.TrialBalanceRow {
 
 // openingBalance is what an account carried into the period, debit-positive: a
 // credit balance comes back negative.
-func openingBalance(trial reports.TrialBalance, code string) decimal.Decimal {
+func openingBalance(trial reports.TrialBalance, code string) money.Dong {
 	held := row(trial, code)
 
 	return held.OpeningDebit.Sub(held.OpeningCredit)
 }
 
 // movement is the period's movement on one side of an account.
-func movement(trial reports.TrialBalance, code string, credit bool) decimal.Decimal {
+func movement(trial reports.TrialBalance, code string, credit bool) money.Dong {
 	held := row(trial, code)
 	if credit {
 		return held.PeriodCredit
@@ -39,7 +38,7 @@ func movement(trial reports.TrialBalance, code string, credit bool) decimal.Deci
 
 // accountMovement is the period's movement on an account, debit-positive: what
 // the account was debited less what it was credited.
-func accountMovement(trial reports.TrialBalance, code string) decimal.Decimal {
+func accountMovement(trial reports.TrialBalance, code string) money.Dong {
 	held := row(trial, code)
 
 	return held.PeriodDebit.Sub(held.PeriodCredit)

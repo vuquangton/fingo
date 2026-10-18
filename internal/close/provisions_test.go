@@ -7,9 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/shopspring/decimal"
-
 	"fingo/internal/domain/gl"
+	"fingo/internal/money"
 )
 
 // testAssets is a fixed set of assets, stated outright.
@@ -46,7 +45,7 @@ func overduePolicy(percent int64) BadDebtPolicy {
 	policy := DefaultBadDebtPolicy()
 	for i := range policy.Bands {
 		if policy.Bands[i].Name == "over 90 days" {
-			policy.Bands[i].Percent = decimal.NewFromInt(percent)
+			policy.Bands[i].Percent = money.FromInt(percent)
 		}
 	}
 
@@ -110,7 +109,7 @@ func asset() DepreciableAsset {
 	return DepreciableAsset{
 		ID:               "FA-001",
 		Name:             "Laptop",
-		Cost:             decimal.NewFromInt(12_000),
+		Cost:             money.FromInt(12_000),
 		UsefulLifeMonths: 120,
 	}
 }
@@ -122,7 +121,7 @@ func TestDepreciationFor_IsTheStraightLineMonthlyRate(t *testing.T) {
 		t.Fatalf("depreciationFor: %v", err)
 	}
 
-	if want := decimal.NewFromInt(100); charge.Cmp(want) != 0 {
+	if want := money.FromInt(100); charge.Cmp(want) != 0 {
 		t.Errorf("monthly depreciation = %s, want %s", charge, want)
 	}
 }
@@ -135,7 +134,7 @@ func TestDepreciationFor_ChargesAMonthlyRateForEachMonthOfThePeriod(t *testing.T
 		t.Fatalf("depreciationFor: %v", err)
 	}
 
-	if want := decimal.NewFromInt(300); charge.Cmp(want) != 0 {
+	if want := money.FromInt(300); charge.Cmp(want) != 0 {
 		t.Errorf("quarterly depreciation = %s, want %s", charge, want)
 	}
 }
@@ -144,7 +143,7 @@ func TestDepreciationFor_ChargesAMonthlyRateForEachMonthOfThePeriod(t *testing.T
 // the end of its life.
 func TestDepreciationFor_SpreadsOnlyWhatIsAboveTheResidual(t *testing.T) {
 	worn := asset()
-	worn.Residual = decimal.NewFromInt(1_200)
+	worn.Residual = money.FromInt(1_200)
 	worn.UsefulLifeMonths = 108 // (12,000 − 1,200) / 108 = 100
 
 	charge, err := depreciationFor(worn, 1)
@@ -152,22 +151,22 @@ func TestDepreciationFor_SpreadsOnlyWhatIsAboveTheResidual(t *testing.T) {
 		t.Fatalf("depreciationFor: %v", err)
 	}
 
-	if want := decimal.NewFromInt(100); charge.Cmp(want) != 0 {
+	if want := money.FromInt(100); charge.Cmp(want) != 0 {
 		t.Errorf("monthly depreciation = %s, want %s", charge, want)
 	}
 }
 
 func TestDepreciationFor_NeverDepreciatesPastTheBase(t *testing.T) {
 	cases := map[string]struct {
-		accumulated decimal.Decimal
+		accumulated money.Dong
 		months      int
 		want        int64
 	}{
-		"the last month takes what is left": {decimal.NewFromInt(11_950), 1, 50},
-		"an overcharge is cut to the base":  {decimal.NewFromInt(11_950), 3, 50},
-		"fully depreciated":                 {decimal.NewFromInt(12_000), 1, 0},
-		"depreciated past the base":         {decimal.NewFromInt(13_000), 1, 0},
-		"nothing above the residual":        {decimal.NewFromInt(0), 1, 100},
+		"the last month takes what is left": {money.FromInt(11_950), 1, 50},
+		"an overcharge is cut to the base":  {money.FromInt(11_950), 3, 50},
+		"fully depreciated":                 {money.FromInt(12_000), 1, 0},
+		"depreciated past the base":         {money.FromInt(13_000), 1, 0},
+		"nothing above the residual":        {money.FromInt(0), 1, 100},
 	}
 
 	for name, tc := range cases {
@@ -179,7 +178,7 @@ func TestDepreciationFor_NeverDepreciatesPastTheBase(t *testing.T) {
 			if err != nil {
 				t.Fatalf("depreciationFor: %v", err)
 			}
-			if got, want := charge, decimal.NewFromInt(tc.want); got.Cmp(want) != 0 {
+			if got, want := charge, money.FromInt(tc.want); got.Cmp(want) != 0 {
 				t.Errorf("charge = %s, want %s", got, want)
 			}
 		})
@@ -192,7 +191,7 @@ func TestDepreciationFor_NeverDepreciatesPastTheBase(t *testing.T) {
 func TestDepreciationFor_ChargesAWholeNumberOfDong(t *testing.T) {
 	cheap := DepreciableAsset{
 		ID:               "FA-002",
-		Cost:             decimal.NewFromInt(100),
+		Cost:             money.FromInt(100),
 		UsefulLifeMonths: 120,
 	}
 
@@ -200,13 +199,13 @@ func TestDepreciationFor_ChargesAWholeNumberOfDong(t *testing.T) {
 	if err != nil {
 		t.Fatalf("depreciationFor: %v", err)
 	}
-	if want := decimal.NewFromInt(1); charge.Cmp(want) != 0 {
+	if want := money.FromInt(1); charge.Cmp(want) != 0 {
 		t.Errorf("charge = %s, want %s — 100 over 120 months is not zero a month", charge, want)
 	}
 
 	// And it finishes: by the end of the hundredth month there is nothing left.
 	spent := cheap
-	spent.Accumulated = decimal.NewFromInt(100)
+	spent.Accumulated = money.FromInt(100)
 	if charge, err = depreciationFor(spent, 1); err != nil {
 		t.Fatalf("depreciationFor: %v", err)
 	}
@@ -216,7 +215,7 @@ func TestDepreciationFor_ChargesAWholeNumberOfDong(t *testing.T) {
 
 	fractional := DepreciableAsset{
 		ID:               "FA-003",
-		Cost:             decimal.NewFromInt(1_000),
+		Cost:             money.FromInt(1_000),
 		UsefulLifeMonths: 3,
 	}
 
@@ -224,7 +223,7 @@ func TestDepreciationFor_ChargesAWholeNumberOfDong(t *testing.T) {
 	if err != nil {
 		t.Fatalf("depreciationFor: %v", err)
 	}
-	if want := decimal.NewFromInt(333); charge.Cmp(want) != 0 {
+	if want := money.FromInt(333); charge.Cmp(want) != 0 {
 		t.Errorf("charge = %s, want %s — 1,000 over 3 months has no exact whole-đồng rate", charge, want)
 	}
 }
@@ -233,36 +232,22 @@ func TestDepreciationFor_RefusesAnAssetThatCouldNotBeDepreciated(t *testing.T) {
 	cases := map[string]func() DepreciableAsset{
 		"no id":         func() DepreciableAsset { a := asset(); a.ID = ""; return a },
 		"no life":       func() DepreciableAsset { a := asset(); a.UsefulLifeMonths = 0; return a },
-		"no cost":       func() DepreciableAsset { a := asset(); a.Cost = decimal.Zero; return a },
-		"negative cost": func() DepreciableAsset { a := asset(); a.Cost = decimal.NewFromInt(-1); return a },
+		"no cost":       func() DepreciableAsset { a := asset(); a.Cost = money.Zero; return a },
+		"negative cost": func() DepreciableAsset { a := asset(); a.Cost = money.FromInt(-1); return a },
 		"residual above cost": func() DepreciableAsset {
 			a := asset()
-			a.Residual = decimal.NewFromInt(12_001)
+			a.Residual = money.FromInt(12_001)
 			return a
 		},
 		"negative residual": func() DepreciableAsset {
 			a := asset()
-			a.Residual = decimal.NewFromInt(-1)
+			a.Residual = money.FromInt(-1)
 			return a
 		},
-		// VND has no subunit, so an amount with one is a fault in whatever read
-		// the asset, and a schedule built from it could never land on a whole
-		// đồng.
-		"a cost with a fractional đồng": func() DepreciableAsset {
-			a := asset()
-			a.Cost = decimal.RequireFromString("12000.5")
-			return a
-		},
-		"a residual with a fractional đồng": func() DepreciableAsset {
-			a := asset()
-			a.Residual = decimal.RequireFromString("0.5")
-			return a
-		},
-		"an accumulated amount with a fractional đồng": func() DepreciableAsset {
-			a := asset()
-			a.Accumulated = decimal.RequireFromString("0.5")
-			return a
-		},
+		// Fractional đồng used to be rejected here. Since ADR 0008 an amount is
+		// money.Dong — an integer — so a fractional asset cost cannot be
+		// expressed, and the three cases that used to prove the check are gone
+		// with the check itself.
 	}
 
 	for name, spoil := range cases {
@@ -281,7 +266,7 @@ func TestBadDebtCharges_ProvidesTheBandRateAgainstWhatIsInIt(t *testing.T) {
 	late := Receivable{
 		DocumentID: "inv-1",
 		DueDate:    asOf.AddDate(0, 0, -120),
-		Amount:     decimal.NewFromInt(1_000_000),
+		Amount:     money.FromInt(1_000_000),
 	}
 
 	charges, err := badDebtCharges([]Receivable{late}, asOf, overduePolicy(5))
@@ -295,10 +280,10 @@ func TestBadDebtCharges_ProvidesTheBandRateAgainstWhatIsInIt(t *testing.T) {
 	if charges[0].Band != "over 90 days" {
 		t.Errorf("band = %q, want over 90 days", charges[0].Band)
 	}
-	if want := decimal.NewFromInt(1_000_000); charges[0].Outstanding.Cmp(want) != 0 {
+	if want := money.FromInt(1_000_000); charges[0].Outstanding.Cmp(want) != 0 {
 		t.Errorf("outstanding = %s, want %s", charges[0].Outstanding, want)
 	}
-	if want := decimal.NewFromInt(50_000); charges[0].Amount.Cmp(want) != 0 {
+	if want := money.FromInt(50_000); charges[0].Amount.Cmp(want) != 0 {
 		t.Errorf("provision = %s, want 5%% of %s = %s", charges[0].Amount, charges[0].Outstanding, want)
 	}
 }
@@ -327,7 +312,7 @@ func TestBadDebtCharges_AgesByWholeDaysAndFloorsAtZero(t *testing.T) {
 	for name, tc := range cases {
 		t.Run(name, func(t *testing.T) {
 			charges, err := badDebtCharges(
-				[]Receivable{{DocumentID: "inv-1", DueDate: tc.due, Amount: decimal.NewFromInt(500)}},
+				[]Receivable{{DocumentID: "inv-1", DueDate: tc.due, Amount: money.FromInt(500)}},
 				asOf, policy,
 			)
 			if err != nil {
@@ -348,9 +333,9 @@ func TestBadDebtCharges_LeavesOutWhatIsNotOwed(t *testing.T) {
 	policy := overduePolicy(5)
 
 	charges, err := badDebtCharges([]Receivable{
-		{DocumentID: "paid", DueDate: asOf.AddDate(0, 0, -120), Amount: decimal.Zero},
-		{DocumentID: "overpaid", DueDate: asOf.AddDate(0, 0, -120), Amount: decimal.NewFromInt(-50)},
-		{DocumentID: "fresh", DueDate: asOf, Amount: decimal.NewFromInt(700)},
+		{DocumentID: "paid", DueDate: asOf.AddDate(0, 0, -120), Amount: money.Zero},
+		{DocumentID: "overpaid", DueDate: asOf.AddDate(0, 0, -120), Amount: money.FromInt(-50)},
+		{DocumentID: "fresh", DueDate: asOf, Amount: money.FromInt(700)},
 	}, asOf, policy)
 	if err != nil {
 		t.Fatalf("badDebtCharges: %v", err)
@@ -385,11 +370,11 @@ func TestBadDebtPolicy_RefusesBandsThatOverlapOrLeaveTheYoungestOut(t *testing.T
 		}},
 		"more than everything": {Bands: []AgingBand{
 			{Name: "current", FromDays: 0},
-			{Name: "over 90", FromDays: 91, Percent: decimal.NewFromInt(101)},
+			{Name: "over 90", FromDays: 91, Percent: money.FromInt(101)},
 		}},
 		"less than nothing": {Bands: []AgingBand{
 			{Name: "current", FromDays: 0},
-			{Name: "over 90", FromDays: 91, Percent: decimal.NewFromInt(-1)},
+			{Name: "over 90", FromDays: 91, Percent: money.FromInt(-1)},
 		}},
 	}
 
@@ -483,10 +468,10 @@ func TestClosePeriod_DepreciatesAnAssetForThePeriod(t *testing.T) {
 		t.Fatalf("provisions = %+v, want one depreciated asset", report.Provisions)
 	}
 	charge := report.Provisions.Depreciation[0]
-	if want := decimal.NewFromInt(100); charge.Amount.Cmp(want) != 0 {
+	if want := money.FromInt(100); charge.Amount.Cmp(want) != 0 {
 		t.Errorf("depreciation = %s, want %s for a 12,000 asset over 120 months", charge.Amount, want)
 	}
-	if want := decimal.NewFromInt(100); charge.Accumulated.Cmp(want) != 0 {
+	if want := money.FromInt(100); charge.Accumulated.Cmp(want) != 0 {
 		t.Errorf("accumulated = %s, want %s", charge.Accumulated, want)
 	}
 	if charge.AssetID != "FA-001" || charge.Months != 1 {
@@ -495,13 +480,13 @@ func TestClosePeriod_DepreciatesAnAssetForThePeriod(t *testing.T) {
 
 	// The charge is an expense of the period: it is expensed, accumulated, and
 	// then carried out of the profit and loss accounts like everything else.
-	if got, want := f.ledger.balance("2141"), decimal.NewFromInt(-100); got.Cmp(want) != 0 {
+	if got, want := f.ledger.balance("2141"), money.FromInt(-100); got.Cmp(want) != 0 {
 		t.Errorf("accumulated depreciation = %s, want %s", got, want)
 	}
 	if got := f.ledger.balance("6422"); !got.IsZero() {
 		t.Errorf("the depreciation expense stands at %s after the close, want 0", got)
 	}
-	if got, want := f.ledger.balance("4212"), decimal.NewFromInt(-399_900); got.Cmp(want) != 0 {
+	if got, want := f.ledger.balance("4212"), money.FromInt(-399_900); got.Cmp(want) != 0 {
 		t.Errorf("retained earnings = %s, want %s — the period's profit after depreciation", got, want)
 	}
 }
@@ -515,7 +500,7 @@ func TestClosePeriod_ChargesAMonthlyRateForEachMonthOfAPeriod(t *testing.T) {
 
 	report := f.closeIt(ctx, t)
 
-	if want := decimal.NewFromInt(300); report.Provisions.DepreciationTotal.Cmp(want) != 0 {
+	if want := money.FromInt(300); report.Provisions.DepreciationTotal.Cmp(want) != 0 {
 		t.Errorf("depreciation over a quarter = %s, want %s", report.Provisions.DepreciationTotal, want)
 	}
 }
@@ -528,25 +513,25 @@ func TestClosePeriod_ProvidesAgainstOverdueReceivables(t *testing.T) {
 		DocumentID: "inv-1",
 		PartnerID:  "cust-1",
 		DueDate:    januaryEnd.AddDate(0, 0, -120),
-		Amount:     decimal.NewFromInt(1_000_000),
+		Amount:     money.FromInt(1_000_000),
 	}}}, overduePolicy(5))
 
 	report := f.closeIt(ctx, t)
 
-	if want := decimal.NewFromInt(50_000); report.Provisions.BadDebtTotal.Cmp(want) != 0 {
+	if want := money.FromInt(50_000); report.Provisions.BadDebtTotal.Cmp(want) != 0 {
 		t.Errorf("bad debt provision = %s, want 5%% of 1,000,000 = %s", report.Provisions.BadDebtTotal, want)
 	}
 	if len(report.Provisions.BadDebt) != 1 || report.Provisions.BadDebt[0].Band != "over 90 days" {
 		t.Errorf("bad debt detail = %+v, want the overdue band alone", report.Provisions.BadDebt)
 	}
 
-	if got, want := f.ledger.balance("2293"), decimal.NewFromInt(-50_000); got.Cmp(want) != 0 {
+	if got, want := f.ledger.balance("2293"), money.FromInt(-50_000); got.Cmp(want) != 0 {
 		t.Errorf("the bad debt provision account = %s, want %s", got, want)
 	}
 	if got := f.ledger.balance("6422"); !got.IsZero() {
 		t.Errorf("the bad debt expense stands at %s after the close, want 0", got)
 	}
-	if got, want := f.ledger.balance("4212"), decimal.NewFromInt(-350_000); got.Cmp(want) != 0 {
+	if got, want := f.ledger.balance("4212"), money.FromInt(-350_000); got.Cmp(want) != 0 {
 		t.Errorf("retained earnings = %s, want %s — the period's profit after the provision", got, want)
 	}
 }
@@ -562,7 +547,7 @@ func TestClosePeriod_PostsProvisionsAndClosingEntriesInOneVoucher(t *testing.T) 
 		&testReceivables{receivables: []Receivable{{
 			DocumentID: "inv-1",
 			DueDate:    januaryEnd.AddDate(0, 0, -120),
-			Amount:     decimal.NewFromInt(1_000_000),
+			Amount:     money.FromInt(1_000_000),
 		}}},
 		overduePolicy(5),
 	)
@@ -594,7 +579,7 @@ func TestClosePeriod_LeavesEveryProfitAndLossAccountAtZeroAfterProviding(t *test
 		&testReceivables{receivables: []Receivable{{
 			DocumentID: "inv-1",
 			DueDate:    januaryEnd.AddDate(0, 0, -120),
-			Amount:     decimal.NewFromInt(1_000_000),
+			Amount:     money.FromInt(1_000_000),
 		}}},
 		overduePolicy(5),
 	)
@@ -780,7 +765,7 @@ func TestClosePeriod_RefusesAProvisionIntoAnAccountThatIsNotAnExpense(t *testing
 	if f.ledger.posts != 0 {
 		t.Errorf("the ledger holds %d posting(s), want none", f.ledger.posts)
 	}
-	if got, want := f.ledger.balance("5111"), decimal.NewFromInt(-1_000_000); got.Cmp(want) != 0 {
+	if got, want := f.ledger.balance("5111"), money.FromInt(-1_000_000); got.Cmp(want) != 0 {
 		t.Errorf("revenue = %s, want it untouched at %s", got, want)
 	}
 }
@@ -868,13 +853,13 @@ func TestClosePeriod_CanBeRetriedAfterTheLockFailsWithProvisions(t *testing.T) {
 	if len(f.ledger.vouchers) != 1 {
 		t.Errorf("postings = %v, want the one voucher the first attempt posted", f.ledger.vouchers)
 	}
-	if got, want := f.ledger.balance("2141"), decimal.NewFromInt(-100); got.Cmp(want) != 0 {
+	if got, want := f.ledger.balance("2141"), money.FromInt(-100); got.Cmp(want) != 0 {
 		t.Errorf("accumulated depreciation = %s, want %s — depreciated once, not twice", got, want)
 	}
-	if got, want := f.ledger.balance("4212"), decimal.NewFromInt(-399_900); got.Cmp(want) != 0 {
+	if got, want := f.ledger.balance("4212"), money.FromInt(-399_900); got.Cmp(want) != 0 {
 		t.Errorf("retained earnings = %s, want %s", got, want)
 	}
-	if want := decimal.NewFromInt(100); report.Provisions.DepreciationTotal.Cmp(want) != 0 {
+	if want := money.FromInt(100); report.Provisions.DepreciationTotal.Cmp(want) != 0 {
 		t.Errorf("the retried close reports %s of depreciation, want the %s that was charged",
 			report.Provisions.DepreciationTotal, want)
 	}
@@ -909,7 +894,7 @@ func TestClosePeriod_DepreciatesAnAssetIntoTheAccountsItNames(t *testing.T) {
 		t.Errorf("the voucher expenses %s to 6422, want nothing: the asset named its own account", amount)
 	}
 
-	if got, want := f.ledger.balance("2142"), decimal.NewFromInt(-100); got.Cmp(want) != 0 {
+	if got, want := f.ledger.balance("2142"), money.FromInt(-100); got.Cmp(want) != 0 {
 		t.Errorf("accumulated depreciation = %s, want %s", got, want)
 	}
 	if got := f.ledger.balance("6421"); !got.IsZero() {
@@ -934,13 +919,13 @@ func TestClosePeriod_AddsAProvisionToAnAccountThePeriodAlreadyUsed(t *testing.T)
 
 	// 500 of administration expense, and 100 of depreciation into the same
 	// account: the period spent 600, and that is what it carries.
-	if want := decimal.NewFromInt(999_400); report.NetProfit.Cmp(want) != 0 {
+	if want := money.FromInt(999_400); report.NetProfit.Cmp(want) != 0 {
 		t.Errorf("net profit = %s, want %s", report.NetProfit, want)
 	}
 	if got := f.ledger.balance("6422"); !got.IsZero() {
 		t.Errorf("the expense account stands at %s after the close, want 0", got)
 	}
-	if got, want := f.ledger.balance("2141"), decimal.NewFromInt(-100); got.Cmp(want) != 0 {
+	if got, want := f.ledger.balance("2141"), money.FromInt(-100); got.Cmp(want) != 0 {
 		t.Errorf("accumulated depreciation = %s, want %s", got, want)
 	}
 
@@ -951,7 +936,7 @@ func TestClosePeriod_AddsAProvisionToAnAccountThePeriodAlreadyUsed(t *testing.T)
 		}
 
 		rows++
-		if want := decimal.NewFromInt(600); expense.Amount.Cmp(want) != 0 {
+		if want := money.FromInt(600); expense.Amount.Cmp(want) != 0 {
 			t.Errorf("6422 in the snapshot = %s, want %s", expense.Amount, want)
 		}
 	}
@@ -970,7 +955,7 @@ func TestClosePeriod_RecordsTheProvisionBreakdownOnTheReport(t *testing.T) {
 		&testReceivables{receivables: []Receivable{{
 			DocumentID: "inv-1",
 			DueDate:    januaryEnd.AddDate(0, 0, -120),
-			Amount:     decimal.NewFromInt(1_000_000),
+			Amount:     money.FromInt(1_000_000),
 		}}},
 		overduePolicy(5),
 	)
@@ -982,14 +967,14 @@ func TestClosePeriod_RecordsTheProvisionBreakdownOnTheReport(t *testing.T) {
 		t.Fatalf("Report: %v", err)
 	}
 
-	if want := decimal.NewFromInt(50_100); recorded.Provisions.Total.Cmp(want) != 0 {
+	if want := money.FromInt(50_100); recorded.Provisions.Total.Cmp(want) != 0 {
 		t.Errorf("provisions totalled = %s, want 100 of depreciation and 50,000 of bad debt = %s",
 			recorded.Provisions.Total, want)
 	}
 	if got := recorded.Provisions.Depreciation[0].Name; got != "Laptop" {
 		t.Errorf("depreciated asset = %q, want Laptop", got)
 	}
-	if got := recorded.Provisions.BadDebt[0].Percent; got.Cmp(decimal.NewFromInt(5)) != 0 {
+	if got := recorded.Provisions.BadDebt[0].Percent; got.Cmp(money.FromInt(5)) != 0 {
 		t.Errorf("band rate = %s%%, want 5%%", got)
 	}
 
@@ -1002,7 +987,7 @@ func TestClosePeriod_RecordsTheProvisionBreakdownOnTheReport(t *testing.T) {
 		}
 
 		rows++
-		if want := decimal.NewFromInt(50_100); expense.Amount.Cmp(want) != 0 {
+		if want := money.FromInt(50_100); expense.Amount.Cmp(want) != 0 {
 			t.Errorf("6422 in the snapshot = %s, want %s", expense.Amount, want)
 		}
 	}
@@ -1126,7 +1111,7 @@ func TestCircular48BadDebtPolicy_ProvidesByHowLateAnAmountIs(t *testing.T) {
 			charges, err := badDebtCharges([]Receivable{{
 				DocumentID: "inv-1",
 				DueDate:    asOf.AddDate(0, 0, -tc.daysLate),
-				Amount:     decimal.NewFromInt(1_000_000),
+				Amount:     money.FromInt(1_000_000),
 			}}, asOf, policy)
 			if err != nil {
 				t.Fatalf("badDebtCharges: %v", err)
@@ -1135,12 +1120,12 @@ func TestCircular48BadDebtPolicy_ProvidesByHowLateAnAmountIs(t *testing.T) {
 				t.Fatalf("charges = %+v, want one band", charges)
 			}
 
-			want := decimal.NewFromInt(1_000_000).Mul(decimal.NewFromInt(tc.percent)).Div(hundred)
+			want := money.FromInt(1_000_000).Mul(money.FromInt(tc.percent)).Div(hundred)
 			if charges[0].Amount.Cmp(want) != 0 {
 				t.Errorf("%d days late provides %s, want %s at %d per cent",
 					tc.daysLate, charges[0].Amount, want, tc.percent)
 			}
-			if charges[0].Percent.Cmp(decimal.NewFromInt(tc.percent)) != 0 {
+			if charges[0].Percent.Cmp(money.FromInt(tc.percent)) != 0 {
 				t.Errorf("%d days late is banded at %s%%, want %d%%",
 					tc.daysLate, charges[0].Percent, tc.percent)
 			}
@@ -1229,15 +1214,15 @@ func TestWithProvisions_KeepsItsOwnCopyOfThePolicy(t *testing.T) {
 	f.withProvisions(t, &testAssets{assets: []DepreciableAsset{asset()}}, &testReceivables{receivables: []Receivable{{
 		DocumentID: "inv-1",
 		DueDate:    januaryEnd.AddDate(0, 0, -120),
-		Amount:     decimal.NewFromInt(1_000_000),
+		Amount:     money.FromInt(1_000_000),
 	}}}, policy)
 
 	// The caller's copy moves under the close's feet.
-	policy.Bands[len(policy.Bands)-1].Percent = decimal.NewFromInt(50)
+	policy.Bands[len(policy.Bands)-1].Percent = money.FromInt(50)
 
 	report := f.closeIt(ctx, t)
 
-	if want := decimal.NewFromInt(50_000); report.Provisions.BadDebtTotal.Cmp(want) != 0 {
+	if want := money.FromInt(50_000); report.Provisions.BadDebtTotal.Cmp(want) != 0 {
 		t.Errorf("bad debt provision = %s, want the %s the close was configured with",
 			report.Provisions.BadDebtTotal, want)
 	}
@@ -1297,8 +1282,8 @@ func TestCheckProvisionPair_RefusesWhatACloseMustNotPostTo(t *testing.T) {
 // expenses into one of them. Where the two disagree about what an account is,
 // the close refuses rather than clearing half of it.
 func TestWithProvisions_RefusesAnAccountTheBooksCarryAsSomethingElse(t *testing.T) {
-	books := []AccountBalance{{AccountCode: "6422", Type: gl.AccountTypeAsset, Amount: decimal.NewFromInt(50)}}
-	expenses := []AccountBalance{{AccountCode: "6422", Type: gl.AccountTypeExpense, Amount: decimal.NewFromInt(100)}}
+	books := []AccountBalance{{AccountCode: "6422", Type: gl.AccountTypeAsset, Amount: money.FromInt(50)}}
+	expenses := []AccountBalance{{AccountCode: "6422", Type: gl.AccountTypeExpense, Amount: money.FromInt(100)}}
 
 	if _, err := withProvisions(books, expenses); !errors.Is(err, ErrInvalidProvision) {
 		t.Fatalf("error = %v, want ErrInvalidProvision", err)
@@ -1307,7 +1292,7 @@ func TestWithProvisions_RefusesAnAccountTheBooksCarryAsSomethingElse(t *testing.
 	// Where they agree, the provision adds to what the account stands at
 	// instead of appearing beside it as a second row for one account.
 	folded, err := withProvisions(
-		[]AccountBalance{{AccountCode: "6422", Type: gl.AccountTypeExpense, Amount: decimal.NewFromInt(50)}},
+		[]AccountBalance{{AccountCode: "6422", Type: gl.AccountTypeExpense, Amount: money.FromInt(50)}},
 		expenses,
 	)
 	if err != nil {
@@ -1316,7 +1301,7 @@ func TestWithProvisions_RefusesAnAccountTheBooksCarryAsSomethingElse(t *testing.
 	if len(folded) != 1 {
 		t.Fatalf("folded balances = %+v, want one row", folded)
 	}
-	if want := decimal.NewFromInt(150); folded[0].Amount.Cmp(want) != 0 {
+	if want := money.FromInt(150); folded[0].Amount.Cmp(want) != 0 {
 		t.Errorf("the folded account = %s, want %s", folded[0].Amount, want)
 	}
 }
@@ -1361,7 +1346,7 @@ func TestMemoryReports_KeepsTheSnapshotItWasGiven(t *testing.T) {
 		Expenses: []AccountBalance{{AccountCode: "632"}},
 		Provisions: ProvisionSummary{
 			Depreciation: []DepreciationCharge{{AssetID: "FA-001", Name: "Laptop"}},
-			BadDebt:      []BadDebtCharge{{Band: "over 90 days", Percent: decimal.NewFromInt(5)}},
+			BadDebt:      []BadDebtCharge{{Band: "over 90 days", Percent: money.FromInt(5)}},
 		},
 	}
 	if err := reports.Save(ctx, report); err != nil {

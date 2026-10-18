@@ -5,17 +5,16 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/shopspring/decimal"
-
 	"fingo/internal/domain/gl"
+	"fingo/internal/money"
 )
 
 func revenue(code string, amount int64) AccountBalance {
-	return AccountBalance{AccountCode: code, Type: gl.AccountTypeRevenue, Amount: decimal.NewFromInt(amount)}
+	return AccountBalance{AccountCode: code, Type: gl.AccountTypeRevenue, Amount: money.FromInt(amount)}
 }
 
 func expense(code string, amount int64) AccountBalance {
-	return AccountBalance{AccountCode: code, Type: gl.AccountTypeExpense, Amount: decimal.NewFromInt(amount)}
+	return AccountBalance{AccountCode: code, Type: gl.AccountTypeExpense, Amount: money.FromInt(amount)}
 }
 
 // voucherOf builds the real thing out of the entries, so a test asserts that
@@ -38,8 +37,8 @@ func voucherOf(t *testing.T, lines []gl.VoucherLine) *gl.Voucher {
 // totalOn is everything one account carries on one side: the result account is
 // touched by the revenue leg, the expense leg and the final leg, so what it comes
 // to is the sum and not any single line.
-func totalOn(lines []gl.VoucherLine, code string, side gl.EntrySide) decimal.Decimal {
-	total := decimal.Zero
+func totalOn(lines []gl.VoucherLine, code string, side gl.EntrySide) money.Dong {
+	total := money.Zero
 	for _, l := range lines {
 		if l.AccountCode == code && l.Side == side {
 			total = total.Add(l.Amount)
@@ -49,14 +48,14 @@ func totalOn(lines []gl.VoucherLine, code string, side gl.EntrySide) decimal.Dec
 	return total
 }
 
-func lineOn(lines []gl.VoucherLine, code string, side gl.EntrySide) (decimal.Decimal, bool) {
+func lineOn(lines []gl.VoucherLine, code string, side gl.EntrySide) (money.Dong, bool) {
 	for _, l := range lines {
 		if l.AccountCode == code && l.Side == side {
 			return l.Amount, true
 		}
 	}
 
-	return decimal.Zero, false
+	return money.Zero, false
 }
 
 // The entries a close posts: revenue into the result account on the debit side
@@ -71,7 +70,7 @@ func TestClosingEntries_CarriesRevenueAndExpensesToRetainedEarnings(t *testing.T
 		t.Fatalf("closingEntries: %v", err)
 	}
 
-	if want := decimal.NewFromInt(400_000); profit.Cmp(want) != 0 {
+	if want := money.FromInt(400_000); profit.Cmp(want) != 0 {
 		t.Errorf("profit = %s, want %s", profit, want)
 	}
 	if err := voucherOf(t, lines).ValidateBalance(); err != nil {
@@ -84,10 +83,10 @@ func TestClosingEntries_CarriesRevenueAndExpensesToRetainedEarnings(t *testing.T
 
 	// The result account takes the revenue in, the expenses out, and is emptied
 	// of the difference — leaving it, as it must be left, at nothing.
-	if got, want := totalOn(lines, "911", gl.SideCredit), decimal.NewFromInt(1_000_000); got.Cmp(want) != 0 {
+	if got, want := totalOn(lines, "911", gl.SideCredit), money.FromInt(1_000_000); got.Cmp(want) != 0 {
 		t.Errorf("the result account was credited %s, want %s", got, want)
 	}
-	if got, want := totalOn(lines, "911", gl.SideDebit), decimal.NewFromInt(1_000_000); got.Cmp(want) != 0 {
+	if got, want := totalOn(lines, "911", gl.SideDebit), money.FromInt(1_000_000); got.Cmp(want) != 0 {
 		t.Errorf("the result account was debited %s, want %s", got, want)
 	}
 	assertResultAccountEmpty(t, lines)
@@ -104,7 +103,7 @@ func TestClosingEntries_CarriesALossToRetainedEarnings(t *testing.T) {
 		t.Fatalf("closingEntries: %v", err)
 	}
 
-	if want := decimal.NewFromInt(-150_000); profit.Cmp(want) != 0 {
+	if want := money.FromInt(-150_000); profit.Cmp(want) != 0 {
 		t.Errorf("profit = %s, want %s", profit, want)
 	}
 	if err := voucherOf(t, lines).ValidateBalance(); err != nil {
@@ -128,7 +127,7 @@ func TestClosingEntries_ClearsAnAccountCarryingItsBalanceTheOtherWay(t *testing.
 		t.Fatalf("closingEntries: %v", err)
 	}
 
-	if want := decimal.NewFromInt(550_000); profit.Cmp(want) != 0 {
+	if want := money.FromInt(550_000); profit.Cmp(want) != 0 {
 		t.Errorf("profit = %s, want %s", profit, want)
 	}
 	if err := voucherOf(t, lines).ValidateBalance(); err != nil {
@@ -203,7 +202,7 @@ func TestClosingEntries_ProducesTheSameEntriesWhateverOrderTheBalancesArriveIn(t
 // capital or an asset through the profit and loss account.
 func TestClosingEntries_RefusesAnAccountThatIsNotProfitAndLoss(t *testing.T) {
 	_, _, err := closingEntries(
-		[]AccountBalance{{AccountCode: "4212", Type: gl.AccountTypeEquity, Amount: decimal.NewFromInt(1)}},
+		[]AccountBalance{{AccountCode: "4212", Type: gl.AccountTypeEquity, Amount: money.FromInt(1)}},
 		TT133ClosingAccounts(),
 	)
 	if err == nil {
@@ -272,7 +271,7 @@ func assertLine(t *testing.T, lines []gl.VoucherLine, code string, side gl.Entry
 		t.Errorf("no %s line on account %s, want one of %d", side, code, want)
 		return
 	}
-	if got.Cmp(decimal.NewFromInt(want)) != 0 {
+	if got.Cmp(money.FromInt(want)) != 0 {
 		t.Errorf("account %s %s line = %s, want %d", code, side, got, want)
 	}
 }

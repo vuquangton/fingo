@@ -7,7 +7,7 @@ Updated 2026-10-18 (Phase 1 foundation). One row per phase; a phase is only `DON
 | Phase | Status | Gate result |
 | :--- | :--- | :--- |
 | **0 — Save and decide** | **DONE** | archive tag exists · `git status` clean · ADRs 0006–0008 written · pushed |
-| 1 — Foundation | **PARTIAL — gate green, one decision open** | `go build` rc=0 · `go vet` rc=0 · `REQUIRE_DB=1 go test ./...` rc=0 (16 packages ok, 0 fail, 0 skip) · schema v1 · 11 database tests |
+| 1 — Foundation | **DONE** | `go build` rc=0 · `go vet` rc=0 · `REQUIRE_DB=1 go test ./...` rc=0 (16 packages ok, 0 fail, 0 skip) · schema v1 · 11 database tests |
 | 2 — Security and operations | NOT STARTED | — |
 | 3 — Spike, then core screens | NOT STARTED | — |
 | 4 — Trading cycle | NOT STARTED | — |
@@ -96,7 +96,7 @@ This is the number to beat or keep: **every ported package must still report `ok
 4. One squashed init migration: schema, composite keys, RLS policies, immutability and balance triggers, period-lock trigger, allocation check, TT133 chart seed.
 5. `internal/store`: pgx pool, `WithScope` transaction, and the tenant-isolation tests.
 
-## 6. Phase 1 — foundation (gate green, one item open)
+## 6. Phase 1 — foundation (DONE)
 
 ### Built
 

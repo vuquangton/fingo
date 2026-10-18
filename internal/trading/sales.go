@@ -35,8 +35,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/shopspring/decimal"
-
 	arap "fingo/internal/document"
 	"fingo/internal/domain/document"
 	"fingo/internal/domain/gl"
@@ -714,8 +712,8 @@ func singleRate(lines []InvoiceLine) string {
 // integers. The conversion is exact in both directions and happens only here,
 // which is what keeps the integer discipline from being a claim and makes it a
 // boundary.
-func decimalOf(amount money.Money) decimal.Decimal {
-	return decimal.NewFromInt(amount.Amount())
+func decimalOf(amount money.Money) money.Dong {
+	return money.FromInt(amount.Amount())
 }
 
 func (cmd InvoiceCommand) validate() error {

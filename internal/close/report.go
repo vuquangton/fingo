@@ -6,9 +6,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/shopspring/decimal"
-
 	"fingo/internal/document"
+	"fingo/internal/money"
 )
 
 // Report is the snapshot taken when a period was closed: what the period earned,
@@ -30,7 +29,7 @@ type Report struct {
 
 	// NetProfit is what was carried to retained earnings: revenue less expense,
 	// positive for a profit and negative for a loss.
-	NetProfit decimal.Decimal
+	NetProfit money.Dong
 
 	// Provisions is what the close provided for at the period's end — the
 	// depreciation it charged and the bad debt it provided against. The entries

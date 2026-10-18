@@ -1,8 +1,7 @@
 package statutory
 
 import (
-	"github.com/shopspring/decimal"
-
+	"fingo/internal/money"
 	"fingo/internal/vat"
 )
 
@@ -111,7 +110,7 @@ type lineSpec struct {
 	reference  string
 	confidence Confidence
 	note       string
-	amount     func(figures) decimal.Decimal
+	amount     func(figures) money.Dong
 
 	// unresolved marks a line the legal basis has not resolved. It is never
 	// emitted: it becomes the statement's warning instead.
@@ -146,7 +145,7 @@ func vatReturnCatalogue() statementSpec {
 				label:      "Thuế GTGT còn được khấu trừ kỳ trước chuyển sang (credit carried in)",
 				reference:  authorityVATReturn,
 				confidence: Secondary,
-				amount:     func(f figures) decimal.Decimal { return f.vatReturn.CarriedIn },
+				amount:     func(f figures) money.Dong { return f.vatReturn.CarriedIn },
 			},
 			{
 				indicator:  "[23]",
@@ -154,7 +153,7 @@ func vatReturnCatalogue() statementSpec {
 				reference:  authorityVATReturn,
 				confidence: Secondary,
 				note:       "Taken from the movement on TK " + accountInputVAT + ", which is where deductible input VAT is recorded.",
-				amount:     func(f figures) decimal.Decimal { return f.vatReturn.InputCredit },
+				amount:     func(f figures) money.Dong { return f.vatReturn.InputCredit },
 			},
 			{
 				// The file names [23]–[25] as the block and not what each one
@@ -183,14 +182,14 @@ func vatReturnCatalogue() statementSpec {
 				label:      "Doanh thu hàng hóa, dịch vụ không chịu thuế GTGT (turnover not subject to VAT)",
 				reference:  authorityVATNonTaxable,
 				confidence: Primary,
-				amount:     func(f figures) decimal.Decimal { return f.vat.NonTaxable },
+				amount:     func(f figures) money.Dong { return f.vat.NonTaxable },
 			},
 			{
 				indicator:  "[29]",
 				label:      "Doanh thu hàng hóa, dịch vụ thuộc mức thuế suất 0% (turnover at 0%)",
 				reference:  authorityVATZeroRated,
 				confidence: Primary,
-				amount:     func(f figures) decimal.Decimal { return f.vat.ZeroRated },
+				amount:     func(f figures) money.Dong { return f.vat.ZeroRated },
 			},
 			{
 				indicator:  "[30]",
@@ -198,14 +197,14 @@ func vatReturnCatalogue() statementSpec {
 				reference:  authorityVATLaw,
 				confidence: Primary,
 				note:       "The 5% list is the law's reduced list; the file does not place the article it sits in.",
-				amount:     func(f figures) decimal.Decimal { return f.vatBand(rateFivePercent).Net },
+				amount:     func(f figures) money.Dong { return f.vatBand(rateFivePercent).Net },
 			},
 			{
 				indicator:  "[31]",
 				label:      "Thuế GTGT đầu ra ở mức 5% (output VAT at 5%)",
 				reference:  authorityVATLaw,
 				confidence: Primary,
-				amount:     func(f figures) decimal.Decimal { return f.vatBand(rateFivePercent).Tax },
+				amount:     func(f figures) money.Dong { return f.vatBand(rateFivePercent).Tax },
 			},
 			{
 				indicator:  "[32]",
@@ -213,14 +212,14 @@ func vatReturnCatalogue() statementSpec {
 				reference:  authorityVATLaw,
 				confidence: Primary,
 				note:       "10% is the standard rate the file states.",
-				amount:     func(f figures) decimal.Decimal { return f.vatBand(rateTenPercent).Net },
+				amount:     func(f figures) money.Dong { return f.vatBand(rateTenPercent).Net },
 			},
 			{
 				indicator:  "[33]",
 				label:      "Thuế GTGT đầu ra ở mức 10% (output VAT at 10%)",
 				reference:  authorityVATLaw,
 				confidence: Primary,
-				amount:     func(f figures) decimal.Decimal { return f.vatBand(rateTenPercent).Tax },
+				amount:     func(f figures) money.Dong { return f.vatBand(rateTenPercent).Tax },
 			},
 			{
 				indicator:  "[40]",
@@ -228,7 +227,7 @@ func vatReturnCatalogue() statementSpec {
 				reference:  authorityVATReturn,
 				confidence: Secondary,
 				note:       "Output VAT less the credit carried in and the input VAT of the period.",
-				amount:     func(f figures) decimal.Decimal { return f.vatReturn.Payable },
+				amount:     func(f figures) money.Dong { return f.vatReturn.Payable },
 			},
 			{
 				indicator:  "[43]",
@@ -236,7 +235,7 @@ func vatReturnCatalogue() statementSpec {
 				reference:  authorityVATReturn,
 				confidence: Secondary,
 				note:       "What the period's output did not absorb, left for the next one.",
-				amount:     func(f figures) decimal.Decimal { return f.vatReturn.CarriedOut },
+				amount:     func(f figures) money.Dong { return f.vatReturn.CarriedOut },
 			},
 		},
 	}
@@ -265,7 +264,7 @@ func vatReductionCatalogue(withinWindow bool) statementSpec {
 				reference:  authorityVATCut,
 				confidence: Secondary,
 				note:       "Sales the 8% window applies to, at the net value invoiced.",
-				amount:     func(f figures) decimal.Decimal { return f.vatBand(rateEightPercent).Net },
+				amount:     func(f figures) money.Dong { return f.vatBand(rateEightPercent).Net },
 			},
 			{
 				indicator:  "01",
@@ -284,7 +283,7 @@ func vatReductionCatalogue(withinWindow bool) statementSpec {
 		reference:  authorityVATCut,
 		confidence: Secondary,
 		note:       "The difference between the standard 10% and the 8% applied, on the same turnover.",
-		amount:     func(f figures) decimal.Decimal { return vatReduction(f.vatBand(rateEightPercent).Net) },
+		amount:     func(f figures) money.Dong { return vatReduction(f.vatBand(rateEightPercent).Net) },
 	}
 
 	if withinWindow {
@@ -320,35 +319,35 @@ func citCatalogue() statementSpec {
 				reference:  authorityCITLaw,
 				confidence: Secondary,
 				note:       "Turnover is what selects the rate, so it is stated before the tax it selects.",
-				amount:     func(f figures) decimal.Decimal { return f.turnover },
+				amount:     func(f figures) money.Dong { return f.turnover },
 			},
 			{
 				label:      "Lợi nhuận kế toán trước thuế (accounting profit before tax)",
 				reference:  authorityCITForm,
 				confidence: Secondary,
 				note:       "The period's result as the books state it, before any tax adjustment: a loss is stated as a negative figure.",
-				amount:     func(f figures) decimal.Decimal { return f.profit.NetProfit },
+				amount:     func(f figures) money.Dong { return f.profit.NetProfit },
 			},
 			{
 				label:      "Thuế TNDN theo thuế suất áp dụng (corporate income tax at the applicable rate)",
 				reference:  authorityCITLaw,
 				confidence: Secondary,
 				note:       "Rate selected by turnover: 15% at or below 3bn, 17% above 3bn up to 50bn, 20% above that.",
-				amount:     func(f figures) decimal.Decimal { return f.citLiability() },
+				amount:     func(f figures) money.Dong { return f.citLiability() },
 			},
 			{
 				label:      "Thuế TNDN đã tạm nộp trong kỳ (provisional corporate income tax paid)",
 				reference:  authorityCITForm,
 				confidence: Secondary,
 				note:       "Taken from what was debited to TK " + accountCITPayable + ", which is what was paid: an accrual credited to the same account is a liability, not a payment.",
-				amount:     func(f figures) decimal.Decimal { return f.citPaid },
+				amount:     func(f figures) money.Dong { return f.citPaid },
 			},
 			{
 				label:      "Chênh lệch so với mức tạm nộp tối thiểu 80% (shortfall against the 80% test)",
 				reference:  authorityCITPay,
 				confidence: Secondary,
 				note:       "80% of the annual liability less what was paid. Nil means the test is met.",
-				amount:     func(f figures) decimal.Decimal { return f.citShortfall() },
+				amount:     func(f figures) money.Dong { return f.citShortfall() },
 			},
 			{
 				// The file says so in as many words: do not assert one.
@@ -413,20 +412,20 @@ func financialStatementsCatalogue(regime string) ([]statementSpec, error) {
 					reference:  authority,
 					confidence: Secondary,
 					note:       "Every asset account the books hold at the period's end, net of any credit balance on it.",
-					amount:     func(f figures) decimal.Decimal { return f.sheet.TotalAssets },
+					amount:     func(f figures) money.Dong { return f.sheet.TotalAssets },
 				},
 				{
 					label:      "Nợ phải trả (liabilities)",
 					reference:  authority,
 					confidence: Secondary,
-					amount:     func(f figures) decimal.Decimal { return f.sheet.TotalLiabilities },
+					amount:     func(f figures) money.Dong { return f.sheet.TotalLiabilities },
 				},
 				{
 					label:      "Vốn chủ sở hữu (equity)",
 					reference:  authority,
 					confidence: Secondary,
 					note:       "Equity accounts plus any result the period has not yet carried to them.",
-					amount:     func(f figures) decimal.Decimal { return f.sheet.TotalEquity },
+					amount:     func(f figures) money.Dong { return f.sheet.TotalEquity },
 				},
 			},
 		},
@@ -443,20 +442,20 @@ func financialStatementsCatalogue(regime string) ([]statementSpec, error) {
 					label:      "Tổng doanh thu (total revenue)",
 					reference:  authority,
 					confidence: Secondary,
-					amount:     func(f figures) decimal.Decimal { return f.profit.TotalRevenue },
+					amount:     func(f figures) money.Dong { return f.profit.TotalRevenue },
 				},
 				{
 					label:      "Tổng chi phí (total expenses)",
 					reference:  authority,
 					confidence: Secondary,
-					amount:     func(f figures) decimal.Decimal { return f.profit.TotalExpenses },
+					amount:     func(f figures) money.Dong { return f.profit.TotalExpenses },
 				},
 				{
 					label:      "Kết quả kinh doanh trong kỳ (result for the period)",
 					reference:  authority,
 					confidence: Secondary,
 					note:       "The period's revenue less its expenses: a loss is stated as a negative figure, which is how the form carries one.",
-					amount:     func(f figures) decimal.Decimal { return f.profit.NetProfit },
+					amount:     func(f figures) money.Dong { return f.profit.NetProfit },
 				},
 			},
 		},
@@ -465,8 +464,8 @@ func financialStatementsCatalogue(regime string) ([]statementSpec, error) {
 
 // vatReduction is the tax the 8% window gives up: the two points between the
 // standard ten and the eight applied, on the turnover in the reduced band.
-func vatReduction(net decimal.Decimal) decimal.Decimal {
+func vatReduction(net money.Dong) money.Dong {
 	return roundDong(net.
-		Mul(decimal.NewFromInt(int64(standardRateDelta))).
-		Div(decimal.NewFromInt(int64(vat.Whole))))
+		Mul(money.FromInt(int64(standardRateDelta))).
+		Div(money.FromInt(int64(vat.Whole))))
 }

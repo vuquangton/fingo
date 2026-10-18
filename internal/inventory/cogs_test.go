@@ -8,8 +8,6 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/shopspring/decimal"
-
 	"fingo/internal/domain/gl"
 	"fingo/internal/inventory"
 	"fingo/internal/money"
@@ -17,7 +15,7 @@ import (
 )
 
 // dec renders a whole number of minor units the way the ledger takes it.
-func dec(amount int64) decimal.Decimal { return decimal.NewFromInt(amount) }
+func dec(amount int64) money.Dong { return money.FromInt(amount) }
 
 // salesRules is the chart the sales cycle posts against, checked the way the
 // ledger checks it at boot.

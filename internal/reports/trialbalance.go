@@ -5,9 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/shopspring/decimal"
-
 	"fingo/internal/domain/gl"
+	"fingo/internal/money"
 	"fingo/internal/period"
 )
 
@@ -25,9 +24,9 @@ type TrialBalance struct {
 
 	Rows []TrialBalanceRow
 
-	OpeningDebit, OpeningCredit decimal.Decimal
-	PeriodDebit, PeriodCredit   decimal.Decimal
-	ClosingDebit, ClosingCredit decimal.Decimal
+	OpeningDebit, OpeningCredit money.Dong
+	PeriodDebit, PeriodCredit   money.Dong
+	ClosingDebit, ClosingCredit money.Dong
 
 	// SourceVoucherCount is how many distinct vouchers the whole report was
 	// summed from.
@@ -45,12 +44,12 @@ type TrialBalanceRow struct {
 
 	// Opening and Closing are netted onto the side the account stands on: a
 	// balance is a position, and a position is on one side.
-	OpeningDebit, OpeningCredit decimal.Decimal
-	ClosingDebit, ClosingCredit decimal.Decimal
+	OpeningDebit, OpeningCredit money.Dong
+	ClosingDebit, ClosingCredit money.Dong
 
 	// Period keeps both sides, because what an account did in a period is a
 	// debit total and a credit total, and not the difference between them.
-	PeriodDebit, PeriodCredit decimal.Decimal
+	PeriodDebit, PeriodCredit money.Dong
 
 	// SourceVoucherCount is how many distinct vouchers put a figure on this
 	// row. It is never zero: a row exists because a voucher line made it.

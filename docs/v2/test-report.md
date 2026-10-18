@@ -60,3 +60,30 @@ No other test was edited. No test was deleted. No assertion was weakened.
 ## Coverage
 
 Not measured in this report. `go test -cover` was not run because a coverage number without assertion review is a gap finder, not a target; the gate is behavioural (tenant, immutability, balance) rather than a percentage.
+
+## Money conversion (ADR 0008) — done
+
+`shopspring/decimal` is gone from `go.mod`. `money.Dong` is `int64` whole đồng, with `Add`/`Sub`/`Mul`/`Div` (truncating), comparisons, identity `Round`/`Truncate`, and JSON as a **string**. `bigint` in PostgreSQL, `int64` in Go, string on the wire.
+
+Behaviour preserved where it mattered: `monthlyRate` already did `.Div(...).Truncate(0)`, and the bad-debt charge already truncated — integer division truncates the same way, so no figure moved. All 788 assertions still pass.
+
+Deliberate behaviour changes, all at the **input boundary**:
+
+| Change | Why |
+| :--- | :--- |
+| `format.Amount` refuses a fractional amount (`"1.234,56"`, `"0,5"`) | đồng has no subunit; rounding what the operator typed would move a figure silently |
+| `format.Money` no longer renders a fractional part | there is no fraction to render |
+| `gl.VoucherLine.Amount` is `money.Dong` | a fractional line is unrepresentable |
+
+Tests changed (no assertion weakened, four obsolete tests removed because the state they described no longer exists):
+
+| File | Change |
+| :--- | :--- |
+| `internal/money/dong_test.go` | **new** — arithmetic, truncation direction, division-by-zero panic, JSON string round-trip above 2^53 |
+| `internal/format/money_test.go` | integer literals; fractional-formatting test removed; new `TestAmount_RefusesAFraction` |
+| `internal/domain/gl/gl_test.go` | `TestVoucher_FractionalDongIsRejected` removed (unrepresentable); "fractional đồng in storage" case removed |
+| `internal/close/provisions_test.go` | three fractional-asset cases removed; `wholeDong` guard deleted as dead |
+| `internal/reports/statutory/statutory_test.go` | helper `money`→`dong`; `readLegalBasis` walks to repo root |
+| `internal/reports/statutory/review_test.go` | fractional JSON case and obsolete `roundDong` test removed; `money(...)`→`dong(...)` |
+
+Gate re-run after the conversion: `go build` rc=0 · `go vet` rc=0 · `REQUIRE_DB=1 go test ./...` **16 packages ok, 0 failures, 0 skips**.

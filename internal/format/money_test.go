@@ -1,11 +1,11 @@
 package format_test
 
 import (
+	"strconv"
 	"testing"
 
-	"github.com/shopspring/decimal"
-
 	"fingo/internal/format"
+	"fingo/internal/money"
 )
 
 // TestMoney_WritesNumbersTheVietnameseWay — slice P1.4.
@@ -36,31 +36,8 @@ func TestMoney_WritesNumbersTheVietnameseWay(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := format.Money(decimal.RequireFromString(tt.in))
+			got := format.Money(mustDong(t, tt.in))
 			if got != tt.want {
-				t.Errorf("Money(%s) = %q, want %q", tt.in, got, tt.want)
-			}
-		})
-	}
-}
-
-// TestMoney_UsesACommaForTheDecimalPart — đồng are not usually written with a
-// fraction, but costs and exchange rates are, and when they are the separator is
-// a comma. Trailing zeroes are dropped: "1.234,50" is the price of something
-// that costs one thousand two hundred and thirty-four and a half, and the
-// trailing zero implies a precision the books do not carry.
-func TestMoney_UsesACommaForTheDecimalPart(t *testing.T) {
-	tests := []struct{ in, want string }{
-		{"1234.5", "1.234,5"},
-		{"1234.50", "1.234,5"},
-		{"1234.567", "1.234,567"},
-		{"0.5", "0,5"},
-		{"-1234.25", "-1.234,25"},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.in, func(t *testing.T) {
-			if got := format.Money(decimal.RequireFromString(tt.in)); got != tt.want {
 				t.Errorf("Money(%s) = %q, want %q", tt.in, got, tt.want)
 			}
 		})
@@ -71,10 +48,10 @@ func TestMoney_UsesACommaForTheDecimalPart(t *testing.T) {
 // and a ledger where every account has a figure is a ledger where none stands
 // out. Zero and empty are different requests, and the caller chooses.
 func TestMoney_BlankForNothing(t *testing.T) {
-	if got := format.MoneyIfAny(decimal.Zero); got != "" {
+	if got := format.MoneyIfAny(money.Zero); got != "" {
 		t.Errorf("MoneyIfAny(0) = %q, want an empty cell", got)
 	}
-	if got := format.MoneyIfAny(decimal.RequireFromString("1234")); got != "1.234" {
+	if got := format.MoneyIfAny(money.FromInt(1234)); got != "1.234" {
 		t.Errorf("MoneyIfAny(1234) = %q, want 1.234", got)
 	}
 }
@@ -95,10 +72,7 @@ func TestAmount_ParsesWhatAnAccountantTypes(t *testing.T) {
 	}{
 		{"a plain integer", "1234", "1234"},
 		{"grouped with dots", "1.234", "1234"},
-		{"grouped and fractional", "1.234,56", "1234.56"},
-		{"only fractional", "0,5", "0.5"},
 		{"a negative", "-1.234", "-1234"},
-		{"a negative fractional", "-1.234,56", "-1234.56"},
 		{"spaces around it", "  1.234  ", "1234"},
 		{"a single group of three", "123", "123"},
 	}
@@ -109,7 +83,7 @@ func TestAmount_ParsesWhatAnAccountantTypes(t *testing.T) {
 			if err != nil {
 				t.Fatalf("Amount(%q): %v", tt.in, err)
 			}
-			if !got.Equal(decimal.RequireFromString(tt.want)) {
+			if !got.Equal(mustDong(t, tt.want)) {
 				t.Errorf("Amount(%q) = %s, want %s", tt.in, got, tt.want)
 			}
 		})
@@ -120,8 +94,8 @@ func TestAmount_ParsesWhatAnAccountantTypes(t *testing.T) {
 // be able to read back. A form that shows a number and then refuses it is how
 // an operator loses an afternoon.
 func TestAmount_RoundTripsThroughMoney(t *testing.T) {
-	for _, in := range []string{"1234", "1234567", "0", "-1234", "1234.56"} {
-		original := decimal.RequireFromString(in)
+	for _, in := range []string{"1234", "1234567", "0", "-1234"} {
+		original := mustDong(t, in)
 
 		printed := format.Money(original)
 
@@ -164,5 +138,30 @@ func TestAmount_RefusesAnAmbiguousDot(t *testing.T) {
 		if err == nil {
 			t.Errorf("Amount(%q) = %s, want a refusal — the dot grouping is not groups of three", bad, got)
 		}
+	}
+}
+
+// mustDong parses a whole-đồng literal. The format tests state exact amounts as
+// strings, and since ADR 0008 an amount is an integer: there is no fraction for
+// the formatter to render.
+func mustDong(t *testing.T, s string) money.Dong {
+	t.Helper()
+
+	v, err := strconv.ParseInt(s, 10, 64)
+	if err != nil {
+		t.Fatalf("parse %q: %v", s, err)
+	}
+	return money.FromInt(v)
+}
+
+// TestAmount_RefusesAFraction — đồng has no subunit, so a comma is not an
+// amount: the parser refuses it rather than rounding what the operator typed.
+func TestAmount_RefusesAFraction(t *testing.T) {
+	for _, in := range []string{"1.234,56", "0,5", "12,00"} {
+		t.Run(in, func(t *testing.T) {
+			if _, err := format.Amount(in); err == nil {
+				t.Fatalf("Amount(%q) accepted a fractional amount", in)
+			}
+		})
 	}
 }

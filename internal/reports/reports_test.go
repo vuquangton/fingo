@@ -6,10 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/shopspring/decimal"
-
 	"fingo/internal/close"
 	"fingo/internal/domain/gl"
+	"fingo/internal/money"
 	"fingo/internal/period"
 )
 
@@ -129,11 +128,11 @@ func (v voucher) reportLines() []Line {
 }
 
 func dr(code string, amount int64) gl.VoucherLine {
-	return gl.VoucherLine{AccountCode: code, Side: gl.SideDebit, Amount: decimal.NewFromInt(amount)}
+	return gl.VoucherLine{AccountCode: code, Side: gl.SideDebit, Amount: money.FromInt(amount)}
 }
 
 func cr(code string, amount int64) gl.VoucherLine {
-	return gl.VoucherLine{AccountCode: code, Side: gl.SideCredit, Amount: decimal.NewFromInt(amount)}
+	return gl.VoucherLine{AccountCode: code, Side: gl.SideCredit, Amount: money.FromInt(amount)}
 }
 
 // books is one client's ledger: capital paid in, goods bought on credit, a sale,
@@ -319,7 +318,7 @@ func TestTrialBalance_TheRowsMakeTheTotals(t *testing.T) {
 	f := newFixture(t)
 	report := f.trialBalance(t, january.ID)
 
-	var openingDebit, openingCredit, periodDebit, periodCredit, closingDebit, closingCredit decimal.Decimal
+	var openingDebit, openingCredit, periodDebit, periodCredit, closingDebit, closingCredit money.Dong
 
 	for _, row := range report.Rows {
 		openingDebit = openingDebit.Add(row.OpeningDebit)
@@ -330,7 +329,7 @@ func TestTrialBalance_TheRowsMakeTheTotals(t *testing.T) {
 		closingCredit = closingCredit.Add(row.ClosingCredit)
 	}
 
-	checks := map[string][2]decimal.Decimal{
+	checks := map[string][2]money.Dong{
 		"opening debit":  {openingDebit, report.OpeningDebit},
 		"opening credit": {openingCredit, report.OpeningCredit},
 		"period debit":   {periodDebit, report.PeriodDebit},
@@ -353,20 +352,20 @@ func TestTrialBalance_ShowsOpeningPeriodAndClosing(t *testing.T) {
 	report := f.trialBalance(t, january.ID)
 
 	cases := map[string]struct {
-		openingDebit, openingCredit decimal.Decimal
-		periodDebit, periodCredit   decimal.Decimal
-		closingDebit, closingCredit decimal.Decimal
+		openingDebit, openingCredit money.Dong
+		periodDebit, periodCredit   money.Dong
+		closingDebit, closingCredit money.Dong
 	}{
 		// Capital paid in before the period: carried in, untouched by January.
-		"4111": {decimal.Zero, decimal.NewFromInt(5_000_000), decimal.Zero, decimal.Zero, decimal.Zero, decimal.NewFromInt(5_000_000)},
+		"4111": {money.Zero, money.FromInt(5_000_000), money.Zero, money.Zero, money.Zero, money.FromInt(5_000_000)},
 		// A receivable raised in the period: 1,000,000 debit, and it stands there.
-		"131": {decimal.Zero, decimal.Zero, decimal.NewFromInt(1_000_000), decimal.Zero, decimal.NewFromInt(1_000_000), decimal.Zero},
+		"131": {money.Zero, money.Zero, money.FromInt(1_000_000), money.Zero, money.FromInt(1_000_000), money.Zero},
 		// Revenue earned and then closed out: the movement stays, the balance goes.
-		"5111": {decimal.Zero, decimal.Zero, decimal.NewFromInt(1_000_000), decimal.NewFromInt(1_000_000), decimal.Zero, decimal.Zero},
+		"5111": {money.Zero, money.Zero, money.FromInt(1_000_000), money.FromInt(1_000_000), money.Zero, money.Zero},
 		// Stock bought and partly sold: netted, and shown on one side only.
-		"156": {decimal.Zero, decimal.Zero, decimal.NewFromInt(2_000_000), decimal.NewFromInt(600_000), decimal.NewFromInt(1_400_000), decimal.Zero},
+		"156": {money.Zero, money.Zero, money.FromInt(2_000_000), money.FromInt(600_000), money.FromInt(1_400_000), money.Zero},
 		// The profit determination account passes through and ends empty.
-		"911": {decimal.Zero, decimal.Zero, decimal.NewFromInt(1_000_000), decimal.NewFromInt(1_000_000), decimal.Zero, decimal.Zero},
+		"911": {money.Zero, money.Zero, money.FromInt(1_000_000), money.FromInt(1_000_000), money.Zero, money.Zero},
 	}
 
 	for code, want := range cases {
@@ -441,7 +440,7 @@ func TestTrialBalance_RefusesAnAccountTheChartDoesNotHold(t *testing.T) {
 		VoucherDate: time.Date(2026, 1, 25, 0, 0, 0, 0, time.UTC),
 		AccountCode: "9999",
 		Side:        gl.SideDebit,
-		Amount:      decimal.NewFromInt(1),
+		Amount:      money.FromInt(1),
 	})
 
 	_, err := f.service.TrialBalance(context.Background(), january.ID)

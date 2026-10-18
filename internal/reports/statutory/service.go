@@ -7,8 +7,7 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/shopspring/decimal"
-
+	"fingo/internal/money"
 	"fingo/internal/reports"
 	"fingo/internal/vat"
 	"fingo/pkg/logger"
@@ -45,16 +44,16 @@ const (
 // VATBand is what one VAT rate was charged on, and how much tax it carried.
 type VATBand struct {
 	Rate vat.BasisPoints
-	Net  decimal.Decimal
-	Tax  decimal.Decimal
+	Net  money.Dong
+	Tax  money.Dong
 }
 
 // VATPots is what the period's invoices say about VAT, by treatment.
 type VATPots struct {
 	// NonTaxable and ZeroRated are net values: what the period sold without VAT
 	// being chargeable, and what it exported or supplied at 0%.
-	NonTaxable decimal.Decimal
-	ZeroRated  decimal.Decimal
+	NonTaxable money.Dong
+	ZeroRated  money.Dong
 
 	// ByRate is one band per rate that appeared.
 	ByRate []VATBand
@@ -73,7 +72,7 @@ type Facts interface {
 
 	// YearTurnover returns the turnover the corporate income tax rate is
 	// selected by.
-	YearTurnover(ctx context.Context, p ReportingPeriod) (decimal.Decimal, error)
+	YearTurnover(ctx context.Context, p ReportingPeriod) (money.Dong, error)
 }
 
 // Ledger is the books a filing is computed from.
@@ -338,11 +337,11 @@ func (s *Service) warn(ctx context.Context, warning Warning) {
 
 // vatReturn is the arithmetic of the 01/GTGT return.
 type vatReturn struct {
-	CarriedIn   decimal.Decimal // what the last period left to credit
-	InputCredit decimal.Decimal // the period's deductible input VAT
-	OutputTax   decimal.Decimal // the period's output VAT
-	Payable     decimal.Decimal // output less credit and input, when positive
-	CarriedOut  decimal.Decimal // the rest, carried to the next period
+	CarriedIn   money.Dong // what the last period left to credit
+	InputCredit money.Dong // the period's deductible input VAT
+	OutputTax   money.Dong // the period's output VAT
+	Payable     money.Dong // output less credit and input, when positive
+	CarriedOut  money.Dong // the rest, carried to the next period
 }
 
 // computeVAT works out what the return states.
@@ -357,7 +356,7 @@ func computeVAT(trial reports.TrialBalance, pots VATPots) vatReturn {
 		// Input VAT carried on the credit side is not a credit carried in; it is
 		// a book that has been reversed past zero. It is not netted into the
 		// return, and vatReconciliation says so.
-		carriedIn = decimal.Zero
+		carriedIn = money.Zero
 	}
 
 	out := vatReturn{
@@ -387,8 +386,8 @@ type figures struct {
 
 	vat       VATPots
 	vatReturn vatReturn
-	turnover  decimal.Decimal
-	citPaid   decimal.Decimal
+	turnover  money.Dong
+	citPaid   money.Dong
 }
 
 // vatBand returns the band for a rate, or an empty one when the period sold
@@ -437,8 +436,8 @@ func (f figures) vatReconciliation() []Warning {
 }
 
 // bandedTax is what the reported rate bands carry in total.
-func (f figures) bandedTax() decimal.Decimal {
-	total := decimal.Zero
+func (f figures) bandedTax() money.Dong {
+	total := money.Zero
 
 	for _, held := range f.vat.ByRate {
 		total = total.Add(held.Tax)
@@ -471,9 +470,9 @@ const vatWindowCloses = "2026-12-31"
 // 15% at or below 3bn, 17% above 3bn up to 50bn, 20% above that.
 func (f figures) citRate() vat.BasisPoints {
 	switch {
-	case f.turnover.LessThanOrEqual(decimal.NewFromInt(3_000_000_000)):
+	case f.turnover.LessThanOrEqual(money.FromInt(3_000_000_000)):
 		return 1500
-	case f.turnover.LessThanOrEqual(decimal.NewFromInt(50_000_000_000)):
+	case f.turnover.LessThanOrEqual(money.FromInt(50_000_000_000)):
 		return 1700
 	default:
 		return 2000
@@ -482,25 +481,25 @@ func (f figures) citRate() vat.BasisPoints {
 
 // citLiability is the tax on the period's profit at the applicable rate. A loss
 // is taxed at nothing.
-func (f figures) citLiability() decimal.Decimal {
+func (f figures) citLiability() money.Dong {
 	if !f.profit.NetProfit.IsPositive() {
-		return decimal.Zero
+		return money.Zero
 	}
 
 	return roundDong(f.profit.NetProfit.
-		Mul(decimal.NewFromInt(int64(f.citRate()))).
-		Div(decimal.NewFromInt(int64(vat.Whole))))
+		Mul(money.FromInt(int64(f.citRate()))).
+		Div(money.FromInt(int64(vat.Whole))))
 }
 
 // citShortfall is what the provisional payments are short of the 80% the
 // administration expects, and nothing when they are not short.
-func (f figures) citShortfall() decimal.Decimal {
+func (f figures) citShortfall() money.Dong {
 	required := roundDong(f.citLiability().
-		Mul(decimal.NewFromInt(80)).
-		Div(decimal.NewFromInt(100)))
+		Mul(money.FromInt(80)).
+		Div(money.FromInt(100)))
 
 	if f.citPaid.GreaterThanOrEqual(required) {
-		return decimal.Zero
+		return money.Zero
 	}
 
 	return required.Sub(f.citPaid)
@@ -511,6 +510,6 @@ func (f figures) citShortfall() decimal.Decimal {
 // It is the direction internal/vat rounds a tax on an amount in, and a second
 // answer to "which way does half go" is a second answer to a question that has
 // one.
-func roundDong(amount decimal.Decimal) decimal.Decimal {
+func roundDong(amount money.Dong) money.Dong {
 	return amount.Round(0)
 }

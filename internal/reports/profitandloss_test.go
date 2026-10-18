@@ -1,9 +1,8 @@
 package reports
 
 import (
+	"fingo/internal/money"
 	"testing"
-
-	"github.com/shopspring/decimal"
 )
 
 // What a period earned, what it spent, and by which heading.
@@ -19,7 +18,7 @@ func TestProfitAndLoss_RevenueLessExpensesByGroup(t *testing.T) {
 	if earned.GroupCode != "511" || earned.GroupName == "" {
 		t.Errorf("5111 reports under %q (%q), want the 511 heading", earned.GroupCode, earned.GroupName)
 	}
-	if want := decimal.NewFromInt(1_000_000); !earned.Amount.Equal(want) {
+	if want := money.FromInt(1_000_000); !earned.Amount.Equal(want) {
 		t.Errorf("revenue = %s, want %s", earned.Amount, want)
 	}
 
@@ -27,17 +26,17 @@ func TestProfitAndLoss_RevenueLessExpensesByGroup(t *testing.T) {
 	if spent.GroupCode != "632" {
 		t.Errorf("632 reports under %q, want its own code: nothing is above it", spent.GroupCode)
 	}
-	if want := decimal.NewFromInt(600_000); !spent.Amount.Equal(want) {
+	if want := money.FromInt(600_000); !spent.Amount.Equal(want) {
 		t.Errorf("cost of goods = %s, want %s", spent.Amount, want)
 	}
 
-	if want := decimal.NewFromInt(1_000_000); !report.TotalRevenue.Equal(want) {
+	if want := money.FromInt(1_000_000); !report.TotalRevenue.Equal(want) {
 		t.Errorf("total revenue = %s, want %s", report.TotalRevenue, want)
 	}
-	if want := decimal.NewFromInt(600_000); !report.TotalExpenses.Equal(want) {
+	if want := money.FromInt(600_000); !report.TotalExpenses.Equal(want) {
 		t.Errorf("total expenses = %s, want %s", report.TotalExpenses, want)
 	}
-	if want := decimal.NewFromInt(400_000); !report.NetProfit.Equal(want) {
+	if want := money.FromInt(400_000); !report.NetProfit.Equal(want) {
 		t.Errorf("net profit = %s, want %s", report.NetProfit, want)
 	}
 }
@@ -71,7 +70,7 @@ func TestProfitAndLoss_LeavesTheClosingEntriesOut(t *testing.T) {
 
 	// The same month, read with the close excluded: the revenue and the cost are
 	// both still there, and the close that zeroed them is not.
-	if !report.NetProfit.Equal(decimal.NewFromInt(400_000)) {
+	if !report.NetProfit.Equal(money.FromInt(400_000)) {
 		t.Errorf("net profit = %s, want 400000", report.NetProfit)
 	}
 }
@@ -82,7 +81,7 @@ func TestProfitAndLoss_ReportsAnOpenPeriod(t *testing.T) {
 	f := newFixture(t)
 	report := f.profitAndLoss(t, february.ID)
 
-	if want := decimal.NewFromInt(500_000); !report.NetProfit.Equal(want) {
+	if want := money.FromInt(500_000); !report.NetProfit.Equal(want) {
 		t.Errorf("net profit = %s, want %s", report.NetProfit, want)
 	}
 	if report.ExcludedClosingVouchers != 0 {
@@ -116,7 +115,7 @@ func TestProfitAndLoss_NetEqualsTheChangeInRetainedEarnings(t *testing.T) {
 	if !report.NetProfit.Equal(change) {
 		t.Errorf("net profit = %s and retained earnings moved by %s", report.NetProfit, change)
 	}
-	if want := decimal.NewFromInt(400_000); !change.Equal(want) {
+	if want := money.FromInt(400_000); !change.Equal(want) {
 		t.Errorf("retained earnings moved by %s, want %s", change, want)
 	}
 }

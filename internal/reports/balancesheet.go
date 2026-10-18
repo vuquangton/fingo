@@ -5,9 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/shopspring/decimal"
-
 	"fingo/internal/domain/gl"
+	"fingo/internal/money"
 	"fingo/internal/period"
 )
 
@@ -26,12 +25,12 @@ type BalanceSheet struct {
 	Liabilities []BalanceSheetRow
 	Equity      []BalanceSheetRow
 
-	TotalAssets      decimal.Decimal
-	TotalLiabilities decimal.Decimal
+	TotalAssets      money.Dong
+	TotalLiabilities money.Dong
 
 	// TotalEquity includes Result: what the owners have is what has been carried
 	// to them plus what the period has earned and nobody has carried yet.
-	TotalEquity decimal.Decimal
+	TotalEquity money.Dong
 
 	// Result is the period's result that is still standing in the profit and
 	// loss accounts — what no close has carried to equity yet.
@@ -45,7 +44,7 @@ type BalanceSheet struct {
 	// It is part of TotalEquity and it is not a row: the accounts that hold it
 	// are the profit and loss accounts, whose own balances are stated once, as
 	// this figure, rather than account by account on a balance sheet.
-	Result decimal.Decimal
+	Result money.Dong
 
 	// SourceVoucherCount is how many distinct vouchers the whole report was
 	// summed from.
@@ -59,7 +58,7 @@ type BalanceSheetRow struct {
 
 	// Amount is in the account's own sense: an asset positive when it is held,
 	// a liability and equity positive when they are owed or owned.
-	Amount decimal.Decimal
+	Amount money.Dong
 
 	// SourceVoucherCount is how many distinct vouchers put a figure on this row.
 	SourceVoucherCount int

@@ -13,10 +13,10 @@ package format
 
 import (
 	"errors"
+	"fingo/internal/money"
 	"fmt"
+	"strconv"
 	"strings"
-
-	"github.com/shopspring/decimal"
 )
 
 // groupSeparator and decimalSeparator are the Vietnamese convention.
@@ -30,7 +30,7 @@ const (
 //
 // Trailing zeroes in the fraction are dropped. "1.234,50" claims a precision the
 // books do not carry, and in a column of figures the extra digit is noise.
-func Money(d decimal.Decimal) string {
+func Money(d money.Dong) string {
 	text := d.String()
 
 	sign := ""
@@ -59,7 +59,7 @@ func Money(d decimal.Decimal) string {
 // A trial balance with "0" in every unused column is a table nobody can read
 // across; an empty cell is a fact — this account was not touched — and a zero
 // is a measurement. The caller decides which it wants to say.
-func MoneyIfAny(d decimal.Decimal) string {
+func MoneyIfAny(d money.Dong) string {
 	if d.IsZero() {
 		return ""
 	}
@@ -77,10 +77,10 @@ func MoneyIfAny(d decimal.Decimal) string {
 // 56, so it is not a Vietnamese number, and it could equally have been meant as
 // 1234,56 typed in the English style. The two readings differ by a hundred, so
 // there is no safe answer except to say so.
-func Amount(s string) (decimal.Decimal, error) {
+func Amount(s string) (money.Dong, error) {
 	text := strings.TrimSpace(s)
 	if text == "" {
-		return decimal.Zero, errors.New("there is no amount here")
+		return money.Zero, errors.New("there is no amount here")
 	}
 
 	sign := ""
@@ -95,33 +95,36 @@ func Amount(s string) (decimal.Decimal, error) {
 	whole, fraction, fractional := strings.Cut(text, string(decimalSeparator))
 	if fractional {
 		if strings.Contains(fraction, string(decimalSeparator)) {
-			return decimal.Zero, fmt.Errorf("%q has more than one %q", s, decimalSeparator)
+			return money.Zero, fmt.Errorf("%q has more than one %q", s, decimalSeparator)
 		}
 		if fraction == "" {
-			return decimal.Zero, fmt.Errorf("%q ends with a %q and nothing after it", s, decimalSeparator)
+			return money.Zero, fmt.Errorf("%q ends with a %q and nothing after it", s, decimalSeparator)
 		}
 	}
 
 	if err := checkGrouping(s, whole); err != nil {
-		return decimal.Zero, err
+		return money.Zero, err
 	}
 
 	digits := strings.ReplaceAll(whole, string(groupSeparator), "")
 
 	if fraction != "" {
 		if !allDigits(fraction) {
-			return decimal.Zero, fmt.Errorf("%q has something in its fraction that is not a digit", s)
+			return money.Zero, fmt.Errorf("%q has something in its fraction that is not a digit", s)
 		}
 
-		digits += "." + fraction
+		// VND has no subunit, so a fraction is not an amount this ledger can
+		// hold. Refusing it is the only honest answer: rounding here would
+		// silently move a figure the operator typed.
+		return money.Zero, fmt.Errorf("%q has a fractional part, and đồng has no subunit", s)
 	}
 
-	amount, err := decimal.NewFromString(sign + digits)
+	amount, err := strconv.ParseInt(sign+digits, 10, 64)
 	if err != nil {
-		return decimal.Zero, fmt.Errorf("%q is not an amount: %w", s, err)
+		return money.Zero, fmt.Errorf("%q is not an amount: %w", s, err)
 	}
 
-	return amount, nil
+	return money.FromInt(amount), nil
 }
 
 // checkGrouping enforces the rule that, WHEN dots are present, they separate

@@ -9,11 +9,10 @@ package document
 
 import (
 	"errors"
+	"fingo/internal/money"
 	"fmt"
 	"sort"
 	"time"
-
-	"github.com/shopspring/decimal"
 )
 
 // Kind is what a document is.
@@ -42,7 +41,7 @@ type Document struct {
 	Reference    string // số hóa đơn — the number written on the paper
 	DocumentDate time.Time
 	DueDate      time.Time
-	Amount       decimal.Decimal // gross, what the counterparty owes
+	Amount       money.Dong // gross, what the counterparty owes
 }
 
 // Validate reports whether a document could be chased.
@@ -69,13 +68,13 @@ func (d Document) Validate() error {
 // Open is a document together with what is still owed on it.
 type Open struct {
 	Document    Document
-	Outstanding decimal.Decimal
+	Outstanding money.Dong
 }
 
 // Allocation is part of a payment applied to one document.
 type Allocation struct {
 	DocumentID string
-	Amount     decimal.Decimal
+	Amount     money.Dong
 }
 
 // Plan is how a payment spreads across a partner's open documents.
@@ -85,7 +84,7 @@ type Plan struct {
 	// Unapplied is what no document could absorb. It is reported rather than
 	// absorbed: an overpayment means the customer is in credit, which is a real
 	// position somebody has to deal with.
-	Unapplied decimal.Decimal
+	Unapplied money.Dong
 }
 
 // PlanAllocation settles open documents oldest first.
@@ -98,7 +97,7 @@ type Plan struct {
 // Nothing is ever allocated beyond what a document owes: paying a 100 invoice
 // with 500 settles that invoice and leaves 400 unapplied, rather than turning
 // the invoice into a credit nobody asked for.
-func PlanAllocation(payment decimal.Decimal, open []Open) (Plan, error) {
+func PlanAllocation(payment money.Dong, open []Open) (Plan, error) {
 	if !payment.IsPositive() {
 		return Plan{}, errors.New("an allocation needs a payment greater than zero")
 	}
@@ -114,7 +113,7 @@ func PlanAllocation(payment decimal.Decimal, open []Open) (Plan, error) {
 	})
 
 	remaining := payment
-	plan := Plan{Unapplied: decimal.Zero}
+	plan := Plan{Unapplied: money.Zero}
 
 	for _, o := range ordered {
 		if !remaining.IsPositive() {

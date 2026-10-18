@@ -7,9 +7,8 @@ import (
 	"sort"
 	"time"
 
-	"github.com/shopspring/decimal"
-
 	"fingo/internal/domain/gl"
+	"fingo/internal/money"
 	"fingo/internal/usecase/ledger"
 )
 
@@ -20,7 +19,7 @@ import (
 var ErrInvalidProvision = errors.New("close: invalid provision")
 
 // hundred is the divisor a percentage is read against.
-var hundred = decimal.NewFromInt(100)
+var hundred = money.FromInt(100)
 
 // DepreciableAsset is one asset a close depreciates.
 //
@@ -35,15 +34,15 @@ type DepreciableAsset struct {
 	// Cost is the original cost (nguyên giá — TK 211), and Residual the amount
 	// the asset is expected to be worth at the end of its life. The depreciable
 	// base is the difference.
-	Cost     decimal.Decimal
-	Residual decimal.Decimal
+	Cost     money.Dong
+	Residual money.Dong
 
 	// UsefulLifeMonths is the life the base is spread over.
 	UsefulLifeMonths int
 
 	// Accumulated is the depreciation charged against the asset so far
 	// (hao mòn lũy kế — TK 214). The charge stops when the base is reached.
-	Accumulated decimal.Decimal
+	Accumulated money.Dong
 
 	// ExpenseAccount is where the period's charge is expensed, and
 	// AccumulationAccount where it is accumulated. Empty means the provision
@@ -74,7 +73,7 @@ type Receivable struct {
 
 	// Amount is what is still outstanding on it — the document's total less
 	// whatever has been allocated to it.
-	Amount decimal.Decimal
+	Amount money.Dong
 }
 
 // Receivables answers what a client's customers still owe, and when it fell due.
@@ -172,7 +171,7 @@ type AgingBand struct {
 
 	// Percent is the provision as a percentage of the band, so 5 is five per
 	// cent.
-	Percent decimal.Decimal
+	Percent money.Dong
 }
 
 // BadDebtPolicy is how much of each age band of receivables is provided against.
@@ -209,11 +208,11 @@ func DefaultBadDebtPolicy() BadDebtPolicy {
 func Circular48BadDebtPolicy() BadDebtPolicy {
 	return BadDebtPolicy{Bands: []AgingBand{
 		{Name: "up to 6 months", FromDays: 0},
-		{Name: "6-12 months", FromDays: 181, Percent: decimal.NewFromInt(30)},
-		{Name: "1-2 years", FromDays: 366, Percent: decimal.NewFromInt(50)},
-		{Name: "2-3 years", FromDays: 731, Percent: decimal.NewFromInt(70)},
-		{Name: "3-4 years", FromDays: 1096, Percent: decimal.NewFromInt(90)},
-		{Name: "over 4 years", FromDays: 1461, Percent: decimal.NewFromInt(100)},
+		{Name: "6-12 months", FromDays: 181, Percent: money.FromInt(30)},
+		{Name: "1-2 years", FromDays: 366, Percent: money.FromInt(50)},
+		{Name: "2-3 years", FromDays: 731, Percent: money.FromInt(70)},
+		{Name: "3-4 years", FromDays: 1096, Percent: money.FromInt(90)},
+		{Name: "over 4 years", FromDays: 1461, Percent: money.FromInt(100)},
 	}}
 }
 
@@ -264,9 +263,9 @@ func (p BadDebtPolicy) bandIndex(daysOverdue int) int {
 // BadDebtCharge is what one age band was provided against at a close.
 type BadDebtCharge struct {
 	Band        string
-	Outstanding decimal.Decimal
-	Percent     decimal.Decimal
-	Amount      decimal.Decimal
+	Outstanding money.Dong
+	Percent     money.Dong
+	Amount      money.Dong
 }
 
 // DepreciationCharge is what one asset was depreciated by at a close.
@@ -276,9 +275,9 @@ type DepreciationCharge struct {
 
 	// Amount is the charge for the period, Months how many monthly rates it
 	// covers, and Accumulated what the asset stands at after it.
-	Amount      decimal.Decimal
+	Amount      money.Dong
 	Months      int
-	Accumulated decimal.Decimal
+	Accumulated money.Dong
 }
 
 // ProvisionSummary is what a close provided for at a period's end: the
@@ -291,13 +290,13 @@ type ProvisionSummary struct {
 	Depreciation []DepreciationCharge
 	BadDebt      []BadDebtCharge
 
-	DepreciationTotal decimal.Decimal
-	BadDebtTotal      decimal.Decimal
+	DepreciationTotal money.Dong
+	BadDebtTotal      money.Dong
 
 	// Total is what the provisions charged to the period's expenses, and is the
 	// amount the closing entries then carry to retained earnings along with
 	// everything else the period spent.
-	Total decimal.Decimal
+	Total money.Dong
 }
 
 // Provisions is the period-end provision calculation a close performs.
@@ -436,9 +435,9 @@ func provisionsFor(
 	out := provision{summary: ProvisionSummary{
 		Depreciation:      make([]DepreciationCharge, 0, len(assets)),
 		BadDebt:           make([]BadDebtCharge, 0, len(badDebt.Bands)),
-		DepreciationTotal: decimal.Zero,
-		BadDebtTotal:      decimal.Zero,
-		Total:             decimal.Zero,
+		DepreciationTotal: money.Zero,
+		BadDebtTotal:      money.Zero,
+		Total:             money.Zero,
 	}}
 
 	// Sorted so that two closes over the same assets produce the same voucher.
@@ -536,10 +535,10 @@ func provisionsFor(
 // instalments. The odd đồng is left to a later period, which the cap above turns
 // into a final charge smaller than the rate — the asset lands exactly on its
 // residual, and never past it.
-func depreciationFor(asset DepreciableAsset, months int) (decimal.Decimal, error) {
+func depreciationFor(asset DepreciableAsset, months int) (money.Dong, error) {
 	rate, err := monthlyRate(asset)
 	if err != nil {
-		return decimal.Zero, err
+		return money.Zero, err
 	}
 	if months < 1 {
 		months = 1
@@ -547,10 +546,10 @@ func depreciationFor(asset DepreciableAsset, months int) (decimal.Decimal, error
 
 	remaining := asset.Cost.Sub(asset.Residual).Sub(asset.Accumulated)
 	if !remaining.IsPositive() {
-		return decimal.Zero, nil
+		return money.Zero, nil
 	}
 
-	charge := rate.Mul(decimal.NewFromInt(int64(months)))
+	charge := rate.Mul(money.FromInt(int64(months)))
 	if charge.GreaterThan(remaining) {
 		// The life is nearly over and this charge would pass the base. What is
 		// left is the charge: the asset lands exactly on its residual, and never
@@ -568,37 +567,28 @@ func depreciationFor(asset DepreciableAsset, months int) (decimal.Decimal, error
 // to last — would otherwise truncate to a rate of zero and never be written down
 // at all. One đồng a month takes the same base over the same life, and the cap
 // in depreciationFor still stops it there.
-func monthlyRate(asset DepreciableAsset) (decimal.Decimal, error) {
+func monthlyRate(asset DepreciableAsset) (money.Dong, error) {
 	switch {
 	case asset.ID == "":
-		return decimal.Zero, fmt.Errorf("%w: an asset to depreciate has no id", ErrInvalidProvision)
+		return money.Zero, fmt.Errorf("%w: an asset to depreciate has no id", ErrInvalidProvision)
 	case asset.UsefulLifeMonths <= 0:
-		return decimal.Zero, fmt.Errorf("%w: asset %s has a useful life of %d months",
+		return money.Zero, fmt.Errorf("%w: asset %s has a useful life of %d months",
 			ErrInvalidProvision, asset.ID, asset.UsefulLifeMonths)
-	case !wholeDong(asset.Cost) || !wholeDong(asset.Residual) || !wholeDong(asset.Accumulated):
-		return decimal.Zero, fmt.Errorf(
-			"%w: asset %s costs %s, is expected to be worth %s at the end of its life and has %s accumulated; VND has no subunit",
-			ErrInvalidProvision, asset.ID, asset.Cost, asset.Residual, asset.Accumulated)
 	case !asset.Cost.IsPositive():
-		return decimal.Zero, fmt.Errorf("%w: asset %s costs %s", ErrInvalidProvision, asset.ID, asset.Cost)
+		return money.Zero, fmt.Errorf("%w: asset %s costs %s", ErrInvalidProvision, asset.ID, asset.Cost)
 	case asset.Residual.IsNegative() || asset.Residual.GreaterThan(asset.Cost):
-		return decimal.Zero, fmt.Errorf("%w: asset %s costs %s and is expected to be worth %s at the end of its life",
+		return money.Zero, fmt.Errorf("%w: asset %s costs %s and is expected to be worth %s at the end of its life",
 			ErrInvalidProvision, asset.ID, asset.Cost, asset.Residual)
 	}
 
 	rate := asset.Cost.Sub(asset.Residual).
-		Div(decimal.NewFromInt(int64(asset.UsefulLifeMonths))).
+		Div(money.FromInt(int64(asset.UsefulLifeMonths))).
 		Truncate(0)
 	if rate.IsZero() {
-		rate = decimal.NewFromInt(1)
+		rate = money.FromInt(1)
 	}
 
 	return rate, nil
-}
-
-// wholeDong reports whether an amount is a whole number of đồng.
-func wholeDong(amount decimal.Decimal) bool {
-	return amount.Equal(amount.Truncate(0))
 }
 
 // badDebtCharges ages the receivables into the policy's bands and works out what
@@ -611,7 +601,7 @@ func badDebtCharges(receivables []Receivable, asOf time.Time, policy BadDebtPoli
 		return nil, err
 	}
 
-	outstanding := make([]decimal.Decimal, len(policy.Bands))
+	outstanding := make([]money.Dong, len(policy.Bands))
 
 	for _, receivable := range receivables {
 		if !receivable.Amount.IsPositive() {
@@ -691,7 +681,7 @@ func dayOf(t time.Time) time.Time {
 // expenses the provisions just created — read before them, the period's expenses
 // would be short by exactly the provisions, and the profit and loss accounts
 // would be left standing at that amount instead of at zero.
-func expenseBalance(account string, amount decimal.Decimal) AccountBalance {
+func expenseBalance(account string, amount money.Dong) AccountBalance {
 	return AccountBalance{AccountCode: account, Type: gl.AccountTypeExpense, Amount: amount}
 }
 

@@ -5,9 +5,8 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/shopspring/decimal"
-
 	"fingo/internal/domain/gl"
+	"fingo/internal/money"
 )
 
 // AccountBalance is one account's position over a period, in the account's own
@@ -26,7 +25,7 @@ import (
 type AccountBalance struct {
 	AccountCode string
 	Type        gl.AccountType
-	Amount      decimal.Decimal
+	Amount      money.Dong
 }
 
 // ClosingAccounts names the two accounts a close posts through.
@@ -89,9 +88,9 @@ func (a ClosingAccounts) Validate() error {
 //
 // The result is the period's profit, positive for a profit and negative for a
 // loss, and is exactly what lands in retained earnings.
-func closingEntries(balances []AccountBalance, accounts ClosingAccounts) ([]gl.VoucherLine, decimal.Decimal, error) {
+func closingEntries(balances []AccountBalance, accounts ClosingAccounts) ([]gl.VoucherLine, money.Dong, error) {
 	if err := accounts.Validate(); err != nil {
-		return nil, decimal.Zero, err
+		return nil, money.Zero, err
 	}
 
 	// Sorted so that two runs over the same books produce the same voucher, and
@@ -106,7 +105,7 @@ func closingEntries(balances []AccountBalance, accounts ClosingAccounts) ([]gl.V
 
 	// result is the balance the closing entries leave on the result account,
 	// credit-positive: the period's profit.
-	result := decimal.Zero
+	result := money.Zero
 
 	clear := func(balance AccountBalance, carries gl.EntrySide) error {
 		if balance.Amount.IsZero() {
@@ -152,14 +151,14 @@ func closingEntries(balances []AccountBalance, accounts ClosingAccounts) ([]gl.V
 		switch balance.Type {
 		case gl.AccountTypeRevenue:
 			if err := clear(balance, gl.SideCredit); err != nil {
-				return nil, decimal.Zero, err
+				return nil, money.Zero, err
 			}
 		case gl.AccountTypeExpense:
 			if err := clear(balance, gl.SideDebit); err != nil {
-				return nil, decimal.Zero, err
+				return nil, money.Zero, err
 			}
 		default:
-			return nil, decimal.Zero, fmt.Errorf(
+			return nil, money.Zero, fmt.Errorf(
 				"account %s is a %s account, and a close clears only revenue and expenses",
 				balance.AccountCode, balance.Type)
 		}
@@ -180,7 +179,7 @@ func closingEntries(balances []AccountBalance, accounts ClosingAccounts) ([]gl.V
 }
 
 // carrySide is the side a signed, credit-positive balance sits on.
-func carrySide(amount decimal.Decimal) gl.EntrySide {
+func carrySide(amount money.Dong) gl.EntrySide {
 	if amount.IsNegative() {
 		return gl.SideDebit
 	}

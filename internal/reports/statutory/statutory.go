@@ -51,9 +51,8 @@ package statutory
 
 import (
 	"errors"
+	"fingo/internal/money"
 	"time"
-
-	"github.com/shopspring/decimal"
 )
 
 // Errors a caller may need to tell apart.
@@ -112,7 +111,7 @@ type LineItem struct {
 	// Amount is in whole đồng. It is written as a decimal string rather than a
 	// JSON number, because a JSON number is a float in most parsers and an
 	// amount that rounds is an amount that is wrong.
-	Amount decimal.Decimal `json:"amount"`
+	Amount money.Dong `json:"amount"`
 
 	// Note is anything a reader of this line has to know: which rate applied,
 	// which question blocks the mã số, what the line is derived from.

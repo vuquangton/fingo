@@ -4,9 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/shopspring/decimal"
-
 	"fingo/internal/domain/gl"
+	"fingo/internal/money"
 )
 
 // What the client owns equals what it owes together with what is left for its
@@ -21,13 +20,13 @@ func TestBalanceSheet_Balances(t *testing.T) {
 			sheet.TotalAssets, sheet.TotalLiabilities.Add(sheet.TotalEquity))
 	}
 
-	if want := decimal.NewFromInt(7_400_000); !sheet.TotalAssets.Equal(want) {
+	if want := money.FromInt(7_400_000); !sheet.TotalAssets.Equal(want) {
 		t.Errorf("total assets = %s, want %s", sheet.TotalAssets, want)
 	}
-	if want := decimal.NewFromInt(2_000_000); !sheet.TotalLiabilities.Equal(want) {
+	if want := money.FromInt(2_000_000); !sheet.TotalLiabilities.Equal(want) {
 		t.Errorf("total liabilities = %s, want %s", sheet.TotalLiabilities, want)
 	}
-	if want := decimal.NewFromInt(5_400_000); !sheet.TotalEquity.Equal(want) {
+	if want := money.FromInt(5_400_000); !sheet.TotalEquity.Equal(want) {
 		t.Errorf("total equity = %s, want %s", sheet.TotalEquity, want)
 	}
 
@@ -68,7 +67,7 @@ func TestBalanceSheet_CarriesEveryLineUpToTheDate(t *testing.T) {
 	for name, tc := range cases {
 		t.Run(name, func(t *testing.T) {
 			row := sheetRow(t, tc.section, codes[name])
-			if want := decimal.NewFromInt(tc.want); !row.Amount.Equal(want) {
+			if want := money.FromInt(tc.want); !row.Amount.Equal(want) {
 				t.Errorf("%s = %s, want %s", codes[name], row.Amount, want)
 			}
 		})
@@ -82,7 +81,7 @@ func TestBalanceSheet_CarriesAnUnclosedResultIntoEquity(t *testing.T) {
 	f := newFixture(t)
 	sheet := f.balanceSheet(t, february.ID)
 
-	if want := decimal.NewFromInt(500_000); !sheet.Result.Equal(want) {
+	if want := money.FromInt(500_000); !sheet.Result.Equal(want) {
 		t.Errorf("unclosed result = %s, want %s", sheet.Result, want)
 	}
 	if !sheet.Balanced() {
@@ -92,7 +91,7 @@ func TestBalanceSheet_CarriesAnUnclosedResultIntoEquity(t *testing.T) {
 
 	// Equity is the owners' capital, the profit carried at the close, and the
 	// profit still standing in the profit and loss accounts.
-	want := decimal.NewFromInt(5_000_000 + 400_000 + 500_000)
+	want := money.FromInt(5_000_000 + 400_000 + 500_000)
 	if !sheet.TotalEquity.Equal(want) {
 		t.Errorf("total equity = %s, want %s", sheet.TotalEquity, want)
 	}
@@ -111,21 +110,21 @@ func TestBalanceSheet_HoldsAContraAssetAsANegativeAsset(t *testing.T) {
 			VoucherDate: time.Date(2026, 1, 25, 0, 0, 0, 0, time.UTC),
 			AccountCode: "6422",
 			Side:        gl.SideDebit,
-			Amount:      decimal.NewFromInt(100_000),
+			Amount:      money.FromInt(100_000),
 		},
 		Line{
 			VoucherID:   "v-depreciation",
 			VoucherDate: time.Date(2026, 1, 25, 0, 0, 0, 0, time.UTC),
 			AccountCode: "2141",
 			Side:        gl.SideCredit,
-			Amount:      decimal.NewFromInt(100_000),
+			Amount:      money.FromInt(100_000),
 		},
 	)
 
 	sheet := f.balanceSheet(t, january.ID)
 
 	accumulated := sheetRow(t, sheet.Assets, "2141")
-	if want := decimal.NewFromInt(-100_000); !accumulated.Amount.Equal(want) {
+	if want := money.FromInt(-100_000); !accumulated.Amount.Equal(want) {
 		t.Errorf("2141 = %s, want %s: a credit balance on an asset account", accumulated.Amount, want)
 	}
 	for _, row := range sheet.Liabilities {

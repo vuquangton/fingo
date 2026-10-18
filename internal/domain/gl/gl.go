@@ -3,11 +3,10 @@ package gl
 import (
 	"context"
 	"errors"
+	"fingo/internal/money"
 	"fmt"
 	"strings"
 	"time"
-
-	"github.com/shopspring/decimal"
 )
 
 type VoucherType string
@@ -46,7 +45,7 @@ type VoucherLine struct {
 	PartnerID string
 
 	Side   EntrySide
-	Amount decimal.Decimal
+	Amount money.Dong
 	Note   string
 }
 
@@ -138,7 +137,7 @@ func (v *Voucher) AddLine(line VoucherLine) error {
 	if line.AccountCode == "" {
 		return errors.New("voucher line account is required")
 	}
-	if line.Amount.LessThanOrEqual(decimal.Zero) {
+	if line.Amount.LessThanOrEqual(money.Zero) {
 		return errors.New("voucher line amount must be greater than zero")
 	}
 	if !line.Amount.Equal(line.Amount.Truncate(0)) {
@@ -163,8 +162,8 @@ func (v *Voucher) ValidateBalance() error {
 		return errors.New("voucher must contain at least one line")
 	}
 
-	totalDebit := decimal.Zero
-	totalCredit := decimal.Zero
+	totalDebit := money.Zero
+	totalCredit := money.Zero
 
 	for _, l := range v.lines {
 		switch l.Side {

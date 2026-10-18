@@ -11,17 +11,16 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/shopspring/decimal"
-
 	"fingo/internal/domain/document"
 	"fingo/internal/domain/gl"
+	"fingo/internal/money"
 )
 
 // StockIssue is stock leaving the warehouse because of a posting.
 type StockIssue struct {
 	ItemCode      string
 	WarehouseCode string
-	Quantity      decimal.Decimal
+	Quantity      money.Dong
 
 	// Cost is what the issue was resolved at, before the transaction, and is
 	// re-checked inside it. If another posting moved the same stock first then
@@ -30,15 +29,15 @@ type StockIssue struct {
 	//
 	// That check is what makes it safe to resolve a cost outside a transaction
 	// at all.
-	Cost decimal.Decimal
+	Cost money.Dong
 }
 
 // StockReceipt is stock arriving because of a posting.
 type StockReceipt struct {
 	ItemCode      string
 	WarehouseCode string
-	Quantity      decimal.Decimal
-	Cost          decimal.Decimal
+	Quantity      money.Dong
+	Cost          money.Dong
 }
 
 // Posting is one atomic write to the books.

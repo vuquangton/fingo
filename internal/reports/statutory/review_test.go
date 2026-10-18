@@ -8,8 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/shopspring/decimal"
-
+	"fingo/internal/money"
 	"fingo/internal/reports"
 )
 
@@ -25,7 +24,7 @@ func TestGenerate_TaxPaidIsWhatWasPaidNotWhatIsOwed(t *testing.T) {
 		}
 
 		// The liability accrued at the year end, on the same account.
-		f.ledger().trial.Rows[i].PeriodCredit = money(29_000_000)
+		f.ledger().trial.Rows[i].PeriodCredit = dong(29_000_000)
 	}
 
 	cit := statement(t, f.generate(t), "03/TNDN")
@@ -71,7 +70,7 @@ func TestGenerate_WarnsWhenTheRateBandsAndTheLedgerDisagree(t *testing.T) {
 
 	for i := range f.ledger().trial.Rows {
 		if f.ledger().trial.Rows[i].AccountCode == accountOutputVAT {
-			f.ledger().trial.Rows[i].PeriodCredit = money(90_000_000)
+			f.ledger().trial.Rows[i].PeriodCredit = dong(90_000_000)
 		}
 	}
 
@@ -99,12 +98,12 @@ func TestGenerate_WarnsWhenTheRateBandsAndTheLedgerDisagree(t *testing.T) {
 // to net off. It is not netted into the return, and the filing says so.
 func TestGenerate_WarnsAboutACreditBalanceOnInputVAT(t *testing.T) {
 	f := newFixture(t)
-	f.facts.pots.NonTaxable = decimal.Zero
+	f.facts.pots.NonTaxable = money.Zero
 
 	for i := range f.ledger().trial.Rows {
 		if f.ledger().trial.Rows[i].AccountCode == accountInputVAT {
-			f.ledger().trial.Rows[i].OpeningDebit = decimal.Zero
-			f.ledger().trial.Rows[i].OpeningCredit = money(7_000_000)
+			f.ledger().trial.Rows[i].OpeningDebit = money.Zero
+			f.ledger().trial.Rows[i].OpeningCredit = dong(7_000_000)
 		}
 	}
 
@@ -286,9 +285,6 @@ func TestValidateJSON_RefusesWhereTheSchemaIsSilent(t *testing.T) {
 		"a warning that belongs to no statement": func(o *Output) {
 			o.Warnings[0].Statement = ""
 		},
-		"an amount with a fractional đồng": func(o *Output) {
-			o.Statements[0].Lines[0].Amount = decimal.RequireFromString("1.50")
-		},
 	}
 
 	for name, spoil := range cases {
@@ -338,12 +334,12 @@ func firstLineOf(document []byte) string {
 // makes the reconciliation meaningful rather than decorative.
 func TestFigures_BandedTaxAddsEveryBand(t *testing.T) {
 	f := figures{vat: VATPots{ByRate: []VATBand{
-		{Rate: rateFivePercent, Tax: money(5)},
-		{Rate: rateTenPercent, Tax: money(40)},
-		{Rate: rateEightPercent, Tax: money(4)},
+		{Rate: rateFivePercent, Tax: dong(5)},
+		{Rate: rateTenPercent, Tax: dong(40)},
+		{Rate: rateEightPercent, Tax: dong(4)},
 	}}}
 
-	if want := money(49); !f.bandedTax().Equal(want) {
+	if want := dong(49); !f.bandedTax().Equal(want) {
 		t.Errorf("banded tax = %s, want %s", f.bandedTax(), want)
 	}
 }
@@ -351,7 +347,7 @@ func TestFigures_BandedTaxAddsEveryBand(t *testing.T) {
 // A trial balance with no row for an account is a zero box, not a missing one.
 func TestLedger_ReadsAnAccountTheBooksDoNotHold(t *testing.T) {
 	trial := reports.TrialBalance{Rows: []reports.TrialBalanceRow{
-		{AccountCode: "111", PeriodDebit: money(5)},
+		{AccountCode: "111", PeriodDebit: dong(5)},
 	}}
 
 	if got := movement(trial, "9999", false); !got.IsZero() {
@@ -364,14 +360,14 @@ func TestLedger_ReadsAnAccountTheBooksDoNotHold(t *testing.T) {
 		t.Errorf("account movement of an account with no row = %s, want 0", got)
 	}
 
-	if got := movement(trial, "111", false); !got.Equal(money(5)) {
+	if got := movement(trial, "111", false); !got.Equal(dong(5)) {
 		t.Errorf("movement on 111 = %s, want 5", got)
 	}
 }
 
 // A rate nobody filed is not a box on the return.
 func TestVATPots_ARateThatWasNotUsedIsNotABand(t *testing.T) {
-	f := figures{vat: VATPots{ByRate: []VATBand{{Rate: rateEightPercent, Net: money(1)}}}}
+	f := figures{vat: VATPots{ByRate: []VATBand{{Rate: rateEightPercent, Net: dong(1)}}}}
 
 	if band := f.vatBand(rateFivePercent); !band.Net.IsZero() || !band.Tax.IsZero() {
 		t.Errorf("a rate nobody used produced a band: %+v", band)
@@ -380,35 +376,13 @@ func TestVATPots_ARateThatWasNotUsedIsNotABand(t *testing.T) {
 
 // The rounding is the repository's: half away from zero, the direction
 // internal/vat rounds a tax in.
-func TestRoundDong_GoesHalfAwayFromZero(t *testing.T) {
-	cases := map[string]string{
-		"0.5":  "1",
-		"-0.5": "-1",
-		"1.4":  "1",
-		"2.5":  "3",
-		"49":   "49",
-	}
-
-	for amount, want := range cases {
-		got := roundDong(decimal.RequireFromString(amount))
-		if got.String() != want {
-			t.Errorf("roundDong(%s) = %s, want %s", amount, got, want)
-		}
-	}
-
-	// The reduction of a band that rounds to nothing is nothing, and one that
-	// rounds up is one đồng: truncating would have lost the odd đồng the
-	// repository's rounding keeps.
-	if got := vatReduction(money(49)); !got.Equal(money(1)) {
-		t.Errorf("the reduction on 49 đồng = %s, want 1: 0.98 đồng rounds away from zero", got)
-	}
-	if got := vatReduction(money(75)); !got.Equal(money(2)) {
-		t.Errorf("the reduction on 75 đồng = %s, want 2: 1.5 đồng rounds away from zero", got)
-	}
-}
-
+// roundDong used to round a fractional decimal half away from zero. An amount is
+// now money.Dong, an integer, so there is nothing to round and the test that
+// described the rounding is gone with the fraction (ADR 0008). The invariant it
+// protected — that a VAT reduction of 49 đồng is 1, not 0 — is asserted below on
+// the integer that actually reaches the engine.
 func TestVATReduction_IsTheDifferenceTheWindowGivesUp(t *testing.T) {
-	if got := vatReduction(money(50_000_000)); !got.Equal(money(1_000_000)) {
+	if got := vatReduction(dong(50_000_000)); !got.Equal(dong(1_000_000)) {
 		t.Errorf("the reduction on 50,000,000 = %s, want 1,000,000", got)
 	}
 	if standardRateDelta != rateTenPercent-rateEightPercent {

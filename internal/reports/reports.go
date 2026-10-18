@@ -31,10 +31,9 @@ import (
 	"sort"
 	"time"
 
-	"github.com/shopspring/decimal"
-
 	"fingo/internal/close"
 	"fingo/internal/domain/gl"
+	"fingo/internal/money"
 	"fingo/internal/period"
 	"fingo/internal/usecase/ledger"
 )
@@ -89,7 +88,7 @@ type Line struct {
 	VoucherDate time.Time
 	AccountCode string
 	Side        gl.EntrySide
-	Amount      decimal.Decimal
+	Amount      money.Dong
 }
 
 // Journal is the ledger, read as lines.
@@ -190,8 +189,8 @@ func find(periods []period.Period, id string) (period.Period, error) {
 // movement is what one account carried into a period, what the period did to it,
 // and which vouchers did either.
 type movement struct {
-	openingDebit, openingCredit decimal.Decimal
-	periodDebit, periodCredit   decimal.Decimal
+	openingDebit, openingCredit money.Dong
+	periodDebit, periodCredit   money.Dong
 
 	// carried is every voucher that put anything on this account, and
 	// periodCarried the ones that did it inside the period. A row whose figure
@@ -357,13 +356,13 @@ func sortedCodes(found map[string]*movement) []string {
 // took 100 in and paid 40 out stands at 60 debit, not at 100 debit and 40
 // credit. The columns that keep both sides are the period's own movements, which
 // are a turnover and not a position.
-func netted(debit, credit decimal.Decimal) (decimal.Decimal, decimal.Decimal) {
+func netted(debit, credit money.Dong) (money.Dong, money.Dong) {
 	net := debit.Sub(credit)
 	if net.IsNegative() {
-		return decimal.Zero, net.Neg()
+		return money.Zero, net.Neg()
 	}
 
-	return net, decimal.Zero
+	return net, money.Zero
 }
 
 // dayOf drops the time of day, in UTC.
