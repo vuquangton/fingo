@@ -33,7 +33,7 @@ and a 9.2×10¹² amount.
 | **L2** ≥ 60 scenarios match hand-calculated oracle | **NO** | 0 executed — see `unverified.md` |
 | **L3** VAT/allocation/average-cost exact at boundaries | **PARTIAL → NO** | VAT 25/25 pass (`03-arithmetic.md`); allocation and average cost not run |
 | **L4** I1–I12 over ≥ 10,000 random sequences | **NO** | not executed |
-| **L5** SQL-only recomputation equals the app's reports | **NO** | not executed |
+| **L5** SQL-only recomputation equals the app's reports | **YES (totals)** | `TestReportsEqualSQLRecomputation`: assets 11.000.000, liabilities 500.000, revenue 2.000.000, expenses 1.500.000, profit 500.000 — identical in SQL and app; line-by-line B01/B02 mapping still `[UNVERIFIED]` |
 | **L6** Concurrency/retry produce no duplicates or partial writes | **PARTIAL** | 20 parallel posts, distinct numbers, balanced (earlier review); retry-with-key untestable (no key, L-06) |
 | **L7** Cross-client isolation inside business logic | **YES** | RLS forced 15/15; cross-client insert refused |
 | **L8** Out-of-scope features blocked clearly | **NO** | 8% VAT and KCT are in scope legally and silently wrong; purchase return / FX / e-invoice are absent with no blocking message |
@@ -66,7 +66,7 @@ and a 9.2×10¹² amount.
 | 4 | Double submit posts twice (no idempotency key) | HIGH |
 | 5 | Inactive/heading accounts accepted by SQL | HIGH |
 | 6 | Stock guards Go-only; negative stock possible via SQL | HIGH |
-| 7 | Reports never recomputed independently in SQL | MEDIUM |
+| 7 | B01/B02 **line** mapping not compared to the TT133 form (totals now are) | MEDIUM |
 | 8 | `Money.Mul` overflow unchecked | MEDIUM |
 | 9 | No exempt/non-taxable line category | MEDIUM |
 | 10 | Suite sensitivity unknown (no mutation run) | MEDIUM |
