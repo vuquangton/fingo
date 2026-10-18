@@ -69,3 +69,4 @@ support call, and the choice belongs to whoever runs the system.
 | Multiple clients active at once | one client at a time is the session model; concurrent *posts* were tested, concurrent *clients* were not |
 | Backup duration and restore time at volume | the dump was measured at 72 KB on a development database, which proves nothing |
 | Memory under load | a report loads every line into Go before grouping |
+| Test isolation | the tests share one database and accumulate rows; the login test counts only its own prefix because of it |

@@ -18,10 +18,14 @@ func TestFailedLoginsAreRecordedAndCostNothing(t *testing.T) {
 
 	const attempts = 30
 
+	// The development database accumulates between runs, so this run counts only
+	// its own attempts, by a prefix nothing else uses.
+	prefix := "spray-" + newUUID(t)[:8] + "-"
+
 	start := time.Now()
 	for i := 0; i < attempts; i++ {
 		resp, err := h.client.PostForm(h.server.URL+"/login", url.Values{
-			"email":    {"nobody-" + itoa(i) + "@example.invalid"},
+			"email":    {prefix + itoa(i) + "@example.invalid"},
 			"password": {"wrong-password"},
 		})
 		if err != nil {
@@ -38,7 +42,7 @@ func TestFailedLoginsAreRecordedAndCostNothing(t *testing.T) {
 	// failed_logins is practice-level data, not a client's books.
 	var recorded int
 	if err := h.pool.QueryRow(t.Context(),
-		`SELECT count(*) FROM failed_logins WHERE email LIKE 'nobody-%@example.invalid'`).Scan(&recorded); err != nil {
+		`SELECT count(*) FROM failed_logins WHERE email LIKE $1`, prefix+"%").Scan(&recorded); err != nil {
 		t.Fatalf("read failed logins: %v", err)
 	}
 
