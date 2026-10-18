@@ -34,3 +34,21 @@ meaning* of an entry (is this account allowed, is this period closed, do these g
 exist). That is a defensible architecture only if every write path is Go — and it is —
 but it means a single missing check in a future path is a silent wrong book, not a
 constraint violation.
+
+## L-11 (found while extending the VAT summary) — the chosen rate is not persisted
+
+**Severity: HIGH. Confidence: HIGH (schema + code inspected).**
+
+The sales and purchase screens now let the operator choose 10% / 5% / 0% / KCT / exempt per line, and the posting is correct at the moment of posting. But **no table stores which rate a document line was taxed under**:
+
+| Evidence | Finding |
+| :--- | :--- |
+| `db/migrations/*.sql` | no `vat_rate_id` column on `documents`, `document_lines`, or `voucher_lines` |
+| `internal/books/documents.go` | the insert lists `id, client_id, kind, partner_id, document_date, period_id, total, allocated, status` — no rate |
+| `internal/document/document.go:154-157` | the domain carries `VATRateID` and its comment says it exists so a stored line stays reproducible — but the adapter drops it |
+
+**Consequence:** the VAT summary cannot be broken down by rate or by KCT/exempt, because the information is not in the database. Re-opening last year's invoice cannot say whether it was 5%, 0%, KCT or exempt; only the amount 33311 moved is known. A change to the rate catalog therefore cannot corrupt the past — but it also cannot explain the past.
+
+**Fix (effort S):** add `vat_rate_id text REFERENCES vat_rates (id)` to `document_lines`, write it in the document adapter from `document.Line.VATRateID`, backfill nothing (old rows stay null), and only then extend the VAT summary with the per-rate table.
+
+I said in the previous message that the data was "already on the document lines". That was wrong: the field exists in the domain model and nowhere in the database. Corrected here rather than papered over.
