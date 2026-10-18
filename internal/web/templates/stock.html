@@ -1,0 +1,132 @@
+{{define "stock.html"}}<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kho — FinGo</title>
+  <link rel="stylesheet" href="/static/vendor/tabler.min.css">
+</head>
+<body class="antialiased">
+<div class="page">
+  <header class="navbar navbar-expand d-print-none">
+    <div class="container-xl">
+      <span class="navbar-brand">FinGo</span>
+      <span class="navbar-text ms-3">{{.Client}}</span>
+      <nav class="ms-4">
+        <a class="btn btn-sm btn-ghost-secondary" href="/sales">Bán hàng</a>
+        <a class="btn btn-sm btn-ghost-secondary" href="/purchase">Mua hàng</a>
+        <a class="btn btn-sm btn-ghost-secondary" href="/stock">Kho</a>
+        <a class="btn btn-sm btn-ghost-secondary" href="/reports">Cân đối</a>
+      </nav>
+      <span class="navbar-text ms-auto">{{.Email}}</span>
+    </div>
+  </header>
+
+  <div class="page-wrapper">
+    <div class="page-body">
+      <div class="container-xl">
+
+        {{if .Posted}}
+        <div class="alert alert-success" role="status">Đã ghi sổ: <strong>{{.Posted}}</strong>.</div>
+        {{end}}
+        {{if .Error}}
+        <div class="alert alert-danger" role="alert">{{.Error}}</div>
+        {{end}}
+
+        <div class="row g-3">
+          <div class="col-lg-8">
+            <div class="card">
+              <div class="card-header"><h3 class="card-title">Hàng tồn kho</h3></div>
+              {{if .Items}}
+              <div class="table-responsive">
+                <table class="table table-vcenter card-table">
+                  <thead><tr><th>Mã</th><th>Tên</th><th>ĐVT</th><th class="text-end">Tồn</th><th class="text-end">Giá vốn / đơn vị</th><th class="text-end">Giá trị tồn</th></tr></thead>
+                  <tbody>
+                    {{range .Items}}
+                    <tr>
+                      <td>{{.SKU}}</td><td>{{.Name}}</td><td>{{.Unit}}</td>
+                      <td class="text-end">{{.OnHand}}</td>
+                      <td class="text-end">{{money .UnitCost}}</td>
+                      <td class="text-end">{{money .Value}}</td>
+                    </tr>
+                    {{end}}
+                  </tbody>
+                </table>
+              </div>
+              {{else}}
+              <div class="card-body"><p class="text-secondary mb-0">Chưa có mặt hàng nào.</p></div>
+              {{end}}
+            </div>
+
+            <form method="post" action="/stock/receive" class="card mt-3">
+              <div class="card-header"><h3 class="card-title">Nhập kho</h3></div>
+              <div class="card-body">
+                <div class="row g-3">
+                  <div class="col-md-5">
+                    <label class="form-label" for="item_id">Mặt hàng</label>
+                    <select class="form-select" id="item_id" name="item_id" required>
+                      {{range .Items}}<option value="{{.ID}}">{{.SKU}} — {{.Name}}</option>{{end}}
+                    </select>
+                  </div>
+                  <div class="col-md-2">
+                    <label class="form-label" for="qty">Số lượng</label>
+                    <input class="form-control text-end" id="qty" name="qty" value="1" inputmode="numeric" required>
+                  </div>
+                  <div class="col-md-3">
+                    <label class="form-label" for="unit_cost">Đơn giá nhập</label>
+                    <input class="form-control text-end" id="unit_cost" name="unit_cost" placeholder="100.000" inputmode="numeric" required>
+                  </div>
+                  <div class="col-md-2">
+                    <label class="form-label" for="date">Ngày</label>
+                    <input class="form-control" id="date" name="date" type="date" value="{{.Date}}" required>
+                  </div>
+                  <div class="col-md-12">
+                    <label class="form-label" for="source_doc">Chứng từ nguồn</label>
+                    <input class="form-control" id="source_doc" name="source_doc" placeholder="HĐ 0001234 / PNK 01" required>
+                  </div>
+                </div>
+                <p class="text-secondary mt-3 mb-0">
+                  Nhập kho ghi Nợ 156 / Có 331 theo giá trị nhập. Giá vốn bình quân được tính lại sau mỗi lần nhập.
+                </p>
+              </div>
+              <div class="card-footer text-end">
+                <button class="btn btn-primary" type="submit">Ghi sổ nhập kho</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="col-lg-4">
+            <form method="post" action="/stock/item" class="card">
+              <div class="card-header"><h3 class="card-title">Thêm mặt hàng</h3></div>
+              <div class="card-body">
+                <div class="mb-3">
+                  <label class="form-label" for="sku">Mã hàng</label>
+                  <input class="form-control" id="sku" name="sku" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label" for="name">Tên</label>
+                  <input class="form-control" id="name" name="name" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label" for="unit">Đơn vị tính</label>
+                  <input class="form-control" id="unit" name="unit" placeholder="cái / kg / thùng" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label" for="reorder_point">Mức đặt lại</label>
+                  <input class="form-control text-end" id="reorder_point" name="reorder_point" value="0" inputmode="numeric">
+                </div>
+              </div>
+              <div class="card-footer text-end">
+                <button class="btn btn-primary" type="submit">Thêm</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
+{{end}}

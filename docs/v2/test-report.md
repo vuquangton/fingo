@@ -272,3 +272,15 @@ Bills and sales invoices share `document.TypeInvoice`, so the payable list reads
 `operator-guide.md` is the Vietnamese task guide (13 sections, ending with the explicit list of what the product does **not** do yet). `installer-notes.md` is the operations note: prerequisites, provisioning, TLS, service install, backup, upgrade, and the five things that must never be done.
 
 No code changed, so the gate is unchanged: 21 packages ok, 0 failures, 0 skips. The Phase 6 **gate** — a parallel run against one client's current software — is not something this repository can execute; it needs a client, a period of real data, and a human to compare output.
+## Phase 4 — stock ledger and goods receipt
+
+`GET /stock` lists items with on-hand, average cost and carrying value; `POST /stock/item` stocks an item; `POST /stock/receive` records a receipt and posts Dr 156 / Cr 331.
+
+The valuation is **replayed** from the movement log through `internal/inventory` on every read. There is no stored balance that could drift from the history that produced it, and a receipt is refused by the engine before any voucher is written if it would make stock negative.
+
+| Test | Assertion |
+| :--- | :--- |
+| receipt | 156 debit = 331 credit = 1.000.000; one movement; screen shows 1.000.000 and 100.000 |
+| no source document | 422 — a movement nobody can trace to a document is refused |
+
+Migration `00007` adds `items`, plus `unit_cost` and `source_doc_id` on `stock_movements`.
