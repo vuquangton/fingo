@@ -62,17 +62,24 @@ func (b *Books) PurchaseBill(ctx context.Context, cmd PurchaseBillCommand) (ledg
 		invoiceID = newUUID()
 	}
 
+	lines := []ledger.Line{
+		{Account: cmd.ExpenseAccount, Side: gl.SideDebit, Amount: cmd.Net},
+	}
+	// A zero-rated or exempt bill has no input VAT to claim: posting a zero-amount
+	// 1331 line would be refused by the amount CHECK, and claiming nothing is the
+	// correct accounting, not a missing line.
+	if vatAmount > money.Zero {
+		lines = append(lines, ledger.Line{Account: "1331", Side: gl.SideDebit, Amount: vatAmount})
+	}
+	lines = append(lines, ledger.Line{Account: "331", Side: gl.SideCredit, Amount: total})
+
 	posted, err := ledger.Post(ctx, b.store, b.scope, ledger.Request{
 		ID:          invoiceID,
 		Description: defaultText(cmd.Description, "Hóa đơn mua vào"),
 		Actor:       cmd.Actor,
 		Date:        day,
 		Type:        gl.VoucherTypePurchase,
-		Lines: []ledger.Line{
-			{Account: cmd.ExpenseAccount, Side: gl.SideDebit, Amount: cmd.Net},
-			{Account: "1331", Side: gl.SideDebit, Amount: vatAmount},
-			{Account: "331", Side: gl.SideCredit, Amount: total},
-		},
+		Lines:       lines,
 	})
 	if err != nil {
 		return ledger.Posted{}, err
@@ -95,13 +102,15 @@ func (b *Books) PurchaseBill(ctx context.Context, cmd PurchaseBillCommand) (ledg
 		Status:    document.StatusOpen,
 	}
 
-	lines := []document.Line{
+	docLines := []document.Line{
 		{DocumentID: invoiceID, AccountID: cmd.ExpenseAccount, Debit: money.New(cmd.Net.Int64(), "VND"), BaseAmount: money.New(cmd.Net.Int64(), "VND")},
-		{DocumentID: invoiceID, AccountID: "1331", Debit: money.New(vatAmount.Int64(), "VND"), VATAmount: money.New(vatAmount.Int64(), "VND")},
-		{DocumentID: invoiceID, AccountID: "331", Credit: money.New(total.Int64(), "VND")},
 	}
+	if vatAmount > money.Zero {
+		docLines = append(docLines, document.Line{DocumentID: invoiceID, AccountID: "1331", Debit: money.New(vatAmount.Int64(), "VND"), VATAmount: money.New(vatAmount.Int64(), "VND")})
+	}
+	docLines = append(docLines, document.Line{DocumentID: invoiceID, AccountID: "331", Credit: money.New(total.Int64(), "VND")})
 
-	if err := b.Documents().CreateAs(ctx, "PURCHASE_BILL", doc, lines); err != nil {
+	if err := b.Documents().CreateAs(ctx, "PURCHASE_BILL", doc, docLines); err != nil {
 		return posted, fmt.Errorf("bill %s posted, but recording the payable failed: %w", posted.VoucherNo, err)
 	}
 

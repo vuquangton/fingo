@@ -73,7 +73,7 @@
                   <td><input class="form-control" name="item" value="{{.ItemID}}" placeholder="HH-01"></td>
                   <td><input class="form-control text-end" name="quantity" value="{{.Quantity}}" inputmode="numeric"></td>
                   <td><input class="form-control text-end" name="unit_price" value="{{.UnitPrice}}" inputmode="numeric" placeholder="500.000"></td>
-                  <td class="text-secondary">10%</td>
+                  <td><select class="form-select form-select-sm" name="vat_rate"><option value="vat10" selected>10%</option><option value="vat5">5%</option><option value="vat0">0%</option></select></td>
                 </tr>
                 {{end}}
               </tbody>

@@ -130,6 +130,7 @@ func parseSale(c *gin.Context, periodID string) (trading.InvoiceCommand, []sales
 	items := c.PostFormArray("item")
 	quantities := c.PostFormArray("quantity")
 	prices := c.PostFormArray("unit_price")
+	vatRates := c.PostFormArray("vat_rate")
 
 	if len(items) != len(quantities) || len(items) != len(prices) {
 		return trading.InvoiceCommand{}, nil, fmt.Errorf("form không khớp số dòng")
@@ -161,11 +162,21 @@ func parseSale(c *gin.Context, periodID string) (trading.InvoiceCommand, []sales
 			return trading.InvoiceCommand{}, rows, fmt.Errorf("dòng %d: đơn giá phải lớn hơn 0", i+1)
 		}
 
+		rateID := salesVATRateID
+		if i < len(vatRates) && strings.TrimSpace(vatRates[i]) != "" {
+			rateID = strings.TrimSpace(vatRates[i])
+		}
+		switch rateID {
+		case "vat0", "vat5", salesVATRateID:
+		default:
+			return trading.InvoiceCommand{}, rows, fmt.Errorf("dòng %d: thuế suất không hợp lệ", i+1)
+		}
+
 		lines = append(lines, trading.InvoiceLine{
 			ItemID:    strings.TrimSpace(items[i]),
 			Quantity:  quantity,
 			UnitPrice: money.New(price.Int64(), "VND"),
-			VATRateID: salesVATRateID,
+			VATRateID: rateID,
 		})
 	}
 

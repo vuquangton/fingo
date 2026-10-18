@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -87,7 +88,7 @@ func (a *Auth) PostPurchase(c *gin.Context) {
 		InvoiceID:      uuid.NewString(),
 		PartnerID:      c.PostForm("partner_id"),
 		ExpenseAccount: c.PostForm("expense_account"),
-		VATRateID:      salesVATRateID,
+		VATRateID:      purchaseRateID(c.PostForm("vat_rate")),
 		Net:            net,
 		Date:           date,
 		Actor:          email,
@@ -102,6 +103,17 @@ func (a *Auth) PostPurchase(c *gin.Context) {
 	}
 
 	c.Redirect(http.StatusSeeOther, "/purchase?posted="+posted.VoucherNo)
+}
+
+// purchaseRateID keeps the form honest: an unknown rate is the standard rate, and
+// the three statutory categories are the only ones accepted.
+func purchaseRateID(raw string) string {
+	switch strings.TrimSpace(raw) {
+	case "vat0", "vat5", salesVATRateID:
+		return strings.TrimSpace(raw)
+	default:
+		return salesVATRateID
+	}
 }
 
 func (a *Auth) renderPurchase(c *gin.Context, status int, data purchaseData) {
