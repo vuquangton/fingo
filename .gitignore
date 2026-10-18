@@ -685,5 +685,17 @@ fingo/FinGo.exe
 fingo/build/bin/
 fingo/frontend/node_modules/
 fingo/frontend/dist/
+# Build output: 48 MB of bundled MariaDB + FinGo.exe, reproduced by build.cmd.
+fingo/dist/
 .codegraph/
 .env
+
+# Research scratch — downloaded primary legal sources, not source code.
+# Kept locally: gazette portals are 403/JS-gated and several PDFs are scans,
+# so these are hard to re-obtain. Safe to delete; never commit.
+#
+# research/official/cb21050.txt is the Công báo text-layer extract of Circular
+# 133/2016 Phụ lục 1 — the source for gl.TT133Chart(). Losing it means losing
+# the only machine-readable copy of that chart.
+_vat_research/
+research/
