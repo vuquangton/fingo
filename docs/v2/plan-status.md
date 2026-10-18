@@ -8,7 +8,7 @@ Updated 2026-10-18 (Phase 1 foundation). One row per phase; a phase is only `DON
 | :--- | :--- | :--- |
 | **0 — Save and decide** | **DONE** | archive tag exists · `git status` clean · ADRs 0006–0008 written · pushed |
 | 1 — Foundation | **DONE** | `go build` rc=0 · `go vet` rc=0 · `REQUIRE_DB=1 go test ./...` rc=0 (16 packages ok, 0 fail, 0 skip) · schema v1 · 11 database tests |
-| 2 — Security and operations | **PARTIAL** | passwords (argon2id) + append-only audit done and tested; HTTP login/session wiring, HTTPS, backup + restore drill, service units outstanding |
+| 2 — Security and operations | **PARTIAL — 3 of 4 gate items proven** | login/session/roles + audit + backup + restore drill done and tested; HTTPS and service units outstanding |
 | 3 — Spike, then core screens | NOT STARTED | — |
 | 4 — Trading cycle | NOT STARTED | — |
 | 5 — Period close | NOT STARTED | — |

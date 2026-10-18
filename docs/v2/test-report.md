@@ -100,3 +100,15 @@ Added and tested:
 Gate: `REQUIRE_DB=1 go test ./...` → **18 packages ok, 0 failures, 0 skips**.
 
 **Still outstanding in Phase 2** (deliberately not faked): Gin login/logout handlers and session middleware, HTTPS with a generated certificate, `pg_dump` backup schedule with retention, the scripted restore drill, and the Windows service / systemd unit files. The gate items "unauthenticated request rejected" and "restore drill succeeds" therefore remain **open**.
+## Phase 2 addendum — HTTP auth and the restore drill
+
+| Gate item | Status | Evidence |
+| :--- | :--- | :--- |
+| Unauthenticated requests rejected | **PROVEN** | `internal/web`: GET /books with no session → 401; after login → 200; after logout → 401 |
+| Audit rows for every post/lock | **PROVEN** | `internal/audit`: row written in the same transaction; rolled back with it; UPDATE refused; missing actor refused |
+| Restore drill succeeds | **PROVEN** | `docs/v2/restore-drill.md`: dump → restore into a fresh database → `123|0|0` matched both sides; ledger balanced |
+| Phase gate overall | **NOT MET** | HTTPS with a generated certificate and the Windows service / systemd unit are outstanding |
+
+Auth surface, 8 tests: unauthenticated 401 · login then protected 200 · wrong password 401 and recorded in `failed_logins` · unknown email indistinguishable from wrong password (same status) · viewer allowed to read, refused 403 on an admin route · logout ends the session · missing credentials 400.
+
+Libraries doing the work: `gin` (routing), `scs` + `scs/pgxstore` (sessions), `x/crypto/argon2` (hashing), `net/http.CrossOriginProtection` (CSRF), `pg_dump`/`pg_restore` (backup). Hand-written: the middleware that decides who is allowed, and the audit insert.
