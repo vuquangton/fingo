@@ -136,3 +136,16 @@ world-readable and appears in `systemctl cat`.
 **Not implemented:** a Windows SCM service. `sc.exe create` with a plain executable
 does not work — the binary must call `svc.Run` — and that wrapper is not written. Windows
 deployments therefore run the binary under a scheduled task or manually until it is.
+## Phase 3 read screens
+
+| Screen | Route | Source of the figure |
+| :--- | :--- | :--- |
+| Chart of accounts | `GET /accounts` | `accounts` rows for the scoped client |
+| General journal | `GET /journal` | posted vouchers, debit total per voucher |
+| Trial balance | `GET /reports` | `internal/reports.TrialBalance` over `internal/books` ports — **not** a second SQL sum |
+
+`internal/books` is the assembly: it implements `reports.Periods`, `reports.Journal` and `ledger.ChartSource` over the scoped store, so the report engine that already had 88 tests now reads PostgreSQL with no change to its own code.
+
+Three end-to-end tests: chart lists 5111/33311/911; journal shows the posted voucher and its 1.100.000 total; trial balance balances and names the period and voucher count.
+
+Defect found by the test: `accounting_periods.id` is a `uuid`, so a readable `FY2026` id failed at INSERT. The database now generates it (`RETURNING id`).

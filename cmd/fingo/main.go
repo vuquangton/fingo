@@ -68,6 +68,9 @@ func run() error {
 
 	protected := router.Group("/", auth.RequireUser())
 	protected.GET("/books", func(c *gin.Context) { c.String(http.StatusOK, "books") })
+	protected.GET("/accounts", auth.ShowAccounts)
+	protected.GET("/journal", auth.ShowJournal)
+	protected.GET("/reports", auth.ShowTrialBalance)
 	protected.GET("/entry", auth.ShowEntry)
 	protected.POST("/entry", auth.PostEntry)
 

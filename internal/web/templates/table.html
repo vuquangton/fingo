@@ -1,0 +1,68 @@
+{{define "table.html"}}<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{.Title}} — FinGo</title>
+  <link rel="stylesheet" href="/static/vendor/tabler.min.css">
+  <script src="/static/vendor/htmx.min.js" defer></script>
+</head>
+<body class="antialiased">
+<div class="page">
+  <header class="navbar navbar-expand d-print-none">
+    <div class="container-xl">
+      <span class="navbar-brand">FinGo</span>
+      <span class="navbar-text ms-3">{{.Client}}</span>
+      <nav class="ms-4">
+        <a class="btn btn-sm btn-ghost-secondary" href="/entry">Nhập chứng từ</a>
+        <a class="btn btn-sm btn-ghost-secondary" href="/journal">Nhật ký</a>
+        <a class="btn btn-sm btn-ghost-secondary" href="/accounts">Tài khoản</a>
+        <a class="btn btn-sm btn-ghost-secondary" href="/reports">Cân đối</a>
+      </nav>
+      <span class="navbar-text ms-auto">{{.Email}}</span>
+    </div>
+  </header>
+
+  <div class="page-wrapper">
+    <div class="page-body">
+      <div class="container-xl">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">{{.Title}}</h3>
+            <div class="card-subtitle ms-auto">{{.Note}}</div>
+          </div>
+
+          {{if .Rows}}
+          <div class="table-responsive">
+            <table class="table table-vcenter card-table">
+              <thead>
+                <tr>
+                  {{range $i, $h := .Headings}}
+                  <th class="{{if index $.Numeric $i}}text-end{{end}}">{{$h}}</th>
+                  {{end}}
+                </tr>
+              </thead>
+              <tbody>
+                {{range .Rows}}
+                <tr>
+                  {{range $i, $cell := .}}
+                  <td class="{{if index $.Numeric $i}}text-end{{end}}">{{$cell}}</td>
+                  {{end}}
+                </tr>
+                {{end}}
+              </tbody>
+            </table>
+          </div>
+          {{else}}
+          <div class="card-body">
+            <p class="text-secondary">{{.Empty}}</p>
+          </div>
+          {{end}}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
+{{end}}
