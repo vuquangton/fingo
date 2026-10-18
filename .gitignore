@@ -699,3 +699,6 @@ fingo/dist/
 # the only machine-readable copy of that chart.
 _vat_research/
 research/
+
+# FinGo v2: local PostgreSQL fallback cluster and disposable dev data
+.local/

@@ -23,11 +23,11 @@ On-premise, multi-user, browser-based accounting for Vietnamese SMEs (TT133/2016
 ## Quick start (development)
 
 ```powershell
-# 1. A local PostgreSQL cluster, no administrator rights needed (port 55432)
-.\scripts\devdb.ps1
+# 1. One-time: databases + app role on the local PostgreSQL 16 service
+$env:PGADMIN_PASSWORD = '<postgres password>'   # read from the environment, never stored
+.\scripts\pgsetup.cmd                              # writes a gitignored .env
 
 # 2. Build and run
-cd fingo
 go build ./...
 go run ./cmd/fingo            # serves https://localhost:8443
 

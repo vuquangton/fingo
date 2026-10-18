@@ -103,20 +103,15 @@ Verified at the point each is added; the upstream `LICENSE` is committed beside 
 
 **If a ported test fails:** fix the adapter, not the test. The only exception is a test that asserts a MariaDB mechanism (e.g. an `information_schema` query or a `DECIMAL(18,4)` column) or a decimal literal; each such change is listed and justified in `test-report.md`.
 
-## 8. Local database (decision taken under uncertainty)
+## 8. Database provisioning (decided after the credential was supplied)
 
-The machine has **PostgreSQL 16.15** running as service `postgresql-x64-16`, but the `postgres` password is not known to this session (`psql -w` → `no password supplied`). Rather than modify a system service's `pg_hba.conf`, v2 provisions a **workspace-local cluster**:
+The target is the **system PostgreSQL 16.15** service (`postgresql-x64-16`) on `127.0.0.1:5432`, not a private cluster. Migration/DDL runs as `postgres`; the application and the test suite connect as **`fingo_app`** (`LOGIN NOSUPERUSER NOBYPASSRLS`), because a superuser bypasses row-level security and a suite that runs as one proves nothing about it.
 
-```powershell
-# scripts/devdb.ps1 — creates a cluster under .local\pgdata and starts it on 55432
-initdb -D .local\pgdata -U fingo --auth=trust --encoding=UTF8 --locale=C
-pg_ctl -D .local\pgdata -o "-p 55432 -k .local" -l .local\pg.log start
-createdb -h 127.0.0.1 -p 55432 -U fingo fingo_dev
-createdb -h 127.0.0.1 -p 55432 -U fingo fingo_test
-```
+`scripts/pgsetup.ps1` (run once per machine) creates `fingo_dev` and `fingo_test`, creates `fingo_app` with a generated password, grants schema usage and default table privileges, and writes the credentials to a **gitignored** `.env`. The admin password is read from `PGADMIN_PASSWORD`, never written to disk and never echoed. The script is idempotent; `-Rotate` rotates the app password.
 
-Tests read `PGHOST/PGPORT/PGUSER` with the same defaults. This is reversible (delete `.local\`), needs no administrator rights, and does not touch the existing service. If the team prefers the system service, `PGPASSWORD` + `scripts/devdb.ps1 -UseService` is the documented path. Recorded for follow-up in `open-questions.md`.
+`scripts/devdb.ps1` remains as a fallback for a machine where the system service is unavailable: it initialises a throwaway cluster under `.local\pgdata` on port 65432 with trust auth. It is not the default and its data is disposable. (Port 55432 was the first choice and is unusable here: Windows reserves 55302–55501, and a bind there fails with "Permission denied" that looks like a firewall fault.)
 
+Tests read `PGHOST/PGPORT/PGUSER/PGPASSWORD/PGDATABASE` and fall back to `.env` at the repository root. `REQUIRE_DB=1` turns a missing database into a failure.
 ## 9. Definition of done, per phase
 
 A phase is done only when, on branch `v2`:
