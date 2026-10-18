@@ -80,7 +80,23 @@ $env:PGADMIN_PASSWORD = '<postgres password>'
 .\scripts\restore-drill.ps1     # restore into a scratch database and compare figures
 ```
 
-Schedule the backup with the OS scheduler. Run the **drill** monthly and after any upgrade: a
+Register it with the OS scheduler, so it does not depend on a human remembering:
+
+```powershell
+.\scripts\install-backup-task.ps1              # daily 01:00, runs as the current user
+.\scripts\install-backup-task.ps1 -Remove      # unregister
+```
+
+The task holds no password on its command line, because a scheduled task's command line is
+readable by every process on the machine. `backup.ps1` instead reads the owner password from
+the standard libpq password file, created once by that user:
+
+```
+%APPDATA%\postgresql\pgpass.conf
+host:port:database:user:password
+```
+
+Run the **drill** monthly and after any upgrade: a
 backup that has not been restored is a file, not a backup. Record the result in
 `docs/v2/restore-drill.md`.
 
@@ -111,6 +127,6 @@ table drops the client's rows with it. Restore from the backup instead.
 | :--- | :--- | :--- |
 | No Windows SCM wrapper | server starts from a scheduled task, not as a service | `svc.Run` wrapper |
 | No installer / MSI | copying the folder is the install | packaging |
-| Backup is a script, not a schedule | a human must create the schedule | scheduler entry or in-process cron |
+| Backup schedule is a Windows task only | a Linux host needs a cron entry; the unit file does not run the dump | add a systemd timer |
 | One database for all clients | a restore restores everybody | per-client export exists (`/handover`) |
 | No TLS certificate rotation | expiry is silent | calendar reminder, or renewal job |

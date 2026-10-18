@@ -1,0 +1,91 @@
+name: test
+
+# The gate this repository has been running by hand, made mechanical:
+# build, vet, and the whole suite against a real PostgreSQL with REQUIRE_DB=1,
+# so a database test cannot skip and report ok.
+#
+# Two roles are used on purpose. Migrations run as the owner; the tests run as
+# fingo_app, which is NOSUPERUSER NOBYPASSRLS. A suite that runs as a superuser
+# cannot observe the tenant boundary it claims to test.
+
+on:
+  push:
+    branches: [main, v2]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  GOFLAGS: -mod=readonly
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+
+    env:
+      PGHOST: 127.0.0.1
+      PGPORT: '5432'
+      PGDATABASE: fingo_test
+      PGUSER: fingo_app
+      PGPASSWORD: ci-app-password
+      FINGO_TEST_DATABASE: fingo_test
+      REQUIRE_DB: '1'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Build
+        run: go build ./...
+
+      - name: Vet
+        run: go vet ./...
+
+      - name: Create the test database and the application role
+        env:
+          PGPASSWORD: postgres
+        run: |
+          psql -U postgres -d postgres -v ON_ERROR_STOP=1 <<'SQL'
+          CREATE DATABASE fingo_test ENCODING 'UTF8' TEMPLATE template0;
+          CREATE ROLE fingo_app LOGIN NOSUPERUSER NOBYPASSRLS PASSWORD 'ci-app-password';
+          GRANT CONNECT ON DATABASE fingo_test TO fingo_app;
+          SQL
+
+      - name: Apply the schema as the owner
+        env:
+          PGADMIN_PASSWORD: postgres
+        run: go run ./cmd/migrate -database fingo_test
+
+      - name: Test — no skips allowed
+        run: go test ./... -count=1 -race -timeout=20m
+
+      - name: Assert that no test skipped
+        # REQUIRE_DB makes a missing database a failure, and this makes a skip
+        # visible even if one is introduced later.
+        run: |
+          go test ./... -count=1 -timeout=20m -json > test.json
+          skipped=$(grep -c '"Action":"skip"' test.json || true)
+          if [ "$skipped" -gt 0 ]; then
+            echo "::error::$skipped skipped result(s) in a REQUIRED_DB run"
+            exit 1
+          fi
+          echo "no skips"

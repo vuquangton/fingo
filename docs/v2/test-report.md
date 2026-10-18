@@ -329,3 +329,10 @@ Four tests: create client → chart provisioned → switch → empty books · ac
 | reverse twice | 422 — a second mirror would undo the correction silently |
 
 The refusal is by description lookup, which is the ledger's own record of what the entry is; no extra table was added for it.
+## Operations — CI and a backup that happens
+
+`.github/workflows/test.yml` runs the gate the repository has been running by hand: build, vet, schema as owner, then the whole suite as `fingo_app` with `REQUIRE_DB=1` and `-race`, plus a step that fails if any result is a skip.
+
+`scripts/install-backup-task.ps1` registers the nightly dump as a Windows scheduled task. No password is on the task's command line — `backup.ps1` falls back to the libpq password file, which is the standard mechanism and keeps the secret out of process listings.
+
+Both scripts are syntax-checked by the PowerShell parser; the task registration itself was not executed on this machine (it would add a scheduled task), so it is reviewed, not proven.

@@ -36,7 +36,14 @@ if (-not $PgBin) {
     if (-not $PgBin) { throw 'pg_dump not found. Set FINGO_PG_BIN.' }
 }
 
-if (-not $env:PGADMIN_PASSWORD) { throw 'Set PGADMIN_PASSWORD (the owner password) before running.' }
+# The owner password comes from the environment, or from the standard libpq
+# password file so an unattended task needs no secret in the script. A scheduled
+# task cannot hold a credential in its command line without exposing it to every
+# process on the machine.
+$havePassword = -not [string]::IsNullOrEmpty($env:PGADMIN_PASSWORD)
+if (-not $havePassword) {
+    Write-Host 'PGADMIN_PASSWORD not set: using the libpq password file (%APPDATA%\postgresql\pgpass.conf).'
+}
 
 $user = if ($env:PGADMIN_USER) { $env:PGADMIN_USER } else { 'postgres' }
 $hostName = if ($env:PGHOST) { $env:PGHOST } else { '127.0.0.1' }
@@ -48,7 +55,7 @@ $stamp = Get-Date -Format 'yyyy-MM-dd_HH-mm-ss'
 $dump = Join-Path $BackupDir ("fingo-$Database-$stamp.dump")
 
 $previous = $env:PGPASSWORD
-$env:PGPASSWORD = $env:PGADMIN_PASSWORD
+if ($havePassword) { $env:PGPASSWORD = $env:PGADMIN_PASSWORD }
 try {
     & (Join-Path $PgBin 'pg_dump.exe') `
         --host $hostName --port $port --username $user `
