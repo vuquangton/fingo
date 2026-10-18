@@ -17,7 +17,7 @@ Conventions:
 
 | Now (this fortnight) | Next (4–6 weeks) | Later |
 | :--- | :--- | :--- |
-| A1 pilot client · A2 parallel run · A4 CI green · A5 production host · B3 test isolation · ~~B2 tie-out~~ | B1 aging · B2 report tie-out · C1 stock transfer · C3 bill from receipt | C2 three-way match · D1 grid spike · D2 keyboard entry · E2 scale guard |
+| A1 pilot client · A2 parallel run · A4 CI green · A5 production host · B3 test isolation · ~~B1 aging~~ · ~~B2 tie-out~~ | B1 aging · B2 report tie-out · C1 stock transfer · C3 bill from receipt | C2 three-way match · D1 grid spike · D2 keyboard entry · E2 scale guard |
 
 ---
 
@@ -65,7 +65,7 @@ Conventions:
 
 ## B — Correctness hardening (P1)
 
-### B1 · AR/AP aging
+### B1 · AR/AP aging — **DONE**
 - **Work:** 30/60/90 buckets from `documents.due_date`, per partner, on the receipt
   and payment screens and as an export.
 - **Done:** a test with three invoices at 10, 45 and 100 days produces the expected

@@ -360,3 +360,13 @@ Numbers and extrapolations are in `docs/v2/performance.md`. The volume test is s
 Expected figures are computed by hand in the test (profit 700,000; assets 5,800,000) so the assertions are not merely self-consistent.
 
 The first version expected assets of 5,770,000 and failed: **the test forgot the 30,000 input VAT still sitting on 1331.** The balance sheet was right, the test was wrong — the same kind of error the test exists to catch in the code.
+## Aging — AR and AP by age, tied to the control account
+
+`GET /aging?as_of=YYYY-MM-DD` buckets open documents by days overdue: current, 1–30, 31–60, 61–90, over 90 — per partner, with totals.
+
+Two decisions worth recording:
+
+1. **A document with no due date is aged from document date + 30 days.** The invoice date is a fact; the payment term is a policy. Treating a missing term as "due immediately" would overstate every overdue column for a client who never fills it in.
+2. **The control figure comes from the voucher lines, not from the documents.** Subledger and control account are two independent records of the same debt; the screen prints both and marks them `khớp` or `lệch <amount>`. An aging report that cannot disagree with the ledger is not a check.
+
+Test: three invoices at 149, 76 and 10 days before 30 June 2026 land in over-90, 31–60 and current; the total is 3.300.000 and equals the 131 balance. A malformed `as_of` is refused 422.

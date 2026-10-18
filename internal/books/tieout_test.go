@@ -185,4 +185,3 @@ func TestReportsAgreeWithEachOther(t *testing.T) {
 			bs.TotalAssets.Int64())
 	}
 }
-

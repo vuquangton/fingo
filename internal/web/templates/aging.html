@@ -1,0 +1,109 @@
+{{define "aging.html"}}<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tuổi nợ — FinGo</title>
+  <link rel="stylesheet" href="/static/vendor/tabler.min.css">
+</head>
+<body class="antialiased">
+<div class="page">
+  <header class="navbar navbar-expand d-print-none">
+    <div class="container-xl">
+      <span class="navbar-brand">FinGo</span>
+      <span class="navbar-text ms-3">{{.Client}}</span>
+      <nav class="ms-4">
+        <a class="btn btn-sm btn-ghost-secondary" href="/receipt">Thu tiền</a>
+        <a class="btn btn-sm btn-ghost-secondary" href="/payment">Trả tiền</a>
+        <a class="btn btn-sm btn-ghost-secondary" href="/reports">Cân đối</a>
+      </nav>
+      <span class="navbar-text ms-auto">{{.Email}}</span>
+    </div>
+  </header>
+
+  <div class="page-wrapper">
+    <div class="page-body">
+      <div class="container-xl">
+
+        {{if .Error}}
+        <div class="alert alert-danger" role="alert">{{.Error}}</div>
+        {{end}}
+
+        <form method="get" action="/aging" class="d-flex align-items-end gap-2 mb-3">
+          <div>
+            <label class="form-label" for="as_of">Tính đến ngày</label>
+            <input class="form-control" id="as_of" name="as_of" type="date" value="{{.AsOf}}">
+          </div>
+          <button class="btn btn-primary" type="submit">Xem</button>
+        </form>
+
+        {{range $view := .Views}}
+        <div class="card mb-3">
+          <div class="card-header">
+            <h3 class="card-title">{{$view.Title}}</h3>
+            <div class="card-subtitle ms-auto">
+              Kiểm soát TK {{$view.Control}}: {{$view.Ledger}}
+              {{if $view.Balanced}}
+              <span class="badge bg-green-lt">khớp</span>
+              {{else}}
+              <span class="badge bg-red-lt">lệch {{$view.Diff}}</span>
+              {{end}}
+            </div>
+          </div>
+
+          {{if $view.Rows}}
+          <div class="table-responsive">
+            <table class="table table-vcenter card-table">
+              <thead>
+                <tr>
+                  <th>Đối tượng</th><th class="text-end">Chứng từ</th>
+                  <th class="text-end">Trong hạn</th><th class="text-end">1–30</th>
+                  <th class="text-end">31–60</th><th class="text-end">61–90</th>
+                  <th class="text-end">&gt;90</th><th class="text-end">Tổng</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{range $view.Rows}}
+                <tr>
+                  <td>{{.Partner}}</td>
+                  <td class="text-end">{{.Documents}}</td>
+                  <td class="text-end">{{.Current}}</td>
+                  <td class="text-end">{{.Days30}}</td>
+                  <td class="text-end">{{.Days60}}</td>
+                  <td class="text-end">{{.Days90}}</td>
+                  <td class="text-end">{{.Older}}</td>
+                  <td class="text-end"><strong>{{.Total}}</strong></td>
+                </tr>
+                {{end}}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Tổng</th><th></th>
+                  <th class="text-end">{{$view.Current}}</th>
+                  <th class="text-end">{{$view.Days30}}</th>
+                  <th class="text-end">{{$view.Days60}}</th>
+                  <th class="text-end">{{$view.Days90}}</th>
+                  <th class="text-end">{{$view.Older}}</th>
+                  <th class="text-end">{{$view.Total}}</th>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+          {{else}}
+          <div class="card-body"><p class="text-secondary mb-0">Không còn khoản nào chưa tất toán.</p></div>
+          {{end}}
+        </div>
+        {{end}}
+
+        <p class="text-secondary">
+          Tuổi nợ tính từ ngày đến hạn; chứng từ không ghi hạn được tính là đến hạn sau 30 ngày kể từ ngày chứng từ.
+          Cột kiểm soát đọc trực tiếp từ sổ cái — lệch nghĩa là sổ phụ và sổ cái không còn nói cùng một số.
+        </p>
+
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
+{{end}}
