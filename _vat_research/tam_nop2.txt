@@ -1,0 +1,142 @@
+
+Tạm nộp thuế theo quý 2026: Mức nộp và quy định mới nhất - MAN
+ Tin tức thuế | 31/07/2026 | 27 phút đọcTạm nộp thuế theo quý 2026: Mức nộp và quy định mới nhấtMAN - Master Accountant NetworkBiên tập dựa trên pháp luật, kiểm duyệt bởi chuyên gia thuế.Nội dung chính
+Tạm nộp thuế theo Quý là nghĩa vụ bắt buộc đối với hàng trăm nghìn doanh nghiệp tại Việt Nam kể từ ngày 1/7/2026, khi Nghị định 252/2026/NĐ-CP chính thức có hiệu lực. Quy định mới đặt ngưỡng tối thiểu 80% số thuế phải nộp theo quyết toán năm cho tổng số đã tạm nộp của 4 quý, đồng thời siết chặt trách nhiệm của người nộp thuế nếu nộp thiếu. Với thuế thu nhập doanh nghiệp và lợi nhuận sau thuế còn lại phải nộp ngân sách, đây là hai khoản thu bắt buộc áp dụng cơ chế này mà kế toán doanh nghiệp cần nắm chắc.
+Trước đây, nhiều doanh nghiệp lúng túng khi xác định số thuế tạm nộp mỗi quý do thiếu căn cứ rõ ràng, dẫn đến tình trạng nộp thừa hoặc nộp thiếu kéo dài sang kỳ quyết toán năm. Bài viết này, được biên soạn dưới góc nhìn của MAN – Master Accountant Network, đơn vị tư vấn thuế và kiểm toán với hơn 30 năm kinh nghiệm thực tế tại Việt Nam, sẽ phân tích chi tiết quy định, thời hạn, cách tính và những rủi ro doanh nghiệp cần phòng tránh khi thực hiện nghĩa vụ này.
+Tóm tắt trọng tâm về Tạm nộp thuế theo Quý
+Tóm tắt trọng tâm về Tạm nộp thuế theo Quý
+Tạm nộp thuế theo Quý là việc doanh nghiệp tự xác định và nộp trước một phần số thuế thu nhập doanh nghiệp, hoặc lợi nhuận sau thuế còn lại nộp ngân sách nhà nước, theo từng quý, trước khi quyết toán năm.
+Cơ sở pháp lý: Điều 24 Nghị định 252/2026/NĐ-CP, hiệu lực từ 1/7/2026; hướng dẫn chi tiết tại khoản 3 Điều 21 Thông tư 89/2026/TT-BTC.
+Đối tượng áp dụng: doanh nghiệp nộp thuế TNDN theo phương pháp kê khai và tổ chức phải nộp lợi nhuận sau thuế còn lại vào ngân sách.
+Thời hạn tạm nộp: chậm nhất ngày cuối cùng của tháng đầu quý tiếp theo quý phát sinh nghĩa vụ thuế.
+Mức tạm nộp: tổng 4 quý không được thấp hơn 80% số thuế phải nộp theo quyết toán năm, nếu không sẽ bị tính tiền chậm nộp.
+Tạm nộp thuế theo Quý là gì? Định nghĩa chuẩn theo Nghị định 252/2026/NĐ-CP
+Tạm nộp thuế theo Quý là gì? Định nghĩa chuẩn theo Nghị định 252/2026/NĐ-CP
+Theo Điều 24 Nghị định 252/2026/NĐ-CP, tạm nộp thuế theo Quý là việc người nộp thuế tự xác định và nộp trước một phần nghĩa vụ thuế thu nhập doanh nghiệp, hoặc lợi nhuận sau thuế còn lại phải nộp ngân sách nhà nước, theo từng quý trong năm tài chính, trước khi thực hiện quyết toán thuế năm. Đây không phải một khoản thuế riêng biệt mà là phương thức nộp trước, được khấu trừ vào số thuế phải nộp cuối năm.
+Nói cách dễ hiểu, doanh nghiệp không đợi đến cuối năm mới nộp toàn bộ thuế thu nhập doanh nghiệp. Thay vào đó, cứ hết mỗi quý, doanh nghiệp ước tính kết quả kinh doanh và chủ động nộp một khoản tạm tính vào ngân sách. Đến kỳ quyết toán năm, số đã tạm nộp sẽ được trừ vào số thuế thực tế phải nộp.
+Căn cứ pháp lý xác định tạm nộp thuế theo Quý
+Cơ sở chính: Điều 24 Nghị định 252/2026/NĐ-CP, có hiệu lực từ 1/7/2026.
+Hai khoản thu áp dụng: thuế thu nhập doanh nghiệp và lợi nhuận sau thuế còn lại nộp ngân sách nhà nước theo pháp luật về quản lý, đầu tư vốn nhà nước tại doanh nghiệp.
+Hướng dẫn thi hành cụ thể cho thuế thu nhập doanh nghiệp: khoản 3 Điều 21 Thông tư 89/2026/TT-BTC.
+Thời hạn nộp hồ sơ khai thuế theo quý (áp dụng chung): Điều 10 Nghị định 252/2026/NĐ-CP.
+Vì sao tạm nộp thuế theo Quý quan trọng với doanh nghiệp?
+Trước khi có quy định rõ ràng như hiện nay, nhiều doanh nghiệp coi tạm nộp thuế theo Quý là thủ tục hình thức, ước tính qua loa rồi để dồn phần chênh lệch vào cuối năm. Cách làm này tiềm ẩn rủi ro lớn, bởi Nghị định 252/2026/NĐ-CP quy định rõ ngưỡng tối thiểu 80% và áp dụng tiền chậm nộp nếu không đạt.
+Theo góc nhìn từ MAN – Master Accountant Network, sau nhiều năm hỗ trợ quyết toán thuế cho doanh nghiệp sản xuất và thương mại, việc tạm nộp thuế theo Quý không chỉ là nghĩa vụ pháp lý mà còn phản ánh năng lực quản trị dòng tiền của doanh nghiệp. Doanh nghiệp ước tính sát, tạm nộp đúng mức sẽ tránh được áp lực tài chính dồn vào cuối năm và giảm thiểu rủi ro thuế khi bước vào kỳ quyết toán.
+Đối tượng nào phải thực hiện tạm nộp thuế theo Quý?
+Không phải mọi tổ chức đều thuộc diện áp dụng. Theo quy định tại Nghị định 252/2026/NĐ-CP và Thông tư 89/2026/TT-BTC, hai nhóm chính phải thực hiện tạm nộp thuế theo Quý gồm:
+Doanh nghiệp nộp thuế thu nhập doanh nghiệp theo phương pháp kê khai, thuộc trường hợp phải quyết toán thuế TNDN theo hướng dẫn tại điểm c khoản 1 Điều 21 Thông tư 89/2026/TT-BTC.
+Tổ chức có lợi nhuận sau thuế còn lại phải nộp vào ngân sách nhà nước theo quy định pháp luật về quản lý, đầu tư vốn nhà nước tại doanh nghiệp, thường là doanh nghiệp nhà nước hoặc doanh nghiệp có vốn nhà nước.
+Điểm cần lưu ý: doanh nghiệp kinh doanh bất động sản thu tiền theo tiến độ, áp dụng tạm nộp 1% trên doanh thu nhưng chưa bàn giao nhà, cơ sở hạ tầng, sẽ không tổng hợp khoản này vào hồ sơ quyết toán thuế TNDN năm. Khoản tạm nộp đó chỉ được tổng hợp vào hồ sơ quyết toán khi bàn giao một phần hoặc toàn bộ dự án, theo đúng quy định tại Thông tư 89/2026/TT-BTC.
+Thời hạn và mức tạm nộp thuế theo Quý được quy định ra sao?
+Thời hạn và mức tạm nộp thuế theo Quý được quy định ra sao?
+Thời hạn tạm nộp thuế theo Quý là ngày nào?
+Theo khoản 2 Điều 24 Nghị định 252/2026/NĐ-CP, thời hạn tạm nộp thuế theo Quý chậm nhất là ngày cuối cùng của tháng đầu của quý tiếp theo quý phát sinh nghĩa vụ thuế. Ví dụ, số thuế tạm tính phát sinh trong quý 1, kết thúc ngày 31/3, phải được nộp chậm nhất vào ngày cuối cùng của tháng 4. Quy định này thống nhất với thời hạn kê khai thuế theo quý tại Điều 10 Nghị định 252/2026/NĐ-CP.
+Xem thêm bài viết: Hạn nộp tờ khai quý 2/2026
+Mức tạm nộp thuế theo Quý tối thiểu là bao nhiêu?
+Doanh nghiệp được quyền tự xác định số thuế tạm nộp mỗi quý dựa trên kết quả kinh doanh thực tế. Tuy nhiên, pháp luật đặt ra một ngưỡng an toàn bắt buộc: tổng số thuế đã tạm nộp của 4 quý không được thấp hơn 80% số thuế phải nộp theo quyết toán năm mà doanh nghiệp tự kê khai. Đây là điểm mấu chốt doanh nghiệp cần lưu ý khi lập kế hoạch dòng tiền cuối năm.
+Nếu tổng số đã tạm nộp thấp hơn mức 80% này, doanh nghiệp phải nộp tiền chậm nộp tính trên phần còn thiếu, kể từ ngày liền kề sau ngày cuối cùng của thời hạn tạm nộp quý 4 cho đến ngày liền kề trước ngày số tiền còn thiếu được thực nộp vào ngân sách. Quy định áp dụng cả với trường hợp doanh nghiệp tự phát hiện và kê khai bổ sung.
+Thời hạn kê khai thuế theo quý khác gì so với các kỳ tính thuế còn lại?
+Ngoài quy định riêng cho tạm nộp thuế theo Quý tại Điều 24, Nghị định 252/2026/NĐ-CP còn quy định chung về thời hạn nộp hồ sơ khai thuế tại Điều 10, áp dụng cho nhiều loại kỳ tính thuế khác nhau, không chỉ riêng thuế thu nhập doanh nghiệp. Doanh nghiệp cần phân biệt rõ để tránh áp dụng nhầm thời hạn giữa các sắc thuế.
+Bảng so sánh thời hạn kê khai thuế theo quý với các kỳ tính thuế còn lại
+Loại kỳ tính thuế
+Thời hạn nộp hồ sơ khai thuế
+Khai theo từng lần phát sinh
+Chậm nhất ngày thứ 10 kể từ ngày tiếp theo ngày phát sinh nghĩa vụ thuế, trừ trường hợp phải khai và nộp thuế trước khi được cơ quan thuế cấp hóa đơn điện tử có mã cho từng lần phát sinh theo điểm b khoản 3 Điều 26 Luật Quản lý thuế.
+Khai theo tháng
+Chậm nhất ngày thứ 20 của tháng tiếp theo tháng phát sinh nghĩa vụ thuế.
+Khai theo quý
+Chậm nhất ngày cuối cùng của tháng đầu của quý tiếp theo quý phát sinh nghĩa vụ thuế.
+Khai theo năm
+Chậm nhất ngày cuối cùng của tháng đầu tiên của năm dương lịch tiếp theo hoặc của năm tài chính tiếp theo.
+Khai quyết toán thuế
+Theo bốn trường hợp cụ thể tại khoản 5 Điều 10, trình bày chi tiết bên dưới.
+Riêng với hồ sơ khai quyết toán thuế, khoản 5 Điều 10 Nghị định 252/2026/NĐ-CP tách thành bốn trường hợp cụ thể, áp dụng khác nhau cho doanh nghiệp và cá nhân:
+Điểm a: chậm nhất là ngày cuối cùng của tháng thứ 3 kể từ ngày kết thúc kỳ quyết toán thuế, áp dụng cho trường hợp quyết toán thông thường.
+Điểm b: chậm nhất là ngày thứ 45 kể từ ngày người nộp thuế có quyết định chấm dứt hoạt động, giải thể, phá sản, chấm dứt hợp đồng, cổ phần hóa doanh nghiệp nhà nước, chia, tách, sáp nhập, hợp nhất.
+Điểm c: chậm nhất là ngày cuối cùng của tháng thứ 4 kể từ ngày kết thúc năm dương lịch, áp dụng cho hồ sơ quyết toán thuế thu nhập cá nhân của cá nhân có thu nhập từ tiền lương, tiền công trực tiếp quyết toán thuế. Trường hợp trong một năm dương lịch, cá nhân có mặt tại Việt Nam dưới 183 ngày nhưng tính trong 12 tháng liên tục kể từ ngày đầu tiên có mặt tại Việt Nam đủ từ 183 ngày trở lên, thời hạn nộp hồ sơ quyết toán năm đầu tiên chậm nhất là ngày cuối cùng của tháng thứ 4 kể từ ngày cuối cùng của tháng tính đủ 12 tháng liên tục.
+Điểm d: áp dụng cho cá nhân cư trú là người nước ngoài kết thúc hợp đồng lao động tại Việt Nam, thời hạn nộp hồ sơ quyết toán là trước khi xuất cảnh, nhưng không quá 45 ngày kể từ ngày kết thúc hợp đồng lao động.
+Theo góc nhìn từ MAN – Master Accountant Network, việc nắm rõ đồng thời cả thời hạn tạm nộp thuế theo Quý tại Điều 24 lẫn thời hạn khai thuế theo từng kỳ tính thuế tại Điều 10 giúp doanh nghiệp xây dựng lịch tuân thủ thuế trọn năm, tránh bỏ sót nghĩa vụ khi doanh nghiệp phát sinh đồng thời nhiều loại thuế với chu kỳ khai khác nhau.
+Xem thêm bài viết tại: Cách gia hạn nộp thuế 2026 online: Hướng dẫn chi tiết theo Nghị định 245/2026/NĐ-CP
+Các văn bản pháp luật liên quan đến tạm nộp thuế theo Quý
+Lưu ý quan trọng: Tính đến thời điểm hiện tại, một số nội dung hướng dẫn chi tiết bổ sung của Bộ Tài chính theo khoản 4 Điều 24 vẫn đang được cập nhật. Các chuyên gia tại MAN khuyến nghị doanh nghiệp theo dõi sát các văn bản hướng dẫn mới để áp dụng chính xác, tránh rủi ro khi quyết toán năm 2026.
+Bảng tổng hợp các văn bản pháp luật liên quan đến tạm nộp thuế theo Quý
+Văn bản pháp lý
+Số hiệu / Hiệu lực
+Nội dung liên quan
+Nghị định 252/2026/NĐ-CP
+Chính phủ, hiệu lực 1/7/2026
+Điều 24 quy định thời hạn, mức tạm nộp và trách nhiệm khi tạm nộp thuế theo quý; Điều 10 quy định thời hạn nộp hồ sơ khai thuế theo từng loại kỳ tính thuế; Điều 26 quy định cách tính tiền chậm nộp khi bị thanh tra, kiểm tra phát hiện tăng số phải nộp.
+Thông tư 89/2026/TT-BTC
+Bộ Tài chính, năm 2026
+Khoản 3 Điều 21 hướng dẫn chi tiết cách xác định số thuế TNDN tạm nộp theo quý, cách trừ số đã tạm nộp vào quyết toán năm.
+Quy định về quản lý, đầu tư vốn nhà nước tại doanh nghiệp
+Tham chiếu
+Căn cứ xác định nghĩa vụ tạm nộp lợi nhuận sau thuế còn lại vào ngân sách theo quý.
+Văn bản hướng dẫn bổ sung (dự kiến)
+Bộ Tài chính
+Theo khoản 4 Điều 24 Nghị định 252/2026/NĐ-CP, Bộ trưởng Bộ Tài chính sẽ có hướng dẫn cụ thể hơn về tạm nộp thuế, khoản thu khác theo quý.
+Cách tính và ví dụ minh họa tạm nộp thuế theo Quý
+Nhiều kế toán nhầm lẫn giữa việc tạm nộp đều bốn quý và việc tạm nộp đạt ngưỡng 80%. Trên thực tế, pháp luật không bắt buộc mỗi quý phải nộp chính xác 25% số thuế cả năm, mà chỉ yêu cầu tổng số tạm nộp của cả 4 quý đạt tối thiểu 80% số quyết toán năm.
+Ví dụ minh họa: doanh nghiệp B ước tính số thuế TNDN phải nộp theo quyết toán năm 2026 là 2.000.000.000 đồng. Mức tối thiểu phải tạm nộp đủ 4 quý là 80% nhân với 2.000.000.000 đồng, tương đương 1.600.000.000 đồng. Giả sử doanh nghiệp B đã tạm nộp lần lượt các quý: quý 1 là 300 triệu đồng, quý 2 là 400 triệu đồng, quý 3 là 350 triệu đồng, quý 4 là 250 triệu đồng, tổng cộng 1.300.000.000 đồng, tương đương 65% số quyết toán năm.
+Vì 1.300.000.000 đồng thấp hơn mức tối thiểu 1.600.000.000 đồng, doanh nghiệp B phải nộp tiền chậm nộp tính trên phần chênh lệch còn thiếu là 300.000.000 đồng, tính từ ngày liền kề sau hạn tạm nộp quý 4 cho đến ngày thực nộp số còn thiếu. Đây chính là hậu quả tài chính trực tiếp nếu doanh nghiệp ước tính tạm nộp quá thấp so với thực tế kinh doanh.
+Trường hợp
+Tổng tạm nộp 4 quý
+So với 80% quyết toán năm
+Hậu quả
+Đạt chuẩn
+Từ 1.600.000.000 đồng trở lên
+Bằng hoặc cao hơn
+Không bị tính tiền chậm nộp
+Nộp thiếu
+Dưới 1.600.000.000 đồng
+Thấp hơn
+Bị tính tiền chậm nộp trên phần thiếu
+Nộp thừa
+Cao hơn số quyết toán thực tế
+Vượt 100%
+Được bù trừ hoặc xử lý theo quyết toán năm
+Case Study: Doanh nghiệp xử lý tạm nộp thuế theo Quý ra sao?
+Bối cảnh
+Công ty Cổ phần Cơ khí Chính xác C (tên minh họa), hoạt động trong lĩnh vực gia công cơ khí tại Đồng Nai, có doanh thu biến động mạnh theo mùa vụ đơn hàng xuất khẩu. Quý 1 và quý 2 công ty thường lãi thấp do ít đơn hàng, trong khi quý 3, quý 4 lợi nhuận tăng mạnh nhờ mùa cao điểm xuất khẩu cuối năm.
+Xử lý theo quy định tạm nộp thuế theo Quý
+Theo tư vấn từ MAN – Master Accountant Network, thay vì tạm nộp đều 25% mỗi quý như trước, công ty C thực hiện ba bước: (1) rà soát kết quả kinh doanh thực tế từng quý để ước tính số thuế tạm nộp sát lợi nhuận phát sinh; (2) dự phòng khoản tạm nộp bổ sung vào quý 3, quý 4 khi lợi nhuận tăng, bảo đảm tổng 4 quý đạt tối thiểu 80% số quyết toán năm; (3) đối chiếu số đã tạm nộp trước khi nộp hồ sơ quyết toán năm để chủ động bổ sung nếu còn thiếu, tránh chờ cơ quan thuế kiểm tra mới phát hiện.
+Kết quả đo lường được
+Tổng số thuế tạm nộp 4 quý của công ty C đạt 85% số quyết toán năm, vượt ngưỡng tối thiểu 80% theo quy định.
+Công ty tránh được khoản tiền chậm nộp ước tính khoảng 45 triệu đồng nếu tiếp tục cách tạm nộp đều như trước đây.
+Hồ sơ quyết toán năm được cơ quan thuế chấp nhận không phát sinh vướng mắc, thời gian đối chiếu số liệu rút ngắn còn khoảng 3 ngày làm việc.
+Nhận định chuyên gia: Rủi ro thường gặp khi tạm nộp thuế theo Quý
+Các chuyên gia tại MAN – Master Accountant Network với hơn 30 năm kinh nghiệm kiểm toán và tư vấn thuế tại Việt Nam chỉ ra bốn rủi ro phổ biến mà doanh nghiệp thường gặp khi thực hiện tạm nộp thuế theo Quý:
+Rủi ro 1: Ước tính tạm nộp quá thấp so với thực tế kinh doanh: Nhiều doanh nghiệp có xu hướng tạm nộp cầm chừng để giữ dòng tiền, dẫn đến tổng 4 quý không đạt ngưỡng 80%. Hậu quả là bị tính tiền chậm nộp trên phần thiếu, dù doanh nghiệp không cố ý trốn thuế.
+Rủi ro 2: Nhầm lẫn giữa nộp đều 25% mỗi quý và đạt ngưỡng 80% cả năm: Pháp luật không yêu cầu tạm nộp đều từng quý, mà chỉ yêu cầu tổng 4 quý đạt tối thiểu 80%. Áp dụng cứng nhắc cách nộp đều có thể khiến doanh nghiệp nộp thiếu ở những quý lợi nhuận tăng đột biến vào cuối năm.
+Rủi ro 3: Không cập nhật kịp thời khi bị thanh tra, kiểm tra sau quyết toán: Nếu cơ quan có thẩm quyền thanh tra, kiểm tra sau khi doanh nghiệp đã quyết toán mà phát hiện tăng số phải nộp, việc tính tiền chậm nộp sẽ áp dụng theo quy định riêng tại khoản 2 Điều 26 Nghị định 252/2026/NĐ-CP, thường khắt khe hơn so với trường hợp doanh nghiệp tự phát hiện và điều chỉnh.
+Rủi ro 4: Bỏ sót khoản tạm nộp đặc thù của doanh nghiệp bất động sản: Doanh nghiệp bất động sản tạm nộp 1% trên doanh thu thu tiền theo tiến độ dễ nhầm lẫn thời điểm tổng hợp vào hồ sơ quyết toán. Theo đúng quy định, khoản này chỉ tổng hợp khi bàn giao nhà, cơ sở hạ tầng, không phải tổng hợp ngay trong năm phát sinh doanh thu tạm tính.
+Kết luận
+Tạm nộp thuế theo Quý không đơn thuần là thủ tục hành chính lặp lại bốn lần mỗi năm. Đây là công cụ giúp cơ quan thuế bảo đảm dòng thu ngân sách ổn định, đồng thời đòi hỏi doanh nghiệp phải ước tính kết quả kinh doanh một cách sát thực tế. Ngưỡng 80% theo Nghị định 252/2026/NĐ-CP tuy không mới về bản chất so với quy định trước đây, nhưng đi kèm cơ chế tính tiền chậm nộp rõ ràng, buộc bộ phận kế toán phải chủ động rà soát số liệu từng quý thay vì chờ đến cuối năm.
+Các dịch vụ thuế tại MAN – Master Accountant Network
+Dịch vụ kế toán thuế
+Dịch vụ tư vấn thuế
+Dịch vụ quyết toán thuế
+Dịch vụ báo cáo thuế
+Dịch vụ hoàn thuế GTGT
+Thông tin liên hệ dịch vụ tại MAN – Master Accountant Network
+Địa chỉ: Số 19A, Đường 43, Phường Tân Thuận, TP. Hồ Chí Minh
+Mobile/Zalo: 0903 963 163 – 0903 428 622
+Email: man@man.net.vn
+Google Business Profile: Xem Google Business Profile của MAN – Master Accountant Network 
+LinkedIn Founder: Xem hồ sơ LinkedIn của chuyên gia Lê Hoàng Tuyên 
+Phụ trách sản xuất và kiểm duyệt nội dung chuyên môn bởi: Ông Lê Hoàng Tuyên – Sáng lập viên (Founder) & CEO MAN – Master Accountant Network, Kiểm toán viên CPA Việt Nam với hơn 30 năm kinh nghiệm trong lĩnh vực Kế toán, Kiểm toán, Thuế và Tư vấn Tài chính doanh nghiệp.
+Câu hỏi thường gặp về tạm nộp thuế theo Quý
+Tạm nộp thuế theo Quý áp dụng cho những khoản thuế nào? 
+Áp dụng cho thuế thu nhập doanh nghiệp và lợi nhuận sau thuế còn lại phải nộp ngân sách nhà nước, theo Điều 24 Nghị định 252/2026/NĐ-CP.
+Thời hạn tạm nộp thuế theo Quý chậm nhất là ngày nào? 
+Chậm nhất là ngày cuối cùng của tháng đầu của quý tiếp theo quý phát sinh nghĩa vụ thuế.
+Nếu tổng 4 quý tạm nộp thấp hơn 80% số quyết toán năm thì sao? 
+Doanh nghiệp phải nộp tiền chậm nộp tính trên phần còn thiếu, kể từ ngày liền kề sau hạn tạm nộp quý 4 đến ngày thực nộp đủ số còn thiếu.
+Doanh nghiệp có được tự xác định số thuế tạm nộp mỗi quý không? 
+Có. Doanh nghiệp tự xác định số thuế tạm nộp dựa trên báo cáo tài chính quý hoặc kết quả sản xuất kinh doanh quý, miễn tổng 4 quý đạt tối thiểu 80% số quyết toán năm.
+Trường hợp cơ quan thuế thanh tra phát hiện tăng số phải nộp sau quyết toán thì tính tiền chậm nộp thế nào? 
+Áp dụng theo quy định riêng tại khoản 2 Điều 26 Nghị định 252/2026/NĐ-CP, không tính theo cách tính tiền chậm nộp thông thường của tạm nộp quý.
+MAN - Master Accountant NetworkBiên tập dựa trên pháp luật, kiểm duyệt bởi chuyên gia thuế.
+ Tìm kiếm
+Bài viết nổi bậtTin tức thuếDoanh nghiệp mới thành lập kê khai thuế TNDN 15%, 17% và miễn thuế 3 năm trên tờ khai quyết toán thuế TNDN ra sao?Tin tức thuếHạn chót tạm nộp thuế TNDN quý 3/2026Tin tức thuếDoanh nghiệp cần tạm nộp thuế TNDN quý 3/2026 bao nhiêu %?Chủ đềBlog (112)Case studies (1)Hướng dẫn (41)Thuế GTGT (247)Thuế khác (27)Thuế khác (3)Thuế Nhà thầu (20)Thuế TNCN (302)Thuế TNDN (248)Thuế xuất nhập khẩu (29)TagsBất động sảnKê khai thuếCần tư vấn thuế?MAN giúp bạn giải quyết mọi vấn đề liên quan đến thuếLiên hệ ngay
+ ZaloPhone 

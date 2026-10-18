@@ -1,0 +1,4 @@
+﻿
+########## https://luatvietnam.vn/tin-van-ban-moi/da-co-du-thao-thong-tu-huong-dan-che-do-ke-toan-doanh-nghiep-nho-va-vua-186-112698-article.html  (13313 chars) ##########
+
+########## https://luatvietnam.vn/tin-van-ban-moi/da-co-du-thao-thong-tu-huong-dan-che-do-ke-toan-doanh-nghiep-nho-va-vua-186-112698-article.html FAILED: 'charmap' codec can't encode character '\u1ee5' in position 6: character maps to <undefined> ##########

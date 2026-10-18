@@ -1,0 +1,154 @@
+
+Đối chiếu toàn bộ chỉ tiêu tờ khai 01/GTGT theo TT89/2026 và TT80/2021 - AGS ACCOUNTING Insight | Góc nhìn chuyên gia về Kế toán – Thuế – Kiểm toán – Pháp lý tại Việt Nam
+Bỏ qua đến nội dung chính
+Home
+THUẾ và HẢI QUAN
+ Từ ngày 01/07/2026, mẫu tờ khai thuế GTGT 01/GTGT được thực hiện theo Thông tư 89/2026/TT-BTC. So với mẫu theo Thông tư 80/2021/TT-BTC, một số chỉ tiêu được giữ nguyên, một số được điều chỉnh tên gọi, cách xác định hoặc bổ sung mới. Để doanh nghiệp thuận tiện trong quá trình chuyển đổi, hãy cùng AGS tổng hợp, đối chiếu toàn bộ chỉ tiêu và hướng dẫn cách lập tờ khai 01/GTGT theo quy định mới.1. Đối tượng áp dụng mẫu 01/GTGTMẫu tờ khai thuế giá trị gia tăng (GTGT) số 01/GTGT là biểu mẫu thông dụng nhất dành cho các tổ chức, doanh nghiệp có hoạt động sản xuất kinh doanh tại Việt Nam. Các tiêu chí áp dụng cụ thể bao gồm:Về đối tượng sử dụng: Dành cho người nộp thuế có phát sinh hoạt động sản xuất, kinh doanh hàng hóa, dịch vụ thông thường.Về phương pháp tính thuế: Chỉ áp dụng đối với người nộp thuế tính thuế GTGT theo phương pháp khấu trừ (doanh nghiệp thực hiện đầy đủ chế độ kế toán, hóa đơn, chứng từ).Về kỳ kê khai thuế: Người nộp thuế lựa chọn tích vào ô kỳ tính thuế phù hợp ngay trên đầu tờ khai:Kỳ khai theo tháng: Dành cho doanh nghiệp lớn có tổng doanh thu năm trước liền kề trên 50 tỷ đồng.Kỳ khai theo quý: Dành cho doanh nghiệp mới thành lập hoặc doanh nghiệp có tổng doanh thu năm trước liền kề từ 50 tỷ đồng trở xuống.2. Bảng đối chiếu mẫu 01/GTGT theo TT89/2026 và TT80/2021Để thuận tiện cho việc kiểm tra và chuyển đổi từ mẫu tờ khai theo Thông tư 80/2021/TT-BTC sang mẫu theo Thông tư 89/2026/TT-BTC, dưới đây là bảng đối chiếu toàn bộ các chỉ tiêu trên tờ khai 01/GTGT.     Qua bảng đối chiếu, phần lớn các chỉ tiêu trên mẫu 01/GTGT vẫn được giữ nguyên. Một số chỉ tiêu được điều chỉnh về tên gọi, công thức hoặc cách xác định; đồng thời bổ sung các chỉ tiêu [32b] và [34a]. Đây là những nội dung người lập tờ khai cần đặc biệt chú ý khi chuyển sang mẫu mới.3. Hướng dẫn lập các chỉ tiêu trên tờ khai 01/GTGT theo TT89/2026/TT-BTCCăn cứ Phụ lục 1 ban hành kèm theo Thông tư 89/2026/TT-BTC hướng dẫn điền tờ khai 01/GTGT như sau:3.1. Thông tin chung và kỳ tính thuếChỉ tiêu [01a] - Tên hoạt động sản xuất kinh doanhNgười nộp thuế lựa chọn một trong các hoạt động sau:- Hoạt động sản xuất kinh doanh thông thường;- Hoạt động xổ số kiến thiết, xổ số điện toán;- Hoạt động khai thác dầu khí;- Dự án đầu tư cơ sở hạ tầng, nhà để chuyển nhượng khác địa bàn tỉnh nơi đóng trụ sở chính;- Nhà máy sản xuất điện khác địa bàn tỉnh nơi đóng trụ sở chính.Không được chọn đồng thời nhiều hoạt động.Chỉ tiêu [09], [10], [11] - Thông tin đơn vị phụ thuộc- Khai thông tin của đơn vị phụ thuộc hoặc địa điểm kinh doanh đặt tại địa phương khác tỉnh với trụ sở chính theo quy định.- Nếu doanh nghiệp có nhiều đơn vị phụ thuộc thì lựa chọn một đơn vị đại diện để kê khai theo hướng dẫn của cơ quan thuế.3.2. Xác định thuế GTGT đầu vàoChỉ tiêu [21] - Không phát sinh hoạt động mua, bán trong kỳĐánh dấu "X" nếu trong kỳ:- Không phát sinh mua hàng hóa, dịch vụ;- Không phát sinh bán hàng hóa, dịch vụ.Nếu đã phát sinh bất kỳ hóa đơn mua hoặc bán nào thì không đánh dấu chỉ tiêu này.Chỉ tiêu [22] - Thuế GTGT còn được khấu trừ kỳ trước chuyển sangGhi số thuế GTGT còn được khấu trừ của kỳ trước chuyển sang kỳ này.Số liệu lấy từ chỉ tiêu [43] của kỳ khai thuế trước.Chỉ tiêu [23], [24] - Giá trị và thuế GTGT của hàng hoá, dịch vụ mua vào- Chỉ tiêu [23]: Khai tổng giá trị hàng hóa, dịch vụ mua vào trong kỳ chưa có thuế GTGT.- Chỉ tiêu [24]: Khai tổng số thuế GTGT đầu vào của hàng hóa, dịch vụ mua vào tương ứng với chỉ tiêu [23].Chỉ tiêu [23a], [24a]: khai riêng:- Giá trị hàng hóa nhập khẩu.- Thuế GTGT hàng nhập khẩu.Chỉ tiêu [25]: Khai tổng số thuế GTGT mua vào đã kê khai tại chỉ tiêu [24] đủ điều kiện được khấu trừ theo quy định của pháp luật về thuế GTGT.Không bao gồm các khoản thuế GTGT không đủ điều kiện khấu trừ theo quy định3.3. Xác định doanh thu và thuế GTGT đầu raChỉ tiêu [26]: Số liệu ghi vào chỉ tiêu này là giá trị HHDV bán ra không chịu thuế giá trị gia tăng trên các hoá đơn GTGT bán ra của người nộp thuế trong kỳ tính thuế.Chỉ tiêu [27], [28]- [27] : Giá trị HHDV bán ra chịu thuế giá trị gia tăng: được xác định theo công thức [27] = [29]+[30]+[32]+[32a]-[32b].- [28]: Thuế GTGT của HHDV bán ra chịu thuế giá trị gia tăng: được xác định theo công thức [28]=[31]+[33].Chỉ tiêu [29] đến [33] phân loại doanh thu theo từng mức thuế suất:- [29]: Doanh thu chịu thuế suất 0%.- [30]: Doanh thu chịu thuế suất 5%.- [31]: Thuế GTGT của doanh thu 5%.- [32]: Doanh thu chịu thuế suất 10%.- [33]: Thuế GTGT của doanh thu 10%.Chỉ tiêu [32a], [32b]- [32a]: Khai giá trị hàng hóa, dịch vụ thuộc trường hợp không phải kê khai, tính thuế GTGT theo quy định của pháp luật.- [32b]: Khai giá trị hàng hóa, dịch vụ thuộc trường hợp không tính vào giá tính thuế GTGT theo quy định của pháp luật thuế GTGT.Chỉ tiêu [34], [34a], [35]- [34a]: Khai doanh thu của hàng hóa, dịch vụ không thuộc phạm vi điều chỉnh của pháp luật thuế GTGT.Chỉ tiêu [34], [35]:- Tổng doanh thu của hàng hóa, dịch vụ bán ra: được xác định theo công thức [34]=[26]+[27]+[34a].- Thuế GTGT của hàng hóa, dịch vụ bán ra: được xác định theo công thức [35]=[28]3.4. Xác định số thuế GTGT phải nộp hoặc còn được khấu trừChỉ tiêu [36]: Thuế GTGT phát sinh trong kỳ: [36] = [35] − [25]Chỉ tiêu [37], [38]: Khai điều chỉnh tăng hoặc giảm số thuế GTGT đầu vào được khấu trừ theo hồ sơ khai bổ sung hoặc theo kết luận, quyết định của cơ quan thuế theo quy định.Chỉ tiêu [39a]: Khai số thuế GTGT còn được khấu trừ chưa đề nghị hoàn của dự án đầu tư hoặc của đơn vị phụ thuộc được chuyển sang tiếp tục khấu trừ khi đáp ứng điều kiện theo quy địnhChỉ tiêu [40a], [40b], [40]- [40a]: Thuế giá trị gia tăng phải nộp của hoạt động sản xuất kinh doanh trong kỳ: được xác định theo công thức [40a]=([36]-[22]+[37]-[38]-[39a]) ≥ 0.- [40b]: Chi tiêu [40b]: Khai tổng số thuế giá trị gia tăng đã khai tại chi tiêu [28a] và [28b] của Tờ khai thuế mẫu số 02/GTGT.- [40]: Thuế GTGT còn phải nộp sau khi bù trừ.Chỉ tiêu [41], [42], [43]- [41]: Thuế GTGT chưa được khấu trừ hết kỳ này.- [42]: Thuế GTGT đề nghị hoàn.- [43]: Thuế GTGT còn được khấu trừ chuyển sang kỳ sau.4. Một số trường hợp thường gặp khi lập tờ khai 01/GTGTTrong quá trình lập tờ khai 01/GTGT theo Thông tư 89/2026/TT-BTC, doanh nghiệp có thể gặp một số trường hợp cần lưu ý khi xác định và phân loại số liệu. Dưới đây là các tình huống thường gặp:Trường hợp 1: Kỳ này không phát sinh hoạt động mua, bánDoanh nghiệp chỉ tích “X” tại chỉ tiêu [21] khi trong kỳ đồng thời không phát sinh hoạt động mua và bán hàng hóa, dịch vụ. Nếu có phát sinh một trong hai hoạt động thì không tích chỉ tiêu này.Trường hợp 2: Có thuế GTGT còn được khấu trừ từ kỳ trướcTại chỉ tiêu [22], doanh nghiệp kê số thuế GTGT còn được khấu trừ của kỳ trước chuyển sang. Số liệu tại [22] được lấy từ chỉ tiêu [43] của kỳ tính thuế trước.Do đó, doanh nghiệp cần đối chiếu [22] của kỳ hiện tại với [43] của kỳ trước để tránh sai lệch số thuế được chuyển khấu trừ.Trường hợp 3: Có hóa đơn đầu vào nhưng thuế không đủ điều kiện khấu trừCần phân biệt giữa chỉ tiêu [24] và chỉ tiêu [25]:- [24]: Tổng số thuế GTGT của hàng hóa, dịch vụ mua vào trong kỳ.- [25]: Phần thuế GTGT đầu vào đủ điều kiện được khấu trừ trong kỳ.
+Vì vậy, số liệu [24] có thể lớn hơn [25] nếu doanh nghiệp có khoản thuế GTGT đầu vào không đáp ứng điều kiện khấu trừ.Trường hợp 4: Có doanh thu không kê khai, tính thuế Từ mẫu 01/GTGT theo Thông tư 89/2026/TT-BTC, chỉ tiêu [32a] được sử dụng để khai giá trị hàng hóa, dịch vụ thuộc trường hợp không phải kê khai, tính thuế GTGT theo quy định pháp luật về thuế GTGT.Doanh nghiệp cần xác định đúng bản chất giao dịch trước khi đưa doanh thu vào chỉ tiêu này, tránh nhầm với hàng hóa, dịch vụ không thuộc phạm vi điều chỉnh của pháp luật thuế GTGT.Trường hợp 5: Có hàng hoá, dịch vụ không tính vào giá tính thuế GTGTTại chỉ tiêu [32b], doanh nghiệp khai giá trị hàng hóa, dịch vụ thuộc trường hợp không tính vào giá tính thuế GTGT theo quy định.Cần phân biệt:- [32a]: Không phải kê khai, tính thuế GTGT.- [32b]: Không tính vào giá tính thuế GTGT.Việc tách riêng hai trường hợp này là một trong những điểm cần lưu ý khi chuyển sang mẫu 01/GTGT theo Thông tư 89/2026/TT-BTC.Trường hợp 6: Có doanh thu không thuộc phạm vi điều chỉnh của Luật GTGTĐối với hàng hóa, dịch vụ không thuộc phạm vi điều chỉnh của pháp luật thuế GTGT, doanh nghiệp kê doanh thu tại chỉ tiêu [34a].Số liệu tại [34a] đồng thời được sử dụng để xác định tổng doanh thu hàng hóa, dịch vụ bán ra tại chỉ tiêu [34] theo công thức:                                         [34] = [26] + [27] + [34a]Lưu ý: [32a], [32b] và [34a] đều là những chỉ tiêu cần đặc biệt chú ý trên mẫu mới. Doanh nghiệp không nên căn cứ đơn thuần vào việc hóa đơn “không có thuế GTGT” để lựa chọn chỉ tiêu, mà cần xác định đúng bản chất và căn cứ pháp lý của từng giao dịch.5. Những điểm cần kiểm tra trước khi nộp tờ khaiTrước khi ký và nộp tờ khai 01/GTGT theo mẫu mới, doanh nghiệp nên kiểm tra:Kỳ tính thuế: Kiểm tra đúng tháng/quý và đúng kỳ kê khai;Chỉ tiêu [22]: Đối chiếu với chỉ tiêu [43] kỳ trước;Chỉ tiêu [24] và [25]: Kiểm tra sự chênh lệch và xác định các khoản thuế đầu vào không đủ điều kiện khấu trừ;Doanh thu bán ra: Đảm bảo doanh thu đã được phân loại đúng theo mức thuế suất và tính chất giao dịch;[32a], [32b], [34a]: Kiểm tra kỹ để tránh nhầm lẫn giữa các trường hợp không kê khai, không tính vào giá tính thuế và không thuộc phạm vi điều chỉnh của thuế GTGT;Các công thức tổng hợp: Đối chiếu [27], [34], [36] và [40a] với số liệu chi tiết;Chỉ tiêu [37], [38]: Kiểm tra nếu kỳ này có điều chỉnh tăng, giảm thuế GTGT được khấu trừ;Chỉ tiêu [42]: Nếu có đề nghị hoàn thuế, đối chiếu với hồ sơ hoàn thuế tương ứng;Chỉ tiêu [43]: Kiểm tra số thuế GTGT còn được khấu trừ chuyển sang kỳ sau để đảm bảo khớp với kỳ tiếp theo.Việc kiểm tra theo checklist trên giúp doanh nghiệp không chỉ hạn chế sai sót khi lập tờ khai mà còn đảm bảo số liệu được liên kết chính xác giữa các kỳ tính thuế.Kết luậnViệc chuyển sang mẫu 01/GTGT theo Thông tư 89/2026/TT-BTC không chỉ là thay đổi biểu mẫu mà còn yêu cầu doanh nghiệp rà soát loại cách phân loại và tổng hợp số liệu trên tờ khai. Đặc biệt, các chỉ tiêu [32a], [32b], [34a] và công thức xác định [27], [34] là những nội dung cần được kiểm tra kỹ trong quá trình lập tờ khai. Việc đối chiếu mẫu cũ và mẫu mới trước khi thực hiện kê khai sẽ giúp doanh nghiệp hạn chế sai sót và chủ động hơn trong quá trình chuyển đổi.Công ty AGS cảm ơn bạn đã dành thời gian để đọc bài viết này. Hy vọng bạn đã có được những thông tin bổ ích. Hãy tiếp tục theo dõi chúng tôi để cập nhật thêm nhiều thông tin cũng như cơ hội việc làm tại AGS nhé.Nguồn: https://thuvienphapluat.vn/ma-so-thue/phap-luat-thue/bang-so-sanh-toan-bo-chi-tieu-to-khai-01gtgt-tt892026-va-tt-802021-khac-gi-230017.html
+Thông tin khác
+ Liên Hệ AGS – Dịch Vụ Kế Toán, Kiểm Toán & Thuế cho DN Nhật Bản
+ Doanh nghiệp Nhật Bản đang gặp khó khăn về thuế và kế toán tại Việt Nam? Khám phá các hướng dẫn thực tiễn và cách xử lý rủi ro hiệu quả từ chuyên gia.
+ AGS ACCOUNTING Insight | Góc nhìn chuyên gia về Kế toán – Thuế – Kiểm toán – Pháp lý tại Việt Nam
+ Cơ hội nghề nghiệp tại AGS：Chính sách, phúc lợi và những câu hỏi thường gặp về tuyển dụng
+ Khám phá chính sách tuyển dụng, phúc lợi và cơ hội việc làm tại AGS – công ty kế toán kiểm toán hàng đầu, đồng hành cùng doanh nghiệp Nhật Bản tại Việ
+ AGS ACCOUNTING Insight | Góc nhìn chuyên gia về Kế toán – Thuế – Kiểm toán – Pháp lý tại Việt Nam
+THUẾ và HẢI QUAN
+#ThuếGTGT
+Next Post
+Previous Post 
+THUẾ và HẢI QUAN
+Translate
+Popular Posts
+30 từ viết tắt thường gặp trong kiểm toán – Giải thích dễ hiểu cho người mới đọc lần đầu
+2026/01/22
+|
+PHÁT TRIỂN KỸ NĂNG
+#Kỹnăng_TiếngAnh
+#ThuậtngữChuyênmôn
+Đối chiếu toàn bộ chỉ tiêu tờ khai 01/GTGT theo TT89/2026 và TT80/2021
+2026/08/27
+|
+THUẾ và HẢI QUAN
+#ThuếGTGT
+Số: 04/VBHN-BTC HƯỚNG DẪN CHẾ ĐỘ KẾ TOÁN DOANH NGHIỆP
+2020/01/20
+|
+KẾ TOÁN và KIỂM TOÁN
+#KếToán(VAS)
+Nghị định 254 và Thông tư 91/2026 – Những điểm mới cần biết
+2026/09/28
+|
+THUẾ và HẢI QUAN
+#ThuếLuậtHóađơn
+Áp dụng tỷ giá ngoại tệ theo Thông tư 99/2025/ TT-BTC.
+2026/05/14
+|
+KẾ TOÁN và KIỂM TOÁN
+#KếToán(VAS)
+Các khoản chi phí được trừ & không được trừ từ 1/10/2025 theo Luật Thuế TNDN năm 2025
+2025/09/22
+|
+THUẾ và HẢI QUAN
+#ThuếTNDN
+Hạch toán lãi tiền gửi ngân hàng có kỳ hạn và không kỳ hạn
+2025/01/08
+|
+KẾ TOÁN và KIỂM TOÁN
+#KếToán(VAS)
+Kiểm soát doanh thu: Cách hạn chế sai sót và gian lận
+2026/09/25
+|
+KẾ TOÁN và KIỂM TOÁN
+#KếToán(VAS)
+Nội quy lao động là gì? Nội dung bắt buộc và hiệu lực theo quy định mới
+2026/08/20
+|
+PHÁP LUẬT và LAO ĐỘNG
+#LuậtLaođộng
+Hóa đơn xăng dầu KKKNT có phải kê khai trên tờ khai 01/GTGT mới?
+2026/08/04
+|
+THUẾ và HẢI QUAN
+#ThuếGTGT
+PILLAR POSTS
+TỔNG HỢP
+Categories
+KẾ TOÁN và KIỂM TOÁN
+NGHỀ NGHIỆP
+NHÀ CUNG CẤP
+PHÁP LUẬT và LAO ĐỘNG
+PHÁT TRIỂN KỸ NĂNG
+TÀI CHÍNH ĐẦU TƯ VÀ M&A
+THUẾ và HẢI QUAN
+VĂN HÓA & ĐỜI SỐNG
+Hashtag
+#BảngLương
+#BHXH-KPCĐ
+#Công văn
+#DịchvụBDS
+#DịchvụĐàotạo
+#DịchvụKếtoán
+#DịchvụKhác
+#DịchvụKiểmToán
+#DịchvụNhânsự
+#DịchvụPMKT-ERP
+#KếToán(VAS)
+#KếtoánQuốctế(IFRS)
+#KếToánTàichính
+#KiểmToán
+#KiểmToán_DX
+#KiểmToán(ISQM)
+#KiểmtoánNộibộ
+#Kỹnăng_BLOG
+#Kỹnăng_Cánhân
+#Kỹnăng_Chứng chỉ
+#Kỹnăng_Hànhvitổchức
+#Kỹnăng_Máytính
+#Kỹnăng_Thiếtkế
+#Kỹnăng_TiếngAnh
+#Kỹnăng_TiếngHàn
+#Kỹnăng_TiếngNhật
+#Kỹnăng_TiếngPháp
+#Kỹnăng_TiếngTrung
+#LuậtBấtđộngsản-Đấtđai
+#LuậtCạnhtranh
+#LuậtDânsự
+#LuậtDoanhnghiệp
+#Luậtđầutư
+#LuậtKhác
+#LuậtLaođộng
+#LuậtLaođộngNướcngoài
+#LuậtNHNN
+#LuậtPhásản
+#LuậtThươngmại
+#Market-ESG
+#MarketCasestudy
+#MarketM&A
+#MarketTrend
+#Nghềnghiệp_Lộtrình
+#Nghềnghiệp_Ứngtuyển
+#Nghềnghiệp_ViệclàmAGS
+#TàisánRWA
+#TàisánSố
+#TàisảnTruyềnthống
+#ThuậtngữChuyênmôn
+#ThuếGTGT
+#ThuếHảiquan-DNCX
+#ThuếHoànthuế
+#ThuếHộkinhdoanh
+#Thuếkhác
+#ThuếLuậtHóađơn
+#ThuếNTNN
+#ThuếQuảnlý
+#ThuếQuốcTế
+#ThuếTNCN
+#ThuếTNDN
+#ThuếTTĐB
+#ThuếƯuđãi-Miễnthuế
+#Tỉnhthành-DisảnViệtNam
+#TỉnhthànhNhậtbản
+#Tổchức_Hiệphội
+#TravelStudyWorkJapan
+#VănhóaẨmthực
+#ViệtNamLịchsử
+#VườnQuốcgia-Disảnthếgiới

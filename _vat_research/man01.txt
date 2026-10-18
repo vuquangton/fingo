@@ -1,0 +1,307 @@
+
+Khai thuế GTGT Quý 3/2026 theo mẫu nào? Hướng dẫn 01/GTGT - MAN
+ VAT, Tax News | 06/10/2026 | 35 phút đọcKhai thuế GTGT Quý 3/2026 theo mẫu nào? Hướng dẫn 01/GTGTMAN - Master Accountant NetworkLegally edited, reviewed by tax experts.Main content
+Khai thuế GTGT Quý 3/2026 theo mẫu nào là câu hỏi nhiều kế toán đặt ra khi kỳ khai thuế quý đầu tiên sau khi Circular 89/2026/TT-BTC được áp dụng đã đến. Theo Phụ lục 1 ban hành kèm Thông tư này, người nộp thuế GTGT theo phương pháp khấu trừ sử dụng Mẫu số 01/GTGT. Tờ khai gồm hàng chục chỉ tiêu liên kết bằng công thức, phân loại doanh thu theo ba mức thuế suất 0%, 5% và 10%.
+Bên cạnh mẫu tờ khai, doanh nghiệp còn phải xác định đúng phương pháp tính thuế theo Value Added Tax Law 2024 (Luật số 48/2024/QH15). Điều 12 Luật này quy định rõ các nhóm áp dụng phương pháp tính trực tiếp, trong đó có doanh nghiệp, hợp tác xã có doanh thu hằng năm dưới 01 tỷ đồng. Chọn sai mẫu hoặc sai phương pháp đồng nghĩa với việc phải khai bổ sung và đối mặt rủi ro bị xử phạt.
+Tải về Mẫu số 01/GTGT
+Tóm tắt trọng tâm về Khai thuế GTGT Quý 3/2026 theo mẫu nào?
+Tóm tắt trọng tâm về Khai thuế GTGT Quý 3/2026 theo mẫu nào?
+Khai thuế GTGT Quý 3/2026 theo mẫu nào là câu hỏi về biểu mẫu áp dụng cho kỳ tính thuế từ tháng 7 đến tháng 9/2026. Câu trả lời: người nộp thuế GTGT theo phương pháp khấu trừ sử dụng Mẫu số 01/GTGT ban hành tại Phụ lục I Thông tư 89/2026/TT-BTC.
+Dùng để làm gì: xác định số thuế GTGT phải nộp, số thuế còn được khấu trừ chuyển kỳ sau hoặc số thuế đề nghị hoàn.
+Áp dụng cho ai: doanh nghiệp nộp thuế theo phương pháp khấu trừ và đủ điều kiện khai theo quý (doanh thu năm trước liền kề từ 50 tỷ đồng trở xuống hoặc mới bắt đầu hoạt động).
+Khi nào nộp: chậm nhất ngày cuối cùng của tháng đầu quý tiếp theo, tức ngày 31/10/2026.
+Lưu ý: Nghị định 245/2026/NĐ-CP chỉ gia hạn thời hạn nộp tiền thuế GTGT quý III/2026 (đến 30/12/2026) cho đối tượng đủ điều kiện, không gia hạn thời hạn nộp tờ khai.
+Khai thuế GTGT Quý 3/2026 theo mẫu nào theo quy định hiện hành?
+Khai thuế GTGT Quý 3/2026 theo mẫu nào theo quy định hiện hành?
+Phần này trả lời trực tiếp câu hỏi về mẫu tờ khai và cơ sở pháp lý của nó. Đây cũng là điểm khởi đầu để kế toán không chọn nhầm biểu mẫu cũ. Theo Phụ lục I ban hành kèm theo Circular 89/2026/TT-BTC, người nộp thuế GTGT theo phương pháp khấu trừ sử dụng Mẫu số 01/GTGT. Do đó, khi khai thuế GTGT Quý 3/2026, người nộp thuế sử dụng Mẫu số 01/GTGT để khai thuế. Doanh nghiệp có thể tải về Mẫu số 01/GTGT để đối chiếu từng chỉ tiêu trong quá trình lập tờ khai.
+Vì sao Quý 3/2026 phải dùng mẫu theo Thông tư 89/2026/TT-BTC?
+Thông tư 89/2026/TT-BTC do Bộ Tài chính ban hành ngày 30/6/2026, có hiệu lực từ ngày 01/7/2026. Thông tư quy định chi tiết một số điều của Luật Quản lý thuế số 108/2025/QH15 và Nghị định 252/2026/NĐ-CP, đồng thời bãi bỏ Thông tư 80/2021/TT-BTC.
+Điều 99 Thông tư 89/2026/TT-BTC quy định về hiệu lực thi hành như sau:
+“Thông tư này có hiệu lực thi hành từ ngày 01 tháng 7 năm 2026.
+Đối với các hồ sơ khai thuế có kỳ tính thuế trước ngày 01 tháng 7 năm 2026, người nộp thuế thực hiện theo mẫu biểu áp dụng trước thời điểm Thông tư này có hiệu lực.”
+Quý 3/2026 gồm tháng 7, 8 và 9/2026, nằm trọn sau mốc 01/7/2026. Vì vậy, đây là kỳ khai thuế quý đầu tiên phải dùng toàn bộ hệ thống biểu mẫu mới. Ngược lại, hồ sơ khai bổ sung cho các kỳ trước 01/7/2026 vẫn dùng mẫu biểu cũ.
+Mẫu 01/GTGT gồm những nhóm thông tin nào?
+Tờ khai được thiết kế theo dòng chảy của số liệu thuế trong kỳ:
+Nhóm thông tin chung: tên hoạt động sản xuất kinh doanh, thông tin đơn vị phụ thuộc.
+Nhóm đầu vào: giá trị và thuế GTGT của hàng hóa, dịch vụ mua vào, trong đó tách riêng hàng nhập khẩu.
+Nhóm đầu ra: doanh thu phân loại theo thuế suất 0%, 5%, 10% và các trường hợp không chịu thuế, không phải kê khai.
+Nhóm xác định nghĩa vụ: thuế phát sinh, điều chỉnh, thuế phải nộp, thuế đề nghị hoàn và thuế chuyển kỳ sau.
+Tờ khai 01/GTGT có vai trò gì trong quản trị tài chính, thuế và kiểm toán?
+Nhiều doanh nghiệp xem tờ khai GTGT như một thủ tục định kỳ. Thực tế, đây là tài liệu mà cơ quan thuế và kiểm toán viên dùng để đối chiếu với hóa đơn, sổ sách và báo cáo tài chính.
+Với quản trị dòng tiền: chỉ tiêu [40] cho biết số thuế phải nộp, chỉ tiêu [43] cho biết số thuế còn được khấu trừ chuyển sang kỳ sau. Hai con số này ảnh hưởng trực tiếp đến kế hoạch chi tiền của quý tiếp theo.
+Với quản lý thuế: số liệu đầu ra trên tờ khai được cơ quan thuế đối chiếu với dữ liệu hóa đơn điện tử. Chênh lệch không giải trình được là căn cứ để yêu cầu giải trình hoặc kiểm tra.
+Với kiểm toán: kiểm toán viên đối chiếu doanh thu chịu thuế trên tờ khai với doanh thu kế toán. Khoản chênh lệch thường dẫn đến bút toán điều chỉnh hoặc ý kiến ngoại trừ.
+Theo góc nhìn từ MAN – Master Accountant Network, rủi ro thuế lớn nhất không nằm ở việc không biết mẫu nào, mà ở việc số liệu trên mẫu không khớp với hóa đơn và sổ kế toán. Các chuyên gia tại MAN với 30 năm kinh nghiệm kiểm toán lưu ý rằng một tờ khai đúng mẫu nhưng sai chỉ tiêu [25] hoặc [22] vẫn có thể khiến doanh nghiệp bị truy thu và tính tiền chậm nộp.
+Ai phải dùng Mẫu 01/GTGT và ai áp dụng phương pháp tính trực tiếp?
+Trước khi mở tờ khai, kế toán cần xác định doanh nghiệp đang nộp thuế theo phương pháp nào. Mẫu 01/GTGT chỉ dành cho người nộp thuế theo phương pháp khấu trừ. Các nhóm áp dụng phương pháp tính trực tiếp được quy định tại Điều 12 Luật Thuế giá trị gia tăng 2024.
+Điều 12 Luật Thuế GTGT 2024 quy định thế nào về phương pháp tính trực tiếp?
+Trích nguyên văn Điều 12 Luật Thuế giá trị gia tăng 2024 (Luật số 48/2024/QH15):
+“Phương pháp tính trực tiếp
+1. Số thuế giá trị gia tăng phải nộp theo phương pháp tính trực tiếp trên giá trị gia tăng bằng giá trị gia tăng nhân với thuế suất thuế giá trị gia tăng áp dụng đối với hoạt động mua, bán, chế tác vàng, bạc, đá quý.
+Giá trị gia tăng của hoạt động mua, bán, chế tác vàng, bạc, đá quý được xác định bằng giá thanh toán của vàng, bạc, đá quý bán ra trừ giá thanh toán của vàng, bạc, đá quý mua vào tương ứng.
+Trường hợp cơ sở kinh doanh có hoạt động mua, bán, chế tác vàng, bạc, đá quý thì cơ sở kinh doanh phải hạch toán riêng hoạt động này để nộp thuế theo phương pháp tính trực tiếp trên giá trị gia tăng.
+2. Số thuế giá trị gia tăng phải nộp theo phương pháp tính trực tiếp theo doanh thu bằng tỷ lệ % nhân với doanh thu áp dụng như sau.
+a) Đối tượng áp dụng bao gồm:
+a1) Doanh nghiệp, hợp tác xã, liên hiệp hợp tác xã có doanh thu hằng năm dưới mức ngưỡng doanh thu 01 tỷ đồng, trừ trường hợp tự nguyện áp dụng phương pháp khấu trừ thuế quy định tại khoản 2 Điều 11 của Luật này;
+a2) Hộ, cá nhân sản xuất, kinh doanh, trừ trường hợp quy định tại khoản 3 Điều này;
+a3) Tổ chức nước ngoài không có cơ sở thường trú tại Việt Nam, cá nhân ở nước ngoài là đối tượng không cư trú tại Việt Nam có doanh thu phát sinh tại Việt Nam chưa thực hiện đầy đủ chế độ kế toán, hóa đơn, chứng từ, không bao gồm các nhà cung cấp nước ngoài quy định tại khoản 4 Điều 4 của Luật này;
+a4) Tổ chức khác, trừ trường hợp nộp thuế theo phương pháp khấu trừ thuế quy định tại khoản 2 Điều 11 của Luật này;
+…”
+Những nhóm nào nộp thuế theo tỷ lệ % trên doanh thu?
+Theo quy định trên, đối tượng nộp thuế GTGT theo phương pháp tính trực tiếp theo doanh thu (bằng tỷ lệ % nhân với doanh thu) gồm:
+Doanh nghiệp, hợp tác xã, liên hiệp hợp tác xã có doanh thu hằng năm dưới mức ngưỡng 01 tỷ đồng, trừ trường hợp tự nguyện áp dụng phương pháp khấu trừ theo khoản 2 Điều 11 Luật Thuế GTGT 2024.
+Hộ, cá nhân sản xuất, kinh doanh, trừ trường hợp quy định tại khoản 3 Điều 12.
+Tổ chức nước ngoài không có cơ sở thường trú tại Việt Nam, cá nhân ở nước ngoài là đối tượng không cư trú tại Việt Nam có doanh thu phát sinh tại Việt Nam chưa thực hiện đầy đủ chế độ kế toán, hóa đơn, chứng từ.
+Tổ chức khác, trừ trường hợp nộp thuế theo phương pháp khấu trừ quy định tại khoản 2 Điều 11 Luật Thuế GTGT 2024.
+Riêng nhóm tổ chức nước ngoài không có cơ sở thường trú tại Việt Nam, cá nhân ở nước ngoài là đối tượng không cư trú tại Việt Nam nêu trên không bao gồm các đối tượng sau:
+Nhà cung cấp nước ngoài không có cơ sở thường trú tại Việt Nam có hoạt động kinh doanh thương mại điện tử, kinh doanh dựa trên nền tảng số với tổ chức, cá nhân tại Việt Nam (sau đây gọi là nhà cung cấp nước ngoài).
+Tổ chức là nhà quản lý nền tảng số nước ngoài thực hiện khấu trừ, nộp thay nghĩa vụ thuế phải nộp của nhà cung cấp nước ngoài.
+Tổ chức kinh doanh tại Việt Nam áp dụng phương pháp tính thuế giá trị gia tăng là phương pháp khấu trừ thuế mua dịch vụ của nhà cung cấp nước ngoài không có cơ sở thường trú tại Việt Nam thông qua kênh thương mại điện tử hoặc các nền tảng số thực hiện khấu trừ, nộp thay nghĩa vụ thuế phải nộp của nhà cung cấp nước ngoài.
+Phân biệt nhanh hai phương pháp
+Criteria
+Deduction method
+Phương pháp trực tiếp theo doanh thu
+Legal basis
+Điều 11 Luật Thuế GTGT 2024
+Khoản 2 Điều 12 Luật Thuế GTGT 2024
+Cách xác định thuế
+Thuế đầu ra trừ thuế đầu vào được khấu trừ
+Tỷ lệ % nhân với doanh thu
+Đối tượng điển hình
+Doanh nghiệp có doanh thu từ 01 tỷ đồng trở lên, hoặc tự nguyện áp dụng
+Doanh nghiệp, HTX doanh thu dưới 01 tỷ đồng; hộ, cá nhân kinh doanh
+Mẫu tờ khai Quý 3/2026
+Mẫu 01/GTGT (Phụ lục I Thông tư 89/2026/TT-BTC)
+Không dùng Mẫu 01/GTGT
+Khi nào doanh nghiệp được khai theo quý và hạn nộp tờ khai Quý 3/2026 là ngày nào?
+Đúng mẫu nhưng sai kỳ khai vẫn bị coi là vi phạm. Vì vậy, sau câu hỏi khai thuế GTGT Quý 3/2026 theo mẫu nào, kế toán cần kiểm tra ngay điều kiện khai quý và mốc thời hạn.
+Điều kiện được khai thuế GTGT theo quý
+Theo Điều 19 Thông tư 89/2026/TT-BTC, thuế GTGT về nguyên tắc khai theo tháng. Doanh nghiệp được lựa chọn khai theo quý khi đáp ứng một trong hai điều kiện:
+Tổng doanh thu bán hàng hóa, cung cấp dịch vụ của năm trước liền kề từ 50 tỷ đồng trở xuống.
+Doanh nghiệp mới bắt đầu hoạt động. Sau khi hoạt động đủ 12 tháng, doanh nghiệp căn cứ doanh thu của năm dương lịch trước liền kề để xác định lại kỳ khai.
+Doanh nghiệp có doanh thu năm trước liền kề trên 50 tỷ đồng khai theo tháng, dùng cùng Mẫu 01/GTGT nhưng kỳ tính thuế là từng tháng.
+Các mốc thời gian cần nhớ cho kỳ Quý 3/2026
+Content
+Timeline
+Base
+Tax period
+01/7/2026 đến 30/9/2026
+Kỳ khai quý
+Hạn nộp tờ khai 01/GTGT Quý 3/2026
+Chậm nhất 31/10/2026 (ngày cuối cùng của tháng đầu quý tiếp theo)
+Luật Quản lý thuế, Điều 10 Nghị định 252/2026/NĐ-CP
+Hạn nộp tiền thuế (thông thường)
+Cùng hạn nộp tờ khai
+Law on Tax Administration
+Hạn nộp tiền thuế GTGT Quý III/2026 nếu được gia hạn
+No later than December 30, 2026
+Điều 2 Nghị định 245/2026/NĐ-CP
+Hạn gửi văn bản đề nghị gia hạn
+Chậm nhất 02/11/2026
+Decree 245/2026/ND-CP
+Ngày 31/10/2026 rơi vào thứ Bảy. MAN khuyến nghị doanh nghiệp hoàn tất nộp tờ khai trong tuần làm việc trước đó, tránh nghẽn hệ thống cổng thuế điện tử vào sát hạn.
+Gia hạn theo Nghị định 245/2026/NĐ-CP có lùi hạn nộp tờ khai không?
+Decree 245/2026/ND-CP chỉ gia hạn thời hạn pay taxes, không gia hạn thời hạn submit tax return. Người nộp thuế vẫn kê khai theo quy định hiện hành, nhưng chưa phải nộp ngay số thuế thuộc diện được gia hạn.
+Chỉ áp dụng cho đối tượng thuộc các ngành kinh tế, lĩnh vực tại Phụ lục I của Nghị định.
+Không áp dụng đối với thuế GTGT ở khâu nhập khẩu.
+Phải gửi văn bản đề nghị gia hạn theo mẫu tại Phụ lục II của Nghị định.
+Trong thời gian được gia hạn, người nộp thuế không bị tính tiền chậm nộp đối với khoản thuế đủ điều kiện gia hạn.
+Cách lập tờ khai thuế GTGT Quý 3/2026 theo Mẫu 01/GTGT ra sao?
+Dưới đây là hướng dẫn từng chỉ tiêu theo thứ tự trên tờ khai. Kế toán nên điền theo đúng trình tự này vì các chỉ tiêu phía sau được tính từ chỉ tiêu phía trước.
+Chỉ tiêu [01a]: Tên hoạt động sản xuất kinh doanh
+Người nộp thuế lựa chọn một trong các hoạt động sau:
+Normal business operations.
+Traditional lottery and computerized lottery operations.
+Oil and gas extraction activities.
+Infrastructure investment projects and properties for sale are located outside the province where the head office is headquartered.
+The power plant is located in a different province from where its main office is situated.
+Không được chọn đồng thời nhiều hoạt động.
+Chỉ tiêu [09], [10], [11]: Thông tin đơn vị phụ thuộc
+Khai thông tin của đơn vị phụ thuộc hoặc địa điểm kinh doanh đặt tại địa phương khác tỉnh với trụ sở chính theo quy định.
+Nếu doanh nghiệp có nhiều đơn vị phụ thuộc thì lựa chọn một đơn vị đại diện để kê khai theo hướng dẫn của cơ quan thuế.
+Chỉ tiêu [21]: Không phát sinh hoạt động mua, bán trong kỳ
+Đánh dấu “X” nếu trong kỳ không phát sinh mua hàng hóa, dịch vụ và không phát sinh bán hàng hóa, dịch vụ. Nếu đã phát sinh bất kỳ hóa đơn mua hoặc bán nào thì không đánh dấu chỉ tiêu này.
+Chỉ tiêu [22]: Thuế GTGT còn được khấu trừ kỳ trước chuyển sang
+Ghi số thuế GTGT còn được khấu trừ của kỳ trước chuyển sang kỳ này. Số liệu lấy từ chỉ tiêu [43] của kỳ khai thuế trước.
+Chỉ tiêu [23], [24], [23a], [24a], [25]: Hàng hóa, dịch vụ mua vào
+[23]: Tổng giá trị hàng hóa, dịch vụ mua vào trong kỳ chưa có thuế GTGT.
+[24]: Tổng số thuế GTGT đầu vào của hàng hóa, dịch vụ mua vào tương ứng với chỉ tiêu [23].
+[23a], [24a]: Khai riêng giá trị hàng hóa nhập khẩu và thuế GTGT hàng nhập khẩu.
+[25]: Tổng số thuế GTGT mua vào đã kê khai tại chỉ tiêu [24] đủ điều kiện được khấu trừ theo quy định của pháp luật về thuế GTGT. Không bao gồm các khoản thuế GTGT không đủ điều kiện khấu trừ.
+Chỉ tiêu [26]: Hàng hóa, dịch vụ bán ra không chịu thuế
+Số liệu ghi vào chỉ tiêu này là giá trị hàng hóa, dịch vụ bán ra không chịu thuế giá trị gia tăng trên các hóa đơn GTGT bán ra của người nộp thuế trong kỳ tính thuế.
+Chỉ tiêu [29] đến [33]: Phân loại doanh thu theo thuế suất
+Target
+Content
+[29]
+Doanh thu chịu thuế suất 0%
+[30]
+Doanh thu chịu thuế suất 5%
+[31]
+Thuế GTGT của doanh thu 5%
+[32]
+Doanh thu chịu thuế suất 10%
+[33]
+Thuế GTGT của doanh thu 10%
+[32a]
+Giá trị hàng hóa, dịch vụ thuộc trường hợp không phải kê khai, tính thuế GTGT theo quy định của pháp luật
+[32b]
+Giá trị hàng hóa, dịch vụ thuộc trường hợp không tính vào giá tính thuế GTGT theo quy định của pháp luật thuế GTGT
+[34a]
+Doanh thu của hàng hóa, dịch vụ không thuộc phạm vi điều chỉnh của pháp luật thuế GTGT
+Các công thức liên kết trên tờ khai
+Phần lớn chỉ tiêu tổng hợp được tính tự động trên phần mềm. Tuy vậy, kế toán vẫn cần hiểu công thức để rà soát trước khi ký nộp:
+Bảng tổng hợp các công thức liên kết trên tờ khai
+Target
+Content
+Công thức
+[27]
+Giá trị hàng hóa, dịch vụ bán ra chịu thuế GTGT
+[27] = [29] + [30] + [32] + [32a] – [32b]
+[28]
+Thuế GTGT của hàng hóa, dịch vụ bán ra chịu thuế GTGT
+[28] = [31] + [33]
+[34]
+Tổng doanh thu của hàng hóa, dịch vụ bán ra
+[34] = [26] + [27] + [34a]
+[35]
+Thuế GTGT của hàng hóa, dịch vụ bán ra
+[35] = [28]
+[36]
+Thuế GTGT phát sinh trong kỳ
+[36] = [35] – [25]
+[40a]
+Thuế GTGT phải nộp của hoạt động sản xuất kinh doanh trong kỳ
+[40a] = ([36] – [22] + [37] – [38] – [39a]) ≥ 0
+Chỉ tiêu [37], [38], [39a]: Điều chỉnh và chuyển khấu trừ
+[37], [38]: Khai điều chỉnh tăng hoặc giảm số thuế GTGT đầu vào được khấu trừ theo hồ sơ khai bổ sung hoặc theo kết luận, quyết định của cơ quan thuế theo quy định.
+[39a]: Khai số thuế GTGT còn được khấu trừ chưa đề nghị hoàn của dự án đầu tư hoặc của đơn vị phụ thuộc được chuyển sang tiếp tục khấu trừ khi đáp ứng điều kiện theo quy định.
+Chỉ tiêu [40b], [40], [41], [42], [43]: Kết quả cuối kỳ
+[40b]: Khai tổng số thuế giá trị gia tăng đã khai tại chỉ tiêu [28a] và [28b] của Tờ khai thuế mẫu số 02/GTGT.
+[40]: Thuế GTGT còn phải nộp sau khi bù trừ.
+[41]: Thuế GTGT chưa được khấu trừ hết kỳ này.
+[42]: Thuế GTGT đề nghị hoàn.
+[43]: Thuế GTGT còn được khấu trừ chuyển sang kỳ sau. Đây chính là số liệu sẽ ghi vào chỉ tiêu [22] của tờ khai Quý 4/2026.
+Những văn bản pháp luật nào chi phối việc khai thuế GTGT Quý 3/2026?
+Bảng dưới đây tổng hợp các văn bản kế toán cần đối chiếu khi lập và nộp tờ khai kỳ này. Những ô ghi “chưa xác minh” là thông tin bài viết chưa đối chiếu được với văn bản gốc, doanh nghiệp nên tra cứu trực tiếp.
+Bảng tổng hợp những văn bản pháp luật chi phối việc khai thuế GTGT Quý 3/2026
+Document
+Number and date of issuance
+Related content
+Value Added Tax Law 2024
+Số 48/2024/QH15, Quốc hội thông qua ngày 26/11/2024, hiệu lực 01/7/2025
+Điều 11 về phương pháp khấu trừ; Điều 12 về phương pháp tính trực tiếp, ngưỡng doanh thu 01 tỷ đồng
+Tax Administration Law 2025
+Số 108/2025/QH15, áp dụng từ 01/7/2026
+Nguyên tắc khai thuế, thời hạn nộp hồ sơ khai thuế theo quý
+Decree 252/2026/ND-CP
+Ngày ban hành: chưa xác minh
+Quy định chi tiết Luật Quản lý thuế; Điều 10 quy định thời hạn nộp hồ sơ khai thuế
+Circular 89/2026/TT-BTC
+Bộ Tài chính ban hành ngày 30/6/2026, hiệu lực 01/7/2026
+Phụ lục I ban hành Mẫu 01/GTGT; Điều 19 về kỳ khai thuế GTGT theo tháng, quý; bãi bỏ Thông tư 80/2021/TT-BTC
+Decree 245/2026/ND-CP
+Chính phủ ban hành ngày 27/6/2026, hiệu lực đến hết 30/12/2026
+Gia hạn nộp thuế GTGT Quý III/2026 đến 30/12/2026 cho đối tượng đủ điều kiện; không gia hạn nộp tờ khai
+Công điện 14/CĐ-CT
+Cục Thuế ban hành ngày 27/6/2026
+Triển khai thực hiện Nghị định 245/2026/NĐ-CP
+Circular 80/2021/TT-BTC
+Đã bị bãi bỏ từ 01/7/2026
+Chỉ còn áp dụng mẫu biểu cho hồ sơ có kỳ tính thuế trước 01/7/2026
+Các chuyên gia tại MAN với 30 năm kinh nghiệm lưu ý rằng doanh nghiệp nên lưu bản tải về của từng văn bản tại thời điểm lập tờ khai. Khi bị kiểm tra sau này, đây là bằng chứng doanh nghiệp đã áp dụng đúng quy định có hiệu lực tại kỳ khai.
+Case Study: Doanh nghiệp thương mại tại TP.HCM lập tờ khai Quý 3/2026 thế nào?
+Tình huống dưới đây được MAN xây dựng từ các dạng hồ sơ thường gặp khi tư vấn cho doanh nghiệp vừa và nhỏ. Tên doanh nghiệp và số liệu mang tính minh họa, được tính đúng theo công thức của Mẫu 01/GTGT.
+Background
+Công ty TNHH Y kinh doanh thiết bị văn phòng tại TP.HCM, nộp thuế GTGT theo phương pháp khấu trừ. Doanh thu năm 2025 đạt 32 tỷ đồng, thấp hơn mốc 50 tỷ đồng, nên công ty khai thuế GTGT theo quý. Chỉ tiêu [43] trên tờ khai Quý 2/2026 là 40 triệu đồng.
+Trong Quý 3/2026, kế toán phát hiện một hóa đơn đầu vào có thuế GTGT 20 triệu đồng chưa đáp ứng điều kiện khấu trừ theo quy định. Đồng thời, công ty có một lô hàng xuất khẩu chịu thuế suất 0%.
+Cách xử lý và số liệu trên tờ khai
+Kế toán không đưa 20 triệu đồng này vào chỉ tiêu [25], mà chỉ ghi nhận ở chỉ tiêu [24]. Các chỉ tiêu được lập như sau (đơn vị: triệu đồng):
+Target
+Content
+Data
+[22]
+Thuế còn được khấu trừ kỳ trước (lấy từ [43] Quý 2/2026)
+40
+[23]
+Giá trị hàng hóa, dịch vụ mua vào
+6.000
+[24]
+Input VAT
+560
+[25]
+Thuế GTGT đầu vào đủ điều kiện khấu trừ
+540
+[26]
+Hàng hóa, dịch vụ không chịu thuế
+200
+[29]
+Doanh thu thuế suất 0% (xuất khẩu)
+500
+[30] / [31]
+Doanh thu thuế suất 5% / Thuế GTGT
+1.000 / 50
+[32] / [33]
+Doanh thu thuế suất 10% / Thuế GTGT
+6.000 / 600
+[27]
+= [29] + [30] + [32] + [32a] – [32b]
+7.500
+[28]
+= [31] + [33]
+650
+[34]
+= [26] + [27] + [34a]
+7.700
+[35]
+= [28]
+650
+[36]
+= [35] – [25]
+110
+[40a]
+= [36] – [22] + [37] – [38] – [39a]
+70
+Công ty không phát sinh [32a], [32b], [34a], [37], [38], [39a] và không có số liệu tại [40b]. Số thuế còn phải nộp tại chỉ tiêu [40] là 70 triệu đồng, chỉ tiêu [43] chuyển sang Quý 4/2026 bằng 0.
+Kết quả và bài học
+Nếu đưa nhầm 20 triệu đồng không đủ điều kiện vào [25], số thuế phải nộp chỉ còn 50 triệu đồng. Khoản khai thiếu 20 triệu đồng này sẽ bị truy thu kèm tiền chậm nộp khi kiểm tra.
+Nếu quên chuyển 40 triệu đồng từ [43] kỳ trước sang [22], công ty nộp thừa 40 triệu đồng và phải làm thủ tục khai bổ sung để điều chỉnh.
+Giả định công ty thuộc ngành kinh tế, lĩnh vực tại Phụ lục I Nghị định 245/2026/NĐ-CP và đã gửi văn bản đề nghị gia hạn. Khi đó, tờ khai vẫn phải nộp chậm nhất ngày 31/10/2026, còn 70 triệu đồng tiền thuế được nộp chậm nhất ngày 30/12/2026 mà không bị tính tiền chậm nộp.
+Nhận định chuyên gia: Doanh nghiệp thường gặp rủi ro gì khi khai thuế GTGT Quý 3/2026?
+Qua quá trình kiểm toán và rà soát hồ sơ thuế, MAN – Master Accountant Network nhận thấy rủi ro thuế ở kỳ chuyển tiếp thường tập trung vào năm điểm. Mỗi điểm đều có cách phòng tránh cụ thể.
+Rủi ro 1: Dùng mẫu cũ theo Thông tư 80/2021/TT-BTC: Phần mềm hỗ trợ kê khai chưa cập nhật có thể vẫn xuất tờ khai theo mẫu cũ. Tờ khai Quý 3/2026 có kỳ tính thuế sau 01/7/2026 nên phải dùng mẫu theo Thông tư 89/2026/TT-BTC. How to handle: cập nhật phiên bản phần mềm mới nhất trước khi lập tờ khai; kiểm tra căn cứ pháp lý in trên tờ khai.
+Rủi ro 2: Kê khai thuế đầu vào không đủ điều kiện vào chỉ tiêu [25]: Đây là lỗi phổ biến nhất mà các chuyên gia tại MAN với 30 năm kinh nghiệm kiểm toán gặp phải. Như case study ở trên, chỉ 20 triệu đồng khai sai cũng tạo ra khoản truy thu và tiền chậm nộp. How to handle: lập bảng kiểm từng hóa đơn đầu vào trước khi tổng hợp; tách riêng hóa đơn chưa đủ điều kiện để theo dõi.
+Rủi ro 3: Sai lệch giữa [43] kỳ trước và [22] kỳ này: Khi doanh nghiệp đổi phần mềm hoặc đổi nhân sự kế toán giữa kỳ, số chuyển kỳ thường bị nhập tay sai. Hệ quả là nộp thừa hoặc nộp thiếu thuế. How to handle: đối chiếu [22] với tờ khai Quý 2/2026 đã nộp và với thông báo của cơ quan thuế nếu có.
+Rủi ro 4: Hiểu nhầm gia hạn nộp thuế là gia hạn nộp tờ khai: Nghị định 245/2026/NĐ-CP chỉ lùi thời hạn nộp tiền thuế. Doanh nghiệp không nộp tờ khai đúng hạn vẫn bị xử phạt về hành vi chậm nộp hồ sơ khai thuế. How to handle: nộp tờ khai đúng hạn, gửi văn bản đề nghị gia hạn chậm nhất 02/11/2026 nếu thuộc diện được gia hạn.
+Rủi ro 5: Xác định sai kỳ khai hoặc sai phương pháp tính thuế: Doanh nghiệp có doanh thu năm trước liền kề vượt 50 tỷ đồng nhưng vẫn khai quý, hoặc doanh nghiệp dưới ngưỡng 01 tỷ đồng chưa đăng ký tự nguyện mà vẫn dùng Mẫu 01/GTGT. How to handle: rà soát doanh thu năm 2025 và hồ sơ đăng ký phương pháp tính thuế ngay đầu kỳ.
+Giải pháp từ MAN – Master Accountant Network là một quy trình soát xét hai lớp: kế toán lập, chuyên gia thuế độc lập kiểm tra lại các chỉ tiêu trọng yếu trước khi ký nộp. Cách làm này giúp phát hiện sai lệch ngay tại kỳ khai, thay vì đợi đến khi cơ quan thuế kiểm tra, từ đó tối ưu chi phí thuế tại Việt Nam một cách hợp pháp và bền vững.
+Conclude
+Câu trả lời cho câu hỏi khai VAT Quý 3/2026 theo mẫu nào khá rõ ràng: Mẫu số 01/GTGT theo Phụ lục I Thông tư 89/2026/TT-BTC. Điều tạo ra khác biệt nằm ở các bước tiếp theo, gồm xác định đúng phương pháp tính thuế theo Điều 12 Luật Thuế GTGT 2024, đúng kỳ khai, điền chính xác từng chỉ tiêu và nộp đúng hạn 31/10/2026. Làm đúng ngay từ kỳ chuyển tiếp này giúp doanh nghiệp tránh truy thu, tiền chậm nộp và các lần khai bổ sung tốn thời gian.
+Tax services at MAN – Master Accountant Network
+Tax accounting services
+Tax consulting services
+Tax settlement services
+Tax reporting services
+VAT refund service
+Contact information for services at MAN – Master Accountant Network
+Address: No. 19A, Street 43, Tan Thuan Ward, Ho Chi Minh City
+Mobile/Zalo: 0903 963 163 – 0903 428 622
+E-mail: man@man.net.vn
+Google Business Profile: View MAN – Master Accountant Network's Google Business Profile 
+LinkedIn Founder: View expert Le Hoang Tuyen's LinkedIn profile. 
+Responsible for production and professional content review by: Mr. Le Hoang Tuyen – Founder & CEO of MAN – Master Accountant Network, CPA Vietnam with over 30 years of experience in accounting, auditing, taxation, and corporate financial consulting.
+Câu hỏi thường gặp về khai thuế GTGT Quý 3/2026
+Khai thuế GTGT Quý 3/2026 theo mẫu nào?
+Người nộp thuế theo phương pháp khấu trừ sử dụng Mẫu số 01/GTGT ban hành tại Phụ lục I Thông tư 89/2026/TT-BTC.
+Hạn nộp tờ khai thuế GTGT Quý 3/2026 là ngày nào?
+Chậm nhất là ngày cuối cùng của tháng đầu quý tiếp theo, tức ngày 31/10/2026.
+Được gia hạn nộp thuế theo Nghị định 245/2026/NĐ-CP thì có được nộp tờ khai muộn không?
+Không. Nghị định 245/2026/NĐ-CP chỉ gia hạn thời hạn nộp tiền thuế GTGT Quý III/2026 đến 30/12/2026 cho đối tượng đủ điều kiện. Tờ khai vẫn phải nộp đúng hạn.
+Khai bổ sung cho Quý 2/2026 thì dùng mẫu nào?
+Theo Thông tư 89/2026/TT-BTC, hồ sơ khai thuế có kỳ tính thuế trước ngày 01/7/2026 thực hiện theo mẫu biểu áp dụng trước thời điểm Thông tư có hiệu lực.
+Doanh nghiệp có doanh thu dưới 01 tỷ đồng có dùng Mẫu 01/GTGT không?
+Không, trừ trường hợp tự nguyện áp dụng phương pháp khấu trừ theo khoản 2 Điều 11 Luật Thuế GTGT 2024. Theo điểm a1 khoản 2 Điều 12, nhóm này áp dụng phương pháp tính trực tiếp theo doanh thu.
+MAN - Master Accountant NetworkLegally edited, reviewed by tax experts.
+ Search
+Featured ArticlesTax NewsDoanh nghiệp mới thành lập kê khai thuế TNDN 15%, 17% và miễn thuế 3 năm trên tờ khai quyết toán thuế TNDN ra sao?Tax NewsHạn chót tạm nộp thuế TNDN quý 3/2026Tax NewsDoanh nghiệp cần tạm nộp thuế TNDN quý 3/2026 bao nhiêu %?TopicBlog (112)Case studies (1)Instructions (41)Thuế GTGT (247)Other taxes (27)Other taxes (3)Contractor Tax (20)Thuế TNCN (302)Thuế TNDN (248)Thuế xuất nhập khẩu (29)TagsReal estateTax declarationNeed tax advice?MAN helps you solve all tax related problemsContact now
+ ZaloPhone 
