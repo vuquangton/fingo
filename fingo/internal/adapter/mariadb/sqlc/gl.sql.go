@@ -40,15 +40,21 @@ func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) er
 }
 
 const createVoucher = `-- name: CreateVoucher :exec
-INSERT INTO vouchers (id, voucher_no, voucher_date, posted_date, voucher_type, description, is_posted)
-VALUES (?, ?, ?, ?, ?, ?, ?)
+INSERT INTO vouchers (id, book, fiscal_year, seq, voucher_no, voucher_date, posted_date, posted_at, posted_by, created_by, voucher_type, description, is_posted)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 `
 
 type CreateVoucherParams struct {
 	ID          string              `json:"id"`
+	Book        sql.NullString      `json:"book"`
+	FiscalYear  sql.NullInt16       `json:"fiscal_year"`
+	Seq         sql.NullInt32       `json:"seq"`
 	VoucherNo   string              `json:"voucher_no"`
 	VoucherDate time.Time           `json:"voucher_date"`
-	PostedDate  time.Time           `json:"posted_date"`
+	PostedDate  sql.NullTime        `json:"posted_date"`
+	PostedAt    sql.NullTime        `json:"posted_at"`
+	PostedBy    sql.NullString      `json:"posted_by"`
+	CreatedBy   sql.NullString      `json:"created_by"`
 	VoucherType VouchersVoucherType `json:"voucher_type"`
 	Description sql.NullString      `json:"description"`
 	IsPosted    bool                `json:"is_posted"`
@@ -57,9 +63,15 @@ type CreateVoucherParams struct {
 func (q *Queries) CreateVoucher(ctx context.Context, arg CreateVoucherParams) error {
 	_, err := q.db.ExecContext(ctx, createVoucher,
 		arg.ID,
+		arg.Book,
+		arg.FiscalYear,
+		arg.Seq,
 		arg.VoucherNo,
 		arg.VoucherDate,
 		arg.PostedDate,
+		arg.PostedAt,
+		arg.PostedBy,
+		arg.CreatedBy,
 		arg.VoucherType,
 		arg.Description,
 		arg.IsPosted,
@@ -68,18 +80,19 @@ func (q *Queries) CreateVoucher(ctx context.Context, arg CreateVoucherParams) er
 }
 
 const createVoucherLine = `-- name: CreateVoucherLine :exec
-INSERT INTO voucher_lines (id, voucher_id, line_order, debit_account_id, credit_account_id, amount, note)
-VALUES (?, ?, ?, ?, ?, ?, ?)
+INSERT INTO voucher_lines (id, voucher_id, line_order, account_id, partner_id, side, amount, note)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 `
 
 type CreateVoucherLineParams struct {
-	ID              string         `json:"id"`
-	VoucherID       string         `json:"voucher_id"`
-	LineOrder       int32          `json:"line_order"`
-	DebitAccountID  string         `json:"debit_account_id"`
-	CreditAccountID string         `json:"credit_account_id"`
-	Amount          string         `json:"amount"`
-	Note            sql.NullString `json:"note"`
+	ID        string           `json:"id"`
+	VoucherID string           `json:"voucher_id"`
+	LineOrder int32            `json:"line_order"`
+	AccountID string           `json:"account_id"`
+	PartnerID sql.NullString   `json:"partner_id"`
+	Side      VoucherLinesSide `json:"side"`
+	Amount    string           `json:"amount"`
+	Note      sql.NullString   `json:"note"`
 }
 
 func (q *Queries) CreateVoucherLine(ctx context.Context, arg CreateVoucherLineParams) error {
@@ -87,8 +100,9 @@ func (q *Queries) CreateVoucherLine(ctx context.Context, arg CreateVoucherLinePa
 		arg.ID,
 		arg.VoucherID,
 		arg.LineOrder,
-		arg.DebitAccountID,
-		arg.CreditAccountID,
+		arg.AccountID,
+		arg.PartnerID,
+		arg.Side,
 		arg.Amount,
 		arg.Note,
 	)
@@ -101,9 +115,21 @@ FROM accounts
 WHERE code = ? LIMIT 1
 `
 
-func (q *Queries) GetAccountByCode(ctx context.Context, code string) (Account, error) {
+type GetAccountByCodeRow struct {
+	ID          string              `json:"id"`
+	Code        string              `json:"code"`
+	Name        string              `json:"name"`
+	ParentID    sql.NullString      `json:"parent_id"`
+	AccountType AccountsAccountType `json:"account_type"`
+	Nature      AccountsNature      `json:"nature"`
+	IsActive    bool                `json:"is_active"`
+	CreatedAt   time.Time           `json:"created_at"`
+	UpdatedAt   time.Time           `json:"updated_at"`
+}
+
+func (q *Queries) GetAccountByCode(ctx context.Context, code string) (GetAccountByCodeRow, error) {
 	row := q.db.QueryRowContext(ctx, getAccountByCode, code)
-	var i Account
+	var i GetAccountByCodeRow
 	err := row.Scan(
 		&i.ID,
 		&i.Code,
@@ -118,6 +144,51 @@ func (q *Queries) GetAccountByCode(ctx context.Context, code string) (Account, e
 	return i, err
 }
 
+const getVoucherByID = `-- name: GetVoucherByID :one
+SELECT id, book, fiscal_year, seq, voucher_no, voucher_date, posted_date, posted_at, posted_by, created_by, voucher_type, description, is_posted, created_at
+FROM vouchers
+WHERE id = ? LIMIT 1
+`
+
+type GetVoucherByIDRow struct {
+	ID          string              `json:"id"`
+	Book        sql.NullString      `json:"book"`
+	FiscalYear  sql.NullInt16       `json:"fiscal_year"`
+	Seq         sql.NullInt32       `json:"seq"`
+	VoucherNo   string              `json:"voucher_no"`
+	VoucherDate time.Time           `json:"voucher_date"`
+	PostedDate  sql.NullTime        `json:"posted_date"`
+	PostedAt    sql.NullTime        `json:"posted_at"`
+	PostedBy    sql.NullString      `json:"posted_by"`
+	CreatedBy   sql.NullString      `json:"created_by"`
+	VoucherType VouchersVoucherType `json:"voucher_type"`
+	Description sql.NullString      `json:"description"`
+	IsPosted    bool                `json:"is_posted"`
+	CreatedAt   time.Time           `json:"created_at"`
+}
+
+func (q *Queries) GetVoucherByID(ctx context.Context, id string) (GetVoucherByIDRow, error) {
+	row := q.db.QueryRowContext(ctx, getVoucherByID, id)
+	var i GetVoucherByIDRow
+	err := row.Scan(
+		&i.ID,
+		&i.Book,
+		&i.FiscalYear,
+		&i.Seq,
+		&i.VoucherNo,
+		&i.VoucherDate,
+		&i.PostedDate,
+		&i.PostedAt,
+		&i.PostedBy,
+		&i.CreatedBy,
+		&i.VoucherType,
+		&i.Description,
+		&i.IsPosted,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const listActiveAccounts = `-- name: ListActiveAccounts :many
 SELECT id, code, name, parent_id, account_type, nature, is_active, created_at, updated_at
 FROM accounts
@@ -125,15 +196,27 @@ WHERE is_active = TRUE
 ORDER BY code ASC
 `
 
-func (q *Queries) ListActiveAccounts(ctx context.Context) ([]Account, error) {
+type ListActiveAccountsRow struct {
+	ID          string              `json:"id"`
+	Code        string              `json:"code"`
+	Name        string              `json:"name"`
+	ParentID    sql.NullString      `json:"parent_id"`
+	AccountType AccountsAccountType `json:"account_type"`
+	Nature      AccountsNature      `json:"nature"`
+	IsActive    bool                `json:"is_active"`
+	CreatedAt   time.Time           `json:"created_at"`
+	UpdatedAt   time.Time           `json:"updated_at"`
+}
+
+func (q *Queries) ListActiveAccounts(ctx context.Context) ([]ListActiveAccountsRow, error) {
 	rows, err := q.db.QueryContext(ctx, listActiveAccounts)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Account
+	var items []ListActiveAccountsRow
 	for rows.Next() {
-		var i Account
+		var i ListActiveAccountsRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Code,
@@ -158,28 +241,171 @@ func (q *Queries) ListActiveAccounts(ctx context.Context) ([]Account, error) {
 	return items, nil
 }
 
-const listVoucherLinesByVoucherID = `-- name: ListVoucherLinesByVoucherID :many
-SELECT id, voucher_id, line_order, debit_account_id, credit_account_id, amount, note
-FROM voucher_lines
-WHERE voucher_id = ?
-ORDER BY line_order ASC
+const listAllAccounts = `-- name: ListAllAccounts :many
+SELECT id, code, name, parent_id, account_type, nature, is_active, created_at, updated_at
+FROM accounts
+ORDER BY code ASC
 `
 
-func (q *Queries) ListVoucherLinesByVoucherID(ctx context.Context, voucherID string) ([]VoucherLine, error) {
+type ListAllAccountsRow struct {
+	ID          string              `json:"id"`
+	Code        string              `json:"code"`
+	Name        string              `json:"name"`
+	ParentID    sql.NullString      `json:"parent_id"`
+	AccountType AccountsAccountType `json:"account_type"`
+	Nature      AccountsNature      `json:"nature"`
+	IsActive    bool                `json:"is_active"`
+	CreatedAt   time.Time           `json:"created_at"`
+	UpdatedAt   time.Time           `json:"updated_at"`
+}
+
+// Includes deactivated accounts: postability is decided by the active flag, and
+// a chart missing a deactivated parent would look as though its children were
+// orphans.
+func (q *Queries) ListAllAccounts(ctx context.Context) ([]ListAllAccountsRow, error) {
+	rows, err := q.db.QueryContext(ctx, listAllAccounts)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListAllAccountsRow
+	for rows.Next() {
+		var i ListAllAccountsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Code,
+			&i.Name,
+			&i.ParentID,
+			&i.AccountType,
+			&i.Nature,
+			&i.IsActive,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listPostedLinesInRange = `-- name: ListPostedLinesInRange :many
+SELECT vl.id, vl.voucher_id, v.voucher_date, a.code AS account_code, vl.side, vl.amount
+FROM voucher_lines vl
+JOIN vouchers v ON v.id = vl.voucher_id
+JOIN accounts a ON a.id = vl.account_id
+WHERE v.is_posted = TRUE
+  AND v.voucher_date >= ?
+  AND v.voucher_date <= ?
+ORDER BY v.voucher_date ASC, vl.line_order ASC
+`
+
+type ListPostedLinesInRangeParams struct {
+	FromDate time.Time `json:"from_date"`
+	ToDate   time.Time `json:"to_date"`
+}
+
+type ListPostedLinesInRangeRow struct {
+	ID          string           `json:"id"`
+	VoucherID   string           `json:"voucher_id"`
+	VoucherDate time.Time        `json:"voucher_date"`
+	AccountCode string           `json:"account_code"`
+	Side        VoucherLinesSide `json:"side"`
+	Amount      string           `json:"amount"`
+}
+
+// Every posted line whose voucher falls inside a date range, both ends included.
+//
+// One query for the whole range rather than one per voucher: a report sums every
+// line it is given, and a round trip per voucher would make the cost of a report
+// a function of how many vouchers a client has ever posted.
+//
+// Both arguments are named, because both are compared against the same column
+// and the generator names an unnamed argument after the column it is compared
+// to — which would give this query two parameters called VoucherDate.
+//
+// is_posted is the filter that matters. A draft is not in the books, and
+// including one would state a figure nobody has signed off.
+//
+// The range has no lower bound in practice: the reports ask for everything up to
+// a period's end, so that an account shows what it carried in as well as what
+// the period did to it. A caller with nothing carried in passes the beginning of
+// the books rather than NULL, because a comparison against NULL is never true
+// and would silently report an empty ledger.
+func (q *Queries) ListPostedLinesInRange(ctx context.Context, arg ListPostedLinesInRangeParams) ([]ListPostedLinesInRangeRow, error) {
+	rows, err := q.db.QueryContext(ctx, listPostedLinesInRange, arg.FromDate, arg.ToDate)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListPostedLinesInRangeRow
+	for rows.Next() {
+		var i ListPostedLinesInRangeRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.VoucherID,
+			&i.VoucherDate,
+			&i.AccountCode,
+			&i.Side,
+			&i.Amount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listVoucherLinesByVoucherID = `-- name: ListVoucherLinesByVoucherID :many
+SELECT vl.id, vl.voucher_id, vl.line_order, a.code AS account_code, vl.partner_id, vl.side, vl.amount, vl.note
+FROM voucher_lines vl
+JOIN accounts a ON a.id = vl.account_id
+WHERE vl.voucher_id = ?
+ORDER BY vl.line_order ASC
+`
+
+type ListVoucherLinesByVoucherIDRow struct {
+	ID          string           `json:"id"`
+	VoucherID   string           `json:"voucher_id"`
+	LineOrder   int32            `json:"line_order"`
+	AccountCode string           `json:"account_code"`
+	PartnerID   sql.NullString   `json:"partner_id"`
+	Side        VoucherLinesSide `json:"side"`
+	Amount      string           `json:"amount"`
+	Note        sql.NullString   `json:"note"`
+}
+
+// Joins accounts so the caller gets the account CODE, which is what the domain
+// speaks. Storage keys lines by accounts.id for referential integrity; the
+// domain never sees that identity.
+func (q *Queries) ListVoucherLinesByVoucherID(ctx context.Context, voucherID string) ([]ListVoucherLinesByVoucherIDRow, error) {
 	rows, err := q.db.QueryContext(ctx, listVoucherLinesByVoucherID, voucherID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []VoucherLine
+	var items []ListVoucherLinesByVoucherIDRow
 	for rows.Next() {
-		var i VoucherLine
+		var i ListVoucherLinesByVoucherIDRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.VoucherID,
 			&i.LineOrder,
-			&i.DebitAccountID,
-			&i.CreditAccountID,
+			&i.AccountCode,
+			&i.PartnerID,
+			&i.Side,
 			&i.Amount,
 			&i.Note,
 		); err != nil {
@@ -194,4 +420,42 @@ func (q *Queries) ListVoucherLinesByVoucherID(ctx context.Context, voucherID str
 		return nil, err
 	}
 	return items, nil
+}
+
+const markVoucherPosted = `-- name: MarkVoucherPosted :exec
+UPDATE vouchers
+SET is_posted = TRUE, book = ?, fiscal_year = ?, seq = ?, voucher_no = ?,
+    posted_date = ?, posted_at = ?, posted_by = ?
+WHERE id = ?
+`
+
+type MarkVoucherPostedParams struct {
+	Book       sql.NullString `json:"book"`
+	FiscalYear sql.NullInt16  `json:"fiscal_year"`
+	Seq        sql.NullInt32  `json:"seq"`
+	VoucherNo  string         `json:"voucher_no"`
+	PostedDate sql.NullTime   `json:"posted_date"`
+	PostedAt   sql.NullTime   `json:"posted_at"`
+	PostedBy   sql.NullString `json:"posted_by"`
+	ID         string         `json:"id"`
+}
+
+// The posting transition, as a separate statement.
+//
+// A voucher is stored as a draft, gets its lines, and is then marked posted —
+// the lifecycle the immutability trigger enforces. Writing the header as already
+// posted would make adding its lines impossible, which is the trigger working
+// correctly.
+func (q *Queries) MarkVoucherPosted(ctx context.Context, arg MarkVoucherPostedParams) error {
+	_, err := q.db.ExecContext(ctx, markVoucherPosted,
+		arg.Book,
+		arg.FiscalYear,
+		arg.Seq,
+		arg.VoucherNo,
+		arg.PostedDate,
+		arg.PostedAt,
+		arg.PostedBy,
+		arg.ID,
+	)
+	return err
 }

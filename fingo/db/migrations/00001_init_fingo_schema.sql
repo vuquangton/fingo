@@ -1,9 +1,11 @@
 -- +goose Up
 -- SQL in section 'Up' is executed when this migration is applied
 
-CREATE DATABASE IF NOT EXISTS fingo CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
-USE fingo;
+-- NOTE: this migration deliberately does NOT create or select a database.
+-- FinGo keeps one database per client (docs/requirements-v1.md §1.1), so the
+-- database name is a connection concern, not schema DDL. A hardcoded
+-- "CREATE DATABASE fingo; USE fingo;" would make migrations run against the
+-- wrong schema on every client except one.
 
 -- Chart of Accounts (Hệ thống tài khoản)
 CREATE TABLE IF NOT EXISTS accounts (

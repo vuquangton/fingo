@@ -6,15 +6,181 @@ package mariadb
 
 import (
 	"context"
+	"database/sql"
 )
 
 type Querier interface {
+	AdvanceVoucherSequence(ctx context.Context, arg AdvanceVoucherSequenceParams) error
+	// Allocates the next number in a series, creating the series on first use.
+	//
+	// One statement, deliberately. It inserts a new series at 1, or advances an
+	// existing one, and either way it takes the row lock for the rest of the
+	// transaction — so the read that follows sees this transaction's own value and
+	// no other allocator can interleave.
+	//
+	// The obvious alternative — INSERT IGNORE and then SELECT ... FOR UPDATE — also
+	// works, but under load the ignored insert leaves the transaction holding a
+	// shared lock on a row it then wants exclusively, which deadlocks against
+	// another allocator doing the same thing.
+	AllocateVoucherSeries(ctx context.Context, arg AllocateVoucherSeriesParams) error
+	// Idempotent at the storage level; the domain refuses a double close, so this
+	// is reached only when the caller believes the period is open.
+	ClosePeriod(ctx context.Context, arg ClosePeriodParams) error
+	// Whether this payment has already been applied to this document. It is counted
+	// in two places because an application that settled something is an allocation,
+	// and one that settled nothing is a credit; a repeat of either is a double count.
+	CountArapAllocationsForPayment(ctx context.Context, arg CountArapAllocationsForPaymentParams) (int64, error)
+	CountArapCreditsForPayment(ctx context.Context, arg CountArapCreditsForPaymentParams) (int64, error)
 	CreateAccount(ctx context.Context, arg CreateAccountParams) error
+	CreateAccountingPeriod(ctx context.Context, arg CreateAccountingPeriodParams) error
+	CreateAllocation(ctx context.Context, arg CreateAllocationParams) error
+	CreateArapAllocation(ctx context.Context, arg CreateArapAllocationParams) error
+	CreateArapCredit(ctx context.Context, arg CreateArapCreditParams) error
+	CreateArapDocument(ctx context.Context, arg CreateArapDocumentParams) error
+	CreateArapLine(ctx context.Context, arg CreateArapLineParams) error
+	CreateDocument(ctx context.Context, arg CreateDocumentParams) error
+	// Recording the key in the same transaction as the voucher is what makes the
+	// pair atomic: if the voucher insert rolls back, so does the claim.
+	CreateIdempotencyKey(ctx context.Context, arg CreateIdempotencyKeyParams) error
+	CreatePartner(ctx context.Context, arg CreatePartnerParams) error
+	CreateStockMovement(ctx context.Context, arg CreateStockMovementParams) error
+	CreateTradePartner(ctx context.Context, arg CreateTradePartnerParams) error
 	CreateVoucher(ctx context.Context, arg CreateVoucherParams) error
 	CreateVoucherLine(ctx context.Context, arg CreateVoucherLineParams) error
-	GetAccountByCode(ctx context.Context, code string) (Account, error)
-	ListActiveAccounts(ctx context.Context) ([]Account, error)
-	ListVoucherLinesByVoucherID(ctx context.Context, voucherID string) ([]VoucherLine, error)
+	// The value this transaction has just written. No FOR UPDATE: the allocation
+	// above already holds the row, and a transaction always sees its own changes.
+	CurrentVoucherSeries(ctx context.Context, arg CurrentVoucherSeriesParams) (int32, error)
+	DeleteTradePartner(ctx context.Context, id string) (int64, error)
+	// Creates the book's counter on first use. INSERT IGNORE so concurrent callers
+	// cannot clobber a counter that already exists.
+	EnsureVoucherSequence(ctx context.Context, arg EnsureVoucherSequenceParams) error
+	FindVoucherByIdempotencyKey(ctx context.Context, keyValue string) (string, error)
+	GetAccountByCode(ctx context.Context, code string) (GetAccountByCodeRow, error)
+	GetAccountingPeriodForUpdate(ctx context.Context, id string) (GetAccountingPeriodForUpdateRow, error)
+	GetArapDocument(ctx context.Context, id string) (GetArapDocumentRow, error)
+	// The row lock every settlement goes through.
+	//
+	// Reading the document without this and writing it back afterwards is the
+	// over-allocation bug: two payments would each read the same outstanding
+	// balance, each decide it may spend it, and each write.
+	GetArapDocumentForUpdate(ctx context.Context, id string) (GetArapDocumentForUpdateRow, error)
+	GetDocumentByID(ctx context.Context, id string) (GetDocumentByIDRow, error)
+	GetPartnerByCode(ctx context.Context, code string) (GetPartnerByCodeRow, error)
+	GetTradePartner(ctx context.Context, id string) (GetTradePartnerRow, error)
+	// The locking read an update goes through.
+	//
+	// Without it, "does this partner exist" would have to be answered by the row
+	// count of the UPDATE — and MySQL counts the rows an UPDATE CHANGED, not the
+	// rows it matched, so re-saving a partner under the values it already has would
+	// report zero and look like a missing row.
+	GetTradePartnerForUpdate(ctx context.Context, id string) (GetTradePartnerForUpdateRow, error)
+	GetVoucherByID(ctx context.Context, id string) (GetVoucherByIDRow, error)
+	ListAccountingPeriods(ctx context.Context) ([]ListAccountingPeriodsRow, error)
+	// The same list, held for the rest of the transaction.
+	//
+	// Creating a period has to be checked against every existing one — a new period
+	// overlaps or leaves a gap only in relation to its neighbours — so the check and
+	// the insert must see a set nobody else is changing.
+	ListAccountingPeriodsForUpdate(ctx context.Context) ([]ListAccountingPeriodsForUpdateRow, error)
+	ListActiveAccounts(ctx context.Context) ([]ListActiveAccountsRow, error)
+	// Includes deactivated accounts: postability is decided by the active flag, and
+	// a chart missing a deactivated parent would look as though its children were
+	// orphans.
+	ListAllAccounts(ctx context.Context) ([]ListAllAccountsRow, error)
+	// What has been settled against this partner's documents.
+	//
+	// Returned raw rather than summed in SQL: sqlc cannot type the aggregate, and
+	// money is added with exact decimals in Go everywhere else. A report that
+	// totals differently from the ledger is worse than no report.
+	ListAllocationsByPartner(ctx context.Context, partnerID string) ([]ListAllocationsByPartnerRow, error)
+	ListArapAllocations(ctx context.Context, documentID string) ([]ListArapAllocationsRow, error)
+	ListArapCreditsByPartner(ctx context.Context, partnerID string) ([]ListArapCreditsByPartnerRow, error)
+	// Oldest first, which is the order a payment settles them in and the order an
+	// aging report reads them in.
+	ListArapDocuments(ctx context.Context) ([]ListArapDocumentsRow, error)
+	ListArapLines(ctx context.Context, documentID string) ([]ListArapLinesRow, error)
+	ListClosedPeriods(ctx context.Context) ([]ListClosedPeriodsRow, error)
+	// Every document for a partner, oldest first — the order a payment settles them
+	// in.
+	//
+	// Fully settled documents come back too: the caller decides what "open" means
+	// rather than the query quietly hiding a paid invoice.
+	ListDocumentsByPartner(ctx context.Context, partnerID string) ([]ListDocumentsByPartnerRow, error)
+	ListInventoryPolicies(ctx context.Context) ([]ListInventoryPoliciesRow, error)
+	// Every number actually issued, for gap detection. Drafts are excluded: they
+	// hold no place in the run.
+	ListIssuedVoucherNumbers(ctx context.Context) ([]ListIssuedVoucherNumbersRow, error)
+	// The lines of Sổ chi tiết TK 131, for the caller to total.
+	//
+	// Returned raw rather than summed in SQL: money is added with exact decimals in
+	// Go everywhere else, and a report that totals differently from the ledger is
+	// worse than no report.
+	//
+	// The LIKE covers any prescribed detail accounts under 131 as well as 131
+	// itself, so this does not depend on which level a client posts at. The join
+	// drops lines whose partner_id is NULL — everything that belongs to nobody in
+	// particular.
+	ListPartnerLedgerLines(ctx context.Context) ([]ListPartnerLedgerLinesRow, error)
+	ListPartners(ctx context.Context) ([]ListPartnersRow, error)
+	// A partner who is both is a counterparty to a sale and to a purchase, so the
+	// filter is by side rather than by exact kind.
+	ListPostablePartners(ctx context.Context, kind PartnersKind) ([]ListPostablePartnersRow, error)
+	// Every posted line whose voucher falls inside a date range, both ends included.
+	//
+	// One query for the whole range rather than one per voucher: a report sums every
+	// line it is given, and a round trip per voucher would make the cost of a report
+	// a function of how many vouchers a client has ever posted.
+	//
+	// Both arguments are named, because both are compared against the same column
+	// and the generator names an unnamed argument after the column it is compared
+	// to — which would give this query two parameters called VoucherDate.
+	//
+	// is_posted is the filter that matters. A draft is not in the books, and
+	// including one would state a figure nobody has signed off.
+	//
+	// The range has no lower bound in practice: the reports ask for everything up to
+	// a period's end, so that an account shows what it carried in as well as what
+	// the period did to it. A caller with nothing carried in passes the beginning of
+	// the books rather than NULL, because a comparison against NULL is never true
+	// and would silently report an empty ledger.
+	ListPostedLinesInRange(ctx context.Context, arg ListPostedLinesInRangeParams) ([]ListPostedLinesInRangeRow, error)
+	// The whole history of one position, in insertion order — the order the balance
+	// is replayed in.
+	ListStockMovements(ctx context.Context, arg ListStockMovementsParams) ([]ListStockMovementsRow, error)
+	// Every item and warehouse that has ever moved, so a caller can enumerate the
+	// stock it has without a separate register that could disagree.
+	ListStockPositions(ctx context.Context) ([]ListStockPositionsRow, error)
+	// Ordered by name, because that is how an operator looks for one.
+	ListTradePartners(ctx context.Context) ([]ListTradePartnersRow, error)
+	// The rows already carrying a tax id, for the duplicate warning.
+	//
+	// Only ever called with a non-empty tax id: NULL never matches, and a partner
+	// with no tax id cannot duplicate one.
+	ListTradePartnersByTaxID(ctx context.Context, taxID sql.NullString) ([]ListTradePartnersByTaxIDRow, error)
+	// Joins accounts so the caller gets the account CODE, which is what the domain
+	// speaks. Storage keys lines by accounts.id for referential integrity; the
+	// domain never sees that identity.
+	ListVoucherLinesByVoucherID(ctx context.Context, voucherID string) ([]ListVoucherLinesByVoucherIDRow, error)
+	ListVoucherSequences(ctx context.Context) ([]ListVoucherSequencesRow, error)
+	ListVoucherSeries(ctx context.Context) ([]ListVoucherSeriesRow, error)
+	LockAccountingPeriod(ctx context.Context, arg LockAccountingPeriodParams) error
+	// The posting transition, as a separate statement.
+	//
+	// A voucher is stored as a draft, gets its lines, and is then marked posted —
+	// the lifecycle the immutability trigger enforces. Writing the header as already
+	// posted would make adding its lines impossible, which is the trigger working
+	// correctly.
+	MarkVoucherPosted(ctx context.Context, arg MarkVoucherPostedParams) error
+	ReopenPeriod(ctx context.Context, arg ReopenPeriodParams) error
+	// FOR UPDATE holds the row for the rest of the transaction, so two callers
+	// cannot take the same place in the run.
+	ReserveVoucherSequence(ctx context.Context, arg ReserveVoucherSequenceParams) (int32, error)
+	SetInventoryPolicy(ctx context.Context, arg SetInventoryPolicyParams) error
+	// Allocated and status move together, in one statement, so there is no moment
+	// at which the row says one thing and means the other.
+	UpdateArapDocumentSettlement(ctx context.Context, arg UpdateArapDocumentSettlementParams) (int64, error)
+	UpdateTradePartner(ctx context.Context, arg UpdateTradePartnerParams) (int64, error)
+	VoidArapDocument(ctx context.Context, arg VoidArapDocumentParams) (int64, error)
 }
 
 var _ Querier = (*Queries)(nil)
