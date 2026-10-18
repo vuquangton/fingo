@@ -43,7 +43,7 @@ func (b *Books) PurchaseBill(ctx context.Context, cmd PurchaseBillCommand) (ledg
 		return ledger.Posted{}, errors.New("books: a purchase bill needs an operator")
 	}
 
-	rates, err := salesVATRates(ctx)
+	rates, err := salesVATRates(ctx, b.store)
 	if err != nil {
 		return ledger.Posted{}, err
 	}

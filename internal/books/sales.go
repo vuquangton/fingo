@@ -2,12 +2,14 @@ package books
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
 	"fingo/internal/domain/gl"
 	"fingo/internal/ledger"
 	"fingo/internal/posting"
+	"fingo/internal/store"
 	"fingo/internal/trading"
 	"fingo/internal/vat"
 )
@@ -18,7 +20,7 @@ import (
 // posts Dr 131 / Cr 5111 / Cr 33311. This function only supplies the four things
 // it needs, because none of them is a decision trading may make for the client.
 func (b *Books) Sales(ctx context.Context) (*trading.Service, error) {
-	rates, err := salesVATRates(ctx)
+	rates, err := salesVATRates(ctx, b.store)
 	if err != nil {
 		return nil, err
 	}
@@ -31,34 +33,49 @@ func (b *Books) Sales(ctx context.Context) (*trading.Service, error) {
 	return trading.NewService(b.Documents(), poster{b: b}, rates, rules)
 }
 
-// salesVATRates is the rate table the operator may choose from.
+// salesVATRates loads the rate catalog from the database.
 //
-// The rates are the statutory ones and are kept as an in-memory registry because
-// a client may add a rate at a date without a schema change. The 8% window is
-// recorded with its end date rather than being looked up at entry time.
-func salesVATRates(_ context.Context) (*vat.Registry, error) {
+// The rates are data, not code: adding the 8% window or retiring a rate is a row,
+// not a deploy. A line names the row it was taxed under, so the tax on a stored
+// line stays reproducible when the table gains rows later.
+func salesVATRates(ctx context.Context, st *store.Store) (*vat.Registry, error) {
+	rows, err := st.Pool().Query(ctx, `
+		SELECT id, basis_points, effective_from, effective_to
+		  FROM vat_rates
+		 WHERE active
+		 ORDER BY effective_from, id`)
+	if err != nil {
+		return nil, fmt.Errorf("books: read the VAT rates: %w", err)
+	}
+	defer rows.Close()
+
 	registry := vat.New()
 
-	// The registry holds the rate in force on a date, not a menu: two active rates
-	// may not cover the same day. Vietnamese VAT has several rates at once (0, 5,
-	// 8, 10 by goods), and modelling that needs a rate dimension the engine does
-	// not have yet. The standard rate is registered here; the others are recorded
-	// as an open question rather than faked.
-	// A catalog, not a single rate: the line names the rate it was taxed under.
-	// 0% and 5% are statutory categories for particular goods; 10% is standard.
-	// The 8% reduced window is deliberately absent until the practitioner confirms
-	// its dates — a wrong date would tax a real invoice at the wrong rate, and an
-	// absent rate refuses the entry instead (see docs/v2/review/logic/00-verdict.md).
-	rates := []vat.VATRate{
-		{ID: "vat0", Rate: 0, Active: true, EffectiveFrom: time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)},
-		{ID: "vat5", Rate: 500, Active: true, EffectiveFrom: time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)},
-		{ID: "vat10", Rate: 1000, Active: true, EffectiveFrom: time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)},
+	for rows.Next() {
+		var (
+			rate vat.VATRate
+			bp   int
+			from time.Time
+			to   *time.Time
+		)
+		if err := rows.Scan(&rate.ID, &bp, &from, &to); err != nil {
+			return nil, err
+		}
+		rate.Rate = vat.BasisPoints(bp)
+		rate.Active = true
+		rate.EffectiveFrom = from
+		rate.EffectiveTo = to
+
+		if err := registry.Create(rate); err != nil {
+			return nil, fmt.Errorf("books: register VAT rate %s: %w", rate.ID, err)
+		}
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
 	}
 
-	for _, r := range rates {
-		if err := registry.Create(r); err != nil {
-			return nil, fmt.Errorf("books: register VAT rate %s: %w", r.ID, err)
-		}
+	if len(registry.List()) == 0 {
+		return nil, errors.New("books: the VAT rate table is empty")
 	}
 
 	return registry, nil
