@@ -155,7 +155,15 @@ func postInTx(ctx context.Context, tx pgx.Tx, scope store.Scope, v *gl.Voucher, 
 		return Posted{}, err
 	}
 
-	if err := insert(ctx, tx, scope, v); err != nil {
+	voucherID := v.ID()
+	// trading derives a readable id ("invoice-<uuid>"), which is a fine domain
+	// identifier but not a uuid. The database key is generated here; the domain
+	// id stays what the domain said.
+	if !isUUID(voucherID) {
+		voucherID = newUUID()
+	}
+
+	if err := insert(ctx, tx, scope, v, voucherID); err != nil {
 		return Posted{}, err
 	}
 
@@ -170,7 +178,7 @@ func postInTx(ctx context.Context, tx pgx.Tx, scope store.Scope, v *gl.Voucher, 
 		return Posted{}, err
 	}
 
-	return Posted{ID: v.ID(), VoucherNo: v.VoucherNo(), Seq: seq}, nil
+	return Posted{ID: voucherID, VoucherNo: v.VoucherNo(), Seq: seq}, nil
 }
 
 // loadChart reads the client's chart. Row-level security already limits the rows
@@ -261,7 +269,7 @@ func nextSeq(ctx context.Context, tx pgx.Tx, scope store.Scope, book gl.Book, ye
 	return seq, nil
 }
 
-func insert(ctx context.Context, tx pgx.Tx, scope store.Scope, v *gl.Voucher) error {
+func insert(ctx context.Context, tx pgx.Tx, scope store.Scope, v *gl.Voucher, voucherID string) error {
 	// The header is written as a DRAFT, then its lines, then it is marked posted.
 	//
 	// That order is not cosmetic: the immutability triggers refuse to attach lines
@@ -274,7 +282,7 @@ func insert(ctx context.Context, tx pgx.Tx, scope store.Scope, v *gl.Voucher) er
 			(id, client_id, voucher_no, book, fiscal_year, seq, voucher_date,
 			 description, created_by)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
-		v.ID(), scope.ID(), v.VoucherNo(), string(v.Number().Book), v.Number().Year, v.Number().Seq,
+		voucherID, scope.ID(), v.VoucherNo(), string(v.Number().Book), v.Number().Year, v.Number().Seq,
 		v.VoucherDate(), v.Description(), v.PostedBy())
 	if err != nil {
 		return fmt.Errorf("write the voucher: %w", err)
@@ -291,7 +299,7 @@ func insert(ctx context.Context, tx pgx.Tx, scope store.Scope, v *gl.Voucher) er
 			INSERT INTO voucher_lines
 				(id, client_id, voucher_id, line_order, account_code, side, amount, note)
 			VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-			lineID, scope.ID(), v.ID(), line.LineOrder, line.AccountCode,
+			lineID, scope.ID(), voucherID, line.LineOrder, line.AccountCode,
 			string(line.Side), line.Amount.Int64(), line.Note); err != nil {
 			return fmt.Errorf("write line %d: %w", line.LineOrder, err)
 		}
@@ -299,7 +307,7 @@ func insert(ctx context.Context, tx pgx.Tx, scope store.Scope, v *gl.Voucher) er
 
 	if _, err := tx.Exec(ctx, `
 		UPDATE vouchers SET posted_at = $2, posted_by = $3 WHERE id = $1`,
-		v.ID(), v.PostedAt(), v.PostedBy()); err != nil {
+		voucherID, v.PostedAt(), v.PostedBy()); err != nil {
 		return fmt.Errorf("post the voucher: %w", err)
 	}
 
@@ -315,4 +323,24 @@ func newUUID() string {
 	b[6] = (b[6] & 0x0f) | 0x40
 	b[8] = (b[8] & 0x3f) | 0x80
 	return fmt.Sprintf("%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:16])
+}
+
+// isUUID reports whether an id is already in the form the database key needs.
+func isUUID(s string) bool {
+	if len(s) != 36 {
+		return false
+	}
+	for i, r := range s {
+		switch i {
+		case 8, 13, 18, 23:
+			if r != '-' {
+				return false
+			}
+		default:
+			if !((r >= '0' && r <= '9') || (r >= 'a' && r <= 'f') || (r >= 'A' && r <= 'F')) {
+				return false
+			}
+		}
+	}
+	return true
 }

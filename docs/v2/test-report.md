@@ -187,3 +187,22 @@ A sale cannot post without a partner: `trading` refuses an invoice with no `Part
 | tests | empty state · create appears in list · duplicate 422 with a readable message · blank name 422 |
 
 Defect found by the test: the redirect carried a Vietnamese name unescaped in the query string, so the followed redirect was not a valid URL. Escaped now with `url.QueryEscape`.
+## Phase 4 — sales invoice posts
+
+`internal/books` now assembles the sales flow: a pgx `document.Repository` (7 methods, `Apply` under `SELECT … FOR UPDATE`), the VAT rate in force, TT133 posting rules, and a poster that sends trading's voucher through the ordinary ledger path.
+
+`TestSalesInvoicePostsRevenueVATAndReceivable` posts 2 × 500.000 at 10% and asserts:
+
+| Assertion | Value |
+| :--- | --- |
+| invoice total / VAT | 1.100.000 / 100.000 |
+| TK 131 debit | 1.100.000 |
+| TK 5111 credit | 1.000.000 |
+| TK 33311 credit | 100.000 |
+| receivable | open, total 1.100.000, 3 document lines |
+
+Three defects surfaced, each a real design fact:
+
+1. **VAT registry holds the rate in force, not a menu.** Two active rates may not cover one date, so the 0/5/8/10 menu cannot be registered. Standard 10% is registered; a per-line rate dimension is recorded as an open question.
+2. **trading derives `invoice-<uuid>` as the voucher id**, which is not a uuid. The ledger now generates the database key when the domain id is not one — the domain keeps its own identifier.
+3. **A document's lines mirror its postings** (AR debit, revenue credit, VAT credit), not the invoice's item lines. The test was corrected to the engine's actual contract.
