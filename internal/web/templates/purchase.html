@@ -1,0 +1,100 @@
+{{define "purchase.html"}}<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mua hàng — FinGo</title>
+  <link rel="stylesheet" href="/static/vendor/tabler.min.css">
+</head>
+<body class="antialiased">
+<div class="page">
+  <header class="navbar navbar-expand d-print-none">
+    <div class="container-xl">
+      <span class="navbar-brand">FinGo</span>
+      <span class="navbar-text ms-3">{{.Client}}</span>
+      <nav class="ms-4">
+        <a class="btn btn-sm btn-ghost-secondary" href="/sales">Bán hàng</a>
+        <a class="btn btn-sm btn-ghost-secondary" href="/purchase">Mua hàng</a>
+        <a class="btn btn-sm btn-ghost-secondary" href="/receipt">Thu tiền</a>
+        <a class="btn btn-sm btn-ghost-secondary" href="/partners">Danh mục</a>
+      </nav>
+      <span class="navbar-text ms-auto">{{.Email}}</span>
+    </div>
+  </header>
+
+  <div class="page-wrapper">
+    <div class="page-body">
+      <div class="container-xl">
+
+        {{if .Posted}}
+        <div class="alert alert-success" role="status">Đã ghi sổ hóa đơn mua vào <strong>{{.Posted}}</strong> — Nợ chi phí / Nợ 1331 / Có 331.</div>
+        {{end}}
+        {{if .Error}}
+        <div class="alert alert-danger" role="alert">{{.Error}}</div>
+        {{end}}
+
+        {{if not .Suppliers}}
+        <div class="alert alert-warning" role="alert">
+          Chưa có nhà cung cấp. <a href="/partners">Thêm nhà cung cấp</a> trước khi ghi hóa đơn mua.
+        </div>
+        {{end}}
+
+        <form method="post" action="/purchase" class="card">
+          <div class="card-header">
+            <h3 class="card-title">Hóa đơn mua vào (chi phí, dịch vụ)</h3>
+            <div class="card-subtitle ms-auto">Hàng nhập kho đi theo luồng mua hàng ba chiều, chưa mở ở màn hình này.</div>
+          </div>
+          <div class="card-body">
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label class="form-label" for="partner_id">Nhà cung cấp</label>
+                <select class="form-select" id="partner_id" name="partner_id" required>
+                  <option value="">— chọn —</option>
+                  {{range .Suppliers}}
+                  {{if ne .Kind "CUSTOMER"}}<option value="{{.ID}}">{{.Name}}</option>{{end}}
+                  {{end}}
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label" for="date">Ngày hóa đơn</label>
+                <input class="form-control" id="date" name="date" type="date" value="{{.Date}}" required>
+              </div>
+              <div class="col-md-5">
+                <label class="form-label" for="description">Diễn giải</label>
+                <input class="form-control" id="description" name="description" placeholder="Phí điện nước tháng 3">
+              </div>
+            </div>
+
+            <div class="row g-3 mt-1">
+              <div class="col-md-5">
+                <label class="form-label" for="expense_account">Tài khoản chi phí</label>
+                <select class="form-select" id="expense_account" name="expense_account" required>
+                  {{range .Expenses}}<option value="{{.Code}}">{{.Code}} — {{.Name}}</option>{{end}}
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label" for="net">Số tiền trước VAT</label>
+                <input class="form-control text-end" id="net" name="net" inputmode="numeric" placeholder="1.000.000" required>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Thuế GTGT</label>
+                <input class="form-control" value="10% (1331)" disabled>
+              </div>
+            </div>
+
+            <p class="text-secondary mt-3 mb-0">
+              Hóa đơn ghi Nợ tài khoản chi phí và Nợ 1331, Có 331. Công nợ phải trả được ghi thành một chứng từ mở.
+            </p>
+          </div>
+          <div class="card-footer text-end">
+            <button class="btn btn-primary" type="submit">Ghi sổ hóa đơn mua</button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
+{{end}}

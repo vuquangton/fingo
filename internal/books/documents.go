@@ -32,6 +32,13 @@ func (b *Books) Documents() *Documents {
 
 // Create stores a document and its lines.
 func (d *Documents) Create(ctx context.Context, doc document.Document, lines []document.Line) error {
+	return d.CreateAs(ctx, kindOf(doc.Type), doc, lines)
+}
+
+// CreateAs stores a document under an explicit kind, for the documents whose
+// domain type is shared: an invoice is a sale or a bill, and only the caller knows
+// which book it belongs to.
+func (d *Documents) CreateAs(ctx context.Context, kind string, doc document.Document, lines []document.Line) error {
 	if err := doc.Validate(); err != nil {
 		return err
 	}
@@ -41,7 +48,7 @@ func (d *Documents) Create(ctx context.Context, doc document.Document, lines []d
 			INSERT INTO documents
 				(id, client_id, kind, partner_id, document_date, period_id, total, allocated, status)
 			VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
-			doc.ID, d.scope.ID(), kindOf(doc.Type), nullUUID(doc.PartnerID), doc.Date,
+			doc.ID, d.scope.ID(), kind, nullUUID(doc.PartnerID), doc.Date,
 			nullUUID(doc.PeriodID), doc.Total.Amount(), doc.Allocated.Amount(), statusToDB(doc.Status)); err != nil {
 			return fmt.Errorf("write the document: %w", err)
 		}

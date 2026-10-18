@@ -250,3 +250,10 @@ The export is `COPY (SELECT * FROM t) TO STDOUT` **inside the scoped transaction
 Test: two clients exist; the first exports; the archive holds exactly 1 voucher row, 123 account rows, the manifest names only the exporting client, and no row of the second client appears.
 
 `clients` is deliberately absent from the export — it is the practice's registry, not the client's books.
+## Phase 4 — supplier bill (cost path)
+
+`GET /purchase` posts a supplier invoice for a cost: Dr expense / Dr 1331 / Cr 331, and records an open payable.
+
+The three-way match is deliberately **not** used here: `trading.Purchasing.Invoice` requires an order and its receipts, which is the warehouse path. A service or utility bill has no goods receipt, so this path is narrower, not a second implementation.
+
+`TestPurchaseBillPostsCostInputVATAndPayable`: 1.000.000 net at 10% → 6422 debit 1.000.000, 1331 debit 100.000, 331 credit 1.100.000, payable document `PURCHASE_BILL` open at 1.100.000.
