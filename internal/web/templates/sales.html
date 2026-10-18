@@ -1,0 +1,98 @@
+{{define "sales.html"}}<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bán hàng — FinGo</title>
+  <link rel="stylesheet" href="/static/vendor/tabler.min.css">
+</head>
+<body class="antialiased">
+<div class="page">
+  <header class="navbar navbar-expand d-print-none">
+    <div class="container-xl">
+      <span class="navbar-brand">FinGo</span>
+      <span class="navbar-text ms-3">{{.Client}}</span>
+      <nav class="ms-4">
+        <a class="btn btn-sm btn-ghost-secondary" href="/sales">Bán hàng</a>
+        <a class="btn btn-sm btn-ghost-secondary" href="/entry">Nhập chứng từ</a>
+        <a class="btn btn-sm btn-ghost-secondary" href="/journal">Nhật ký</a>
+        <a class="btn btn-sm btn-ghost-secondary" href="/partners">Danh mục</a>
+      </nav>
+      <span class="navbar-text ms-auto">{{.Email}}</span>
+    </div>
+  </header>
+
+  <div class="page-wrapper">
+    <div class="page-body">
+      <div class="container-xl">
+
+        {{if .Posted}}
+        <div class="alert alert-success" role="status">Đã ghi sổ hóa đơn <strong>{{.Posted}}</strong> — Nợ 131 / Có 5111 / Có 33311.</div>
+        {{end}}
+        {{if .Error}}
+        <div class="alert alert-danger" role="alert">{{.Error}}</div>
+        {{end}}
+
+        {{if not .Partners}}
+        <div class="alert alert-warning" role="alert">
+          Chưa có khách hàng. <a href="/partners">Thêm khách hàng</a> trước khi bán hàng —
+          hóa đơn phải ghi rõ ai nợ.
+        </div>
+        {{end}}
+
+        <form method="post" action="/sales" class="card">
+          <div class="card-header"><h3 class="card-title">Hóa đơn bán hàng</h3></div>
+          <div class="card-body">
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label class="form-label" for="partner_id">Khách hàng</label>
+                <select class="form-select" id="partner_id" name="partner_id" required>
+                  <option value="">— chọn —</option>
+                  {{range .Partners}}
+                  <option value="{{.ID}}" {{if eq .ID $.PartnerID}}selected{{end}}>{{.Name}}</option>
+                  {{end}}
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label" for="date">Ngày hóa đơn</label>
+                <input class="form-control" id="date" name="date" type="date" value="{{.Date}}" required>
+              </div>
+              <div class="col-md-5">
+                <label class="form-label" for="description">Diễn giải</label>
+                <input class="form-control" id="description" name="description" value="{{.Description}}" placeholder="Bán hàng cho khách">
+              </div>
+            </div>
+
+            <table class="table table-sm mt-4">
+              <thead>
+                <tr><th style="width:30%">Mã hàng / diễn giải</th><th style="width:12%">Số lượng</th><th style="width:22%">Đơn giá (chưa VAT)</th><th>Thuế</th></tr>
+              </thead>
+              <tbody>
+                {{range .Rows}}
+                <tr>
+                  <td><input class="form-control" name="item" value="{{.ItemID}}" placeholder="HH-01"></td>
+                  <td><input class="form-control text-end" name="quantity" value="{{.Quantity}}" inputmode="numeric"></td>
+                  <td><input class="form-control text-end" name="unit_price" value="{{.UnitPrice}}" inputmode="numeric" placeholder="500.000"></td>
+                  <td class="text-secondary">10%</td>
+                </tr>
+                {{end}}
+              </tbody>
+            </table>
+
+            <p class="text-secondary mb-0">
+              Đơn giá chưa gồm VAT. Thuế suất đang áp dụng: 10%. Hóa đơn ghi Nợ 131, Có 5111 và Có 33311.
+            </p>
+          </div>
+          <div class="card-footer d-flex">
+            <a class="btn btn-link" href="/journal">Nhật ký</a>
+            <button class="btn btn-primary ms-auto" type="submit">Ghi sổ hóa đơn</button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
+{{end}}

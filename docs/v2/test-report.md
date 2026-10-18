@@ -206,3 +206,10 @@ Three defects surfaced, each a real design fact:
 1. **VAT registry holds the rate in force, not a menu.** Two active rates may not cover one date, so the 0/5/8/10 menu cannot be registered. Standard 10% is registered; a per-line rate dimension is recorded as an open question.
 2. **trading derives `invoice-<uuid>` as the voucher id**, which is not a uuid. The ledger now generates the database key when the domain id is not one — the domain keeps its own identifier.
 3. **A document's lines mirror its postings** (AR debit, revenue credit, VAT credit), not the invoice's item lines. The test was corrected to the engine's actual contract.
+## Phase 4 — sales screen
+
+`GET /sales` shows the partner picker and line form; `GET /sales` with no partners sends the operator to add one first. `POST /sales` prices, taxes and posts through `internal/trading`.
+
+Three tests: no partner → guidance instead of a dead form · invoice posts (131 1.100.000 / 5111 1.000.000 / 33311 100.000, one open receivable) · empty invoice refused 422.
+
+The engine still owns every figure: the handler parses a form and converts `money.Dong` to `money.Money`. No VAT arithmetic in the web layer.
