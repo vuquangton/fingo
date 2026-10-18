@@ -1,0 +1,46 @@
+{{define "vat.html"}}<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <title>Thuế GTGT — FinGo</title>
+  <link rel="stylesheet" href="/static/vendor/tabler.min.css">
+</head>
+<body class="antialiased">
+<div class="page">
+  <header class="navbar navbar-expand d-print-none">
+    <div class="container-xl">
+      <span class="navbar-brand">FinGo</span>
+      <span class="navbar-text ms-3">{{.Client}}</span>
+      <nav class="ms-4">
+        <a class="btn btn-sm btn-ghost-secondary" href="/reports">Cân đối</a>
+        <a class="btn btn-sm btn-ghost-secondary" href="/sales">Bán hàng</a>
+        <a class="btn btn-sm btn-ghost-secondary" href="/purchase">Mua hàng</a>
+      </nav>
+      <span class="navbar-text ms-auto">{{.Email}}</span>
+    </div>
+  </header>
+  <div class="page-wrapper"><div class="page-body"><div class="container-xl">
+    {{if .Error}}<div class="alert alert-danger">{{.Error}}</div>{{end}}
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">Thuế GTGT — kỳ {{.From}} đến {{.To}}</h3></div>
+      <div class="table-responsive">
+        <table class="table card-table">
+          <tbody>
+            <tr><td>Thuế đầu ra (TK 33311)</td><td class="text-end">{{.Output}}</td></tr>
+            <tr><td>Thuế đầu vào (TK 1331)</td><td class="text-end">{{.Input}}</td></tr>
+            <tr><th>Còn phải nộp</th><th class="text-end">{{.Net}}</th></tr>
+            <tr><td>Doanh thu chịu thuế (TK 5111)</td><td class="text-end">{{.Rev}}</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card-body">
+        <p class="text-secondary mb-0">Số liệu đọc trực tiếp từ sổ cái: thuế đầu ra là phát sinh Có TK 33311,
+        đầu vào là phát sinh Nợ TK 1331. Báo cáo này khớp với bảng cân đối số phát sinh theo định nghĩa.
+        Đây là bản nội bộ, chưa phải tờ khai 01/GTGT.</p>
+      </div>
+    </div>
+  </div></div></div>
+</div>
+</body>
+</html>
+{{end}}

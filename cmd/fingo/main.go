@@ -99,6 +99,7 @@ func run() error {
 	protected.GET("/close", auth.ShowClose)
 	protected.POST("/close", auth.RequireRole(web.RoleAdmin), auth.PostClose)
 	protected.GET("/aging", auth.ShowAging)
+	protected.GET("/reports/vat", auth.ShowVAT)
 	protected.GET("/reports", auth.ShowTrialBalance)
 	protected.GET("/reports/pnl", auth.ShowProfitAndLoss)
 	protected.GET("/reports/balance-sheet", auth.ShowBalanceSheet)

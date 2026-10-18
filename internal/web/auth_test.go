@@ -77,6 +77,7 @@ func newHarness(t *testing.T) *harness {
 	protected.GET("/close", a.ShowClose)
 	protected.POST("/close", a.RequireRole(web.RoleAdmin), a.PostClose)
 	protected.GET("/aging", a.ShowAging)
+	protected.GET("/reports/vat", a.ShowVAT)
 	protected.GET("/reports", a.ShowTrialBalance)
 	protected.GET("/reports/pnl", a.ShowProfitAndLoss)
 	protected.GET("/reports/balance-sheet", a.ShowBalanceSheet)
