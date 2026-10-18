@@ -22,58 +22,38 @@ func active(id string, rate vat.BasisPoints, from string) vat.VATRate {
 // The table must answer "which rate applies on this date" with one row. Two
 // active rows that would cover the same day are refused at creation, whichever
 // order they arrive in.
-func TestRegistry_RefusesTwoActiveRatesCoveringTheSameDate(t *testing.T) {
+func TestRegistry_HoldsARateCatalogAndChargesByID(t *testing.T) {
 	table := vat.New()
 
-	if err := table.Create(active("r-2025", 1000, "2025-01-01")); err != nil {
-		t.Fatalf("the first active rate must be accepted: %v", err)
+	for _, r := range []vat.VATRate{
+		active("vat10", 1000, "2025-01-01"),
+		active("vat5", 500, "2025-01-01"),
+		active("vat0", 0, "2025-01-01"),
+	} {
+		if err := table.Create(r); err != nil {
+			t.Fatalf("catalog must accept %s: %v", r.ID, err)
+		}
 	}
 
-	clashes := []struct {
-		name string
-		rate vat.VATRate
-	}{
-		{"a second rate starting on the same day", active("r-tie", 800, "2025-01-01")},
-		{"a rate backdated before it", active("r-backfill", 800, "2024-06-01")},
+	for _, c := range []struct {
+		id  string
+		tax int64
+	}{{"vat10", 100_000}, {"vat5", 50_000}, {"vat0", 0}} {
+		charged, err := table.Charge(vat.Line{NetAmount: 1_000_000, VATRateID: c.id})
+		if err != nil {
+			t.Fatalf("Charge(%s): %v", c.id, err)
+		}
+		if charged.Tax != c.tax {
+			t.Fatalf("Charge(%s).Tax = %d, want %d", c.id, charged.Tax, c.tax)
+		}
 	}
 
-	for _, c := range clashes {
-		t.Run(c.name, func(t *testing.T) {
-			err := table.Create(c.rate)
-			if !errors.Is(err, vat.ErrOverlappingRate) {
-				t.Fatalf("Create() = %v, want ErrOverlappingRate", err)
-			}
-		})
-	}
-
-	if got := len(table.List()); got != 1 {
-		t.Fatalf("the table holds %d rows, want only the one that was accepted", got)
+	if err := table.Create(active("vat10", 1000, "2025-01-01")); !errors.Is(err, vat.ErrDuplicateRateID) {
+		t.Fatalf("duplicate id = %v, want ErrDuplicateRateID", err)
 	}
 }
 
-// A row that declared an end is still in force until that end. A new row
-// starting inside the window would contradict it, so it is refused.
-func TestRegistry_RefusesARateStartingInsideAClosedWindow(t *testing.T) {
-	table := vat.New()
 
-	window := active("r-8pct", 800, "2025-07-01")
-	window.EffectiveTo = spot("2025-12-31")
-	if err := table.Create(window); err != nil {
-		t.Fatalf("the 8%% window must be accepted: %v", err)
-	}
-
-	if err := table.Create(active("r-inside", 1000, "2025-09-01")); !errors.Is(err, vat.ErrOverlappingRate) {
-		t.Fatalf("Create() = %v, want ErrOverlappingRate", err)
-	}
-
-	// The day after the window closes is a different date, and is free.
-	if err := table.Create(active("r-after", 1000, "2026-01-01")); err != nil {
-		t.Fatalf("a rate starting after the window closed must be accepted: %v", err)
-	}
-}
-
-// A rate change is a new row after the old one, and it takes over from its own
-// start date. The row it replaces is not edited, and is not consulted again.
 func TestRegistry_ARateChangeIsANewRowAppendedAfterTheOld(t *testing.T) {
 	table := vat.New()
 

@@ -44,7 +44,14 @@ func salesVATRates(_ context.Context) (*vat.Registry, error) {
 	// 8, 10 by goods), and modelling that needs a rate dimension the engine does
 	// not have yet. The standard rate is registered here; the others are recorded
 	// as an open question rather than faked.
+	// A catalog, not a single rate: the line names the rate it was taxed under.
+	// 0% and 5% are statutory categories for particular goods; 10% is standard.
+	// The 8% reduced window is deliberately absent until the practitioner confirms
+	// its dates — a wrong date would tax a real invoice at the wrong rate, and an
+	// absent rate refuses the entry instead (see docs/v2/review/logic/00-verdict.md).
 	rates := []vat.VATRate{
+		{ID: "vat0", Rate: 0, Active: true, EffectiveFrom: time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)},
+		{ID: "vat5", Rate: 500, Active: true, EffectiveFrom: time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)},
 		{ID: "vat10", Rate: 1000, Active: true, EffectiveFrom: time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)},
 	}
 

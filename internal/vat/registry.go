@@ -60,31 +60,17 @@ func (g *Registry) Create(rate VATRate) error {
 
 // admits reports whether an active row may be appended, given the active rows
 // already held.
+// admits reports whether a rate may be added to the catalog.
+//
+// Two active rates may cover the same day: Vietnamese VAT has several rates in
+// force at once (0%, 5%, 8%, 10% by goods), and a line names the row it was taxed
+// under. The old rule — one rate per date — was right for a single default rate
+// and wrong for a catalog; the per-line choice is what makes the books
+// reproducible, not the date.
 func (g *Registry) admits(candidate VATRate) error {
-	from := truncateToDay(candidate.EffectiveFrom)
-
 	for _, held := range g.rows {
-		if !held.Active {
-			continue
-		}
-
-		heldFrom := truncateToDay(held.EffectiveFrom)
-
-		// A row that starts on or before an existing row's start would sit
-		// alongside it rather than after it: the two would claim the same days,
-		// and the table could no longer say which one a report of those days
-		// was made under.
-		if !from.After(heldFrom) {
-			return fmt.Errorf("%w: %s starts %s, at or before %s which starts %s",
-				ErrOverlappingRate, candidate.ID, day(from), held.ID, day(heldFrom))
-		}
-
-		// A row that starts inside a window another row declared the end of
-		// overlaps it: the earlier row says it is still in force, the new one
-		// says it has taken over.
-		if held.EffectiveTo != nil && !from.After(truncateToDay(*held.EffectiveTo)) {
-			return fmt.Errorf("%w: %s starts %s, inside the window %s closes on %s",
-				ErrOverlappingRate, candidate.ID, day(from), held.ID, day(*held.EffectiveTo))
+		if held.ID == candidate.ID {
+			return fmt.Errorf("%w: %s", ErrDuplicateRateID, candidate.ID)
 		}
 	}
 
