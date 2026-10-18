@@ -151,8 +151,7 @@ Giao cho kế toán kế nhiệm khi khách hàng rời đi.
 
 | Chưa có | Ảnh hưởng |
 | :--- | :--- |
-| Giá vốn hàng bán (TK 632) và kho | Lãi gộp chưa đúng cho doanh nghiệp bán hàng hóa |
-| Nhập kho, điều chuyển, kiểm kê | Chưa quản lý tồn kho trên phần mềm |
+| Điều chuyển kho, kiểm kê | Chỉ nhập kho được; chưa điều chuyển hay kiểm kê trên phần mềm |
 | Mua hàng theo luồng ba chiều | Chỉ ghi được hóa đơn chi phí |
 | Nhiều thuế suất (0/5/8/10) | Chỉ áp dụng 10% |
 | Bút toán đảo bằng một cú bấm | Phải tự nhập bút toán đảo |

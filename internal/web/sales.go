@@ -100,13 +100,7 @@ func (a *Auth) PostSales(c *gin.Context) {
 		return
 	}
 
-	sales, err := b.Sales(c.Request.Context())
-	if err != nil {
-		a.renderSales(c, http.StatusInternalServerError, salesData{Client: clientName, Error: err.Error()})
-		return
-	}
-
-	invoice, err := sales.Invoice(c.Request.Context(), cmd)
+	invoice, err := b.SaleWithCost(c.Request.Context(), cmd)
 	if err != nil {
 		a.renderSales(c, http.StatusUnprocessableEntity, salesData{
 			Client:      clientName,

@@ -284,3 +284,15 @@ The valuation is **replayed** from the movement log through `internal/inventory`
 | no source document | 422 — a movement nobody can trace to a document is refused |
 
 Migration `00007` adds `items`, plus `unit_cost` and `source_doc_id` on `stock_movements`.
+## Phase 4 — cost of sales
+
+A sale now posts two vouchers: revenue (131/5111/33311) and the cost of what left the warehouse (632/156). The cost comes from `inventory.RecordIssue`, which values the issue at the moving average and hands back an unposted voucher; the ledger numbers and posts it like any other.
+
+The stock check happens **before** the sale is posted: a sale the warehouse cannot cover is refused 422 and no revenue line is written.
+
+| Test | Assertion |
+| :--- | :--- |
+| sale of 2 from 10 @ 100.000 | revenue 1.000.000, receivable 1.100.000, **COGS 200.000**, inventory credit 200.000, on hand 8 |
+| sale of 5 from 3 | 422, **zero** revenue lines posted |
+
+Ordering is deliberate: the sale posts first, then its cost. A crash between them leaves a sale whose cost can be posted by hand — visible — rather than revenue silently carrying no cost.
