@@ -12,7 +12,7 @@ Updated 2026-10-18 (Phase 1 foundation). One row per phase; a phase is only `DON
 | 3 — Spike, then core screens | **PARTIAL — 9 screens live** | entry, chart of accounts, journal, trial balance, login. Trial balance reads through `internal/reports` over pgx. Tabulator keyboard spike outstanding. |
 | 4 — Trading cycle | **PARTIAL — AR cycle closed** | partners · sales invoice · receipt with allocation and overpayment credit. Purchase side and stock outstanding. |
 | 5 — Period close | **DONE (gate met)** | `POST /close` runs `internal/close`: result carried through 911 into 4212, period locked, report stored; a later voucher into the period is refused. Provisions not wired (fixed assets are out of v2 scope). |
-| 6 — Pilot readiness | **PARTIAL** | opening-balance Excel import done and tested; handover export, installer notes and the parallel run outstanding |
+| 6 — Pilot readiness | **PARTIAL** | opening-balance import · per-client handover export (zip of CSV + manifest). Installer notes and the parallel run outstanding. |
 
 ## 2. Baseline: the v1 tree is green before the port
 

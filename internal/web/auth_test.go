@@ -49,6 +49,7 @@ func newHarness(t *testing.T) *harness {
 	protected.POST("/clients/:id/select", a.SelectClient)
 	protected.GET("/accounts", a.ShowAccounts)
 	protected.GET("/journal", a.ShowJournal)
+	protected.GET("/handover", a.ExportHandover)
 	protected.GET("/opening", a.ShowOpening)
 	protected.POST("/opening", a.PostOpening)
 	protected.GET("/receipt", a.ShowReceipts)

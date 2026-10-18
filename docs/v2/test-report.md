@@ -241,3 +241,12 @@ Three defects, each a schema or layering fact:
 Three tests: import (4 lines, 800.000.000 each side) · unbalanced refused with **nothing written** · same file twice leaves exactly one voucher.
 
 One defect worth recording: the first test used account `411`, and the engine refused it — `411` is a heading in the TT133 chart with postable children. The test was wrong; the engine was right. A user would have seen the same clear refusal.
+## Phase 6 — per-client handover export
+
+`GET /handover` streams a zip: one CSV per client-scoped table plus `MANIFEST.json`.
+
+The export is `COPY (SELECT * FROM t) TO STDOUT` **inside the scoped transaction**, so row-level security is the filter. A Go-written SELECT per table would be a second, weaker guarantee; this one cannot include another client because those rows are not visible to the query.
+
+Test: two clients exist; the first exports; the archive holds exactly 1 voucher row, 123 account rows, the manifest names only the exporting client, and no row of the second client appears.
+
+`clients` is deliberately absent from the export — it is the practice's registry, not the client's books.
