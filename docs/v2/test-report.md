@@ -257,3 +257,13 @@ Test: two clients exist; the first exports; the archive holds exactly 1 voucher 
 The three-way match is deliberately **not** used here: `trading.Purchasing.Invoice` requires an order and its receipts, which is the warehouse path. A service or utility bill has no goods receipt, so this path is narrower, not a second implementation.
 
 `TestPurchaseBillPostsCostInputVATAndPayable`: 1.000.000 net at 10% → 6422 debit 1.000.000, 1331 debit 100.000, 331 credit 1.100.000, payable document `PURCHASE_BILL` open at 1.100.000.
+## Phase 4 — supplier payment (AP cycle closed)
+
+`GET /payment` lists open supplier bills; `POST /payment` posts Dr 331 / Cr 1111 and settles the bill through the same `Documents.Apply`.
+
+| Test | Assertion |
+| :--- | :--- |
+| settle | bill SETTLED, allocated 1.100.000, 331 debit = 1111 credit = 1.100.000 |
+| settled bill | paying it again is refused 422 |
+
+Bills and sales invoices share `document.TypeInvoice`, so the payable list reads the stored `kind` (`PURCHASE_BILL`) rather than guessing from the domain type — the same distinction the export adapter already makes.

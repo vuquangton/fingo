@@ -43,10 +43,10 @@ func (b *Books) Export(ctx context.Context, w interface{ Write([]byte) (int, err
 	archive := zip.NewWriter(w)
 
 	manifest := struct {
-		ClientID  string            `json:"client_id"`
+		ClientID   string           `json:"client_id"`
 		ExportedAt string           `json:"exported_at"`
-		Tables    map[string]int64  `json:"tables"`
-		Note      string            `json:"note"`
+		Tables     map[string]int64 `json:"tables"`
+		Note       string           `json:"note"`
 	}{
 		ClientID:   b.scope.ID(),
 		ExportedAt: time.Now().UTC().Format(time.RFC3339),

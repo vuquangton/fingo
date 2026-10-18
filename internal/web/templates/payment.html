@@ -1,0 +1,87 @@
+{{define "payment.html"}}<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trả tiền nhà cung cấp — FinGo</title>
+  <link rel="stylesheet" href="/static/vendor/tabler.min.css">
+</head>
+<body class="antialiased">
+<div class="page">
+  <header class="navbar navbar-expand d-print-none">
+    <div class="container-xl">
+      <span class="navbar-brand">FinGo</span>
+      <span class="navbar-text ms-3">{{.Client}}</span>
+      <nav class="ms-4">
+        <a class="btn btn-sm btn-ghost-secondary" href="/purchase">Mua hàng</a>
+        <a class="btn btn-sm btn-ghost-secondary" href="/payment">Trả tiền</a>
+        <a class="btn btn-sm btn-ghost-secondary" href="/receipt">Thu tiền</a>
+        <a class="btn btn-sm btn-ghost-secondary" href="/journal">Nhật ký</a>
+      </nav>
+      <span class="navbar-text ms-auto">{{.Email}}</span>
+    </div>
+  </header>
+
+  <div class="page-wrapper">
+    <div class="page-body">
+      <div class="container-xl">
+
+        {{if .Posted}}
+        <div class="alert alert-success" role="status">Đã ghi sổ phiếu chi <strong>{{.Posted}}</strong> — Nợ 331 / Có 1111.</div>
+        {{end}}
+        {{if .Error}}
+        <div class="alert alert-danger" role="alert">{{.Error}}</div>
+        {{end}}
+
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Công nợ phải trả</h3>
+            <div class="card-subtitle ms-auto">Trả cho hóa đơn nào thì chọn hóa đơn đó.</div>
+          </div>
+
+          {{if .Rows}}
+          <div class="table-responsive">
+            <table class="table table-vcenter card-table">
+              <thead>
+                <tr><th>Ngày</th><th>Nhà cung cấp</th><th class="text-end">Tổng</th><th class="text-end">Đã trả</th><th class="text-end">Còn nợ</th><th></th></tr>
+              </thead>
+              <tbody>
+                {{range .Rows}}
+                <tr>
+                  <td>{{.Date}}</td>
+                  <td>{{.Supplier}}</td>
+                  <td class="text-end">{{.Total}}</td>
+                  <td class="text-end">{{.Allocated}}</td>
+                  <td class="text-end"><strong>{{.Outstanding}}</strong></td>
+                  <td class="text-end">
+                    <form method="post" action="/payment" class="d-flex gap-2 justify-content-end">
+                      <input type="hidden" name="document_id" value="{{.ID}}">
+                      <input class="form-control form-control-sm text-end" style="width:9rem" name="amount"
+                             value="{{.Outstanding}}" inputmode="numeric" aria-label="Số tiền trả">
+                      <input type="hidden" name="date" value="{{$.Date}}">
+                      <button class="btn btn-sm btn-primary" type="submit">Trả tiền</button>
+                    </form>
+                  </td>
+                </tr>
+                {{end}}
+              </tbody>
+            </table>
+          </div>
+          {{else}}
+          <div class="card-body"><p class="text-secondary mb-0">Không còn hóa đơn mua nào chưa trả.</p></div>
+          {{end}}
+
+          <div class="card-body">
+            <p class="text-secondary mb-0">
+              Phiếu chi ghi sổ là bất biến. Trả thừa được ghi thành số dư nợ của nhà cung cấp.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
+{{end}}
