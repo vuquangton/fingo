@@ -23,7 +23,9 @@ func TestVATSummaryReadsOutputAndInputFromTheLedger(t *testing.T) {
 		"item": {"HH-10", "", ""}, "quantity": {"1", "1", "1"},
 		"unit_price": {"1.000.000", "", ""}, "vat_rate": {"vat10", "vat10", "vat10"},
 	})
-	if err != nil { t.Fatalf("sale: %v", err) }
+	if err != nil {
+		t.Fatalf("sale: %v", err)
+	}
 	_ = sale.Body.Close()
 
 	supplierID := h.addSupplier(t, client, "NCC VAT", "")
@@ -31,11 +33,15 @@ func TestVATSummaryReadsOutputAndInputFromTheLedger(t *testing.T) {
 		"partner_id": {supplierID}, "date": {"2026-05-11"}, "description": {"Mua hàng"},
 		"expense_account": {"6422"}, "net": {"1.000.000"}, "vat_rate": {"vat5"},
 	})
-	if err != nil { t.Fatalf("purchase: %v", err) }
+	if err != nil {
+		t.Fatalf("purchase: %v", err)
+	}
 	_ = bill.Body.Close()
 
 	resp, err := h.client.Get(h.server.URL + "/reports/vat")
-	if err != nil { t.Fatalf("vat: %v", err) }
+	if err != nil {
+		t.Fatalf("vat: %v", err)
+	}
 	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != http.StatusOK {
@@ -45,7 +51,7 @@ func TestVATSummaryReadsOutputAndInputFromTheLedger(t *testing.T) {
 
 	// Output 100.000 (10% of 1.000.000); input 50.000 (5% of 1.000.000);
 	// payable 50.000; taxable revenue 1.000.000.
-	for _, want := range []string{"100.000", "50.000", "1.000.000", "33311", "1331"} {
+	for _, want := range []string{"100.000", "50.000", "1.000.000", "33311", "1331", "Theo thuế suất", "vat5"} {
 		if !strings.Contains(body, want) {
 			t.Fatalf("VAT summary missing %q:\n%s", want, body)
 		}

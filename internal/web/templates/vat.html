@@ -33,8 +33,16 @@
           </tbody>
         </table>
       </div>
-      <div class="card-body">
-        <p class="text-secondary mb-0">Số liệu đọc trực tiếp từ sổ cái: thuế đầu ra là phát sinh Có TK 33311,
+'      <div class="card-body">
+        <h3 class="card-title">Theo thuế suất</h3>
+        <table class="table table-sm">
+          <thead><tr><th>Thuế suất</th><th class="text-end">Doanh thu</th><th class="text-end">Thuế đầu ra</th></tr></thead>
+          <tbody>
+            {{range .Rates}}<tr><td>{{.RateID}}</td><td class="text-end">{{.Base}}</td><td class="text-end">{{.VAT}}</td></tr>{{end}}
+            {{if not .Rates}}<tr><td colspan="3" class="text-secondary">Chưa có chứng từ nào ghi nhận thuế suất.</td></tr>{{end}}
+          </tbody>
+        </table>
+        <p class="text-secondary mb-0">'Số liệu đọc trực tiếp từ sổ cái: thuế đầu ra là phát sinh Có TK 33311,
         đầu vào là phát sinh Nợ TK 1331. Báo cáo này khớp với bảng cân đối số phát sinh theo định nghĩa.
         Đây là bản nội bộ, chưa phải tờ khai 01/GTGT.</p>
       </div>

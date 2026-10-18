@@ -46,10 +46,10 @@ func (d *Documents) CreateAs(ctx context.Context, kind string, doc document.Docu
 	return d.store.InClient(ctx, d.scope, func(tx pgx.Tx) error {
 		if _, err := tx.Exec(ctx, `
 			INSERT INTO documents
-				(id, client_id, kind, partner_id, document_date, period_id, total, allocated, status)
-			VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+				(id, client_id, kind, partner_id, document_date, period_id, vat_rate_id, total, allocated, status)
+			VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
 			doc.ID, d.scope.ID(), kind, nullUUID(doc.PartnerID), doc.Date,
-			nullUUID(doc.PeriodID), doc.Total.Amount(), doc.Allocated.Amount(), statusToDB(doc.Status)); err != nil {
+			nullUUID(doc.PeriodID), nullText(doc.VATRateID), doc.Total.Amount(), doc.Allocated.Amount(), statusToDB(doc.Status)); err != nil {
 			return fmt.Errorf("write the document: %w", err)
 		}
 
@@ -402,4 +402,12 @@ func isUUID(s string) bool {
 		}
 	}
 	return true
+}
+
+// nullText stores an optional string as SQL NULL.
+func nullText(s string) any {
+	if s == "" {
+		return nil
+	}
+	return s
 }

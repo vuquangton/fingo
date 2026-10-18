@@ -21,6 +21,17 @@ type VATSummary struct {
 	InputVAT           money.Dong
 	NetPayable         money.Dong
 	Revenue            money.Dong
+
+	// Rates is the document-level breakdown, where a rate was recorded. Documents
+	// posted before the rate was persisted have none and appear in no row.
+	Rates []VATRateTotal
+}
+
+// VATRateTotal is one rate's turnover and VAT for the period.
+type VATRateTotal struct {
+	RateID string
+	Base   money.Dong
+	VAT    money.Dong
 }
 
 // VATSummary reads the VAT position of one period.
@@ -52,5 +63,34 @@ func (b *Books) VATSummary(ctx context.Context, periodID string) (VATSummary, er
 	}
 
 	out.NetPayable = out.OutputVAT.Sub(out.InputVAT)
+
+	err = b.store.Read(ctx, b.scope, func(tx pgx.Tx) error {
+		rows, err := tx.Query(ctx, `
+			SELECT d.vat_rate_id, COALESCE(SUM(dl.base_amount), 0), COALESCE(SUM(dl.vat_amount), 0)
+			  FROM documents d
+			  JOIN document_lines dl ON dl.document_id = d.id
+			 WHERE d.kind = 'SALES_INVOICE'
+			   AND d.vat_rate_id IS NOT NULL
+			   AND d.document_date BETWEEN $1 AND $2
+			 GROUP BY d.vat_rate_id
+			 ORDER BY d.vat_rate_id`, out.StartDate, out.EndDate)
+		if err != nil {
+			return err
+		}
+		defer rows.Close()
+
+		for rows.Next() {
+			var row VATRateTotal
+			if err := rows.Scan(&row.RateID, &row.Base, &row.VAT); err != nil {
+				return err
+			}
+			out.Rates = append(out.Rates, row)
+		}
+		return rows.Err()
+	})
+	if err != nil {
+		return VATSummary{}, fmt.Errorf("books: VAT by rate: %w", err)
+	}
+
 	return out, nil
 }

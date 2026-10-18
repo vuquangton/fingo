@@ -20,7 +20,14 @@ type vatData struct {
 	Input  string
 	Net    string
 	Rev    string
+	Rates  []vatRateRow
 	Error  string
+}
+
+type vatRateRow struct {
+	RateID string
+	Base   string
+	VAT    string
 }
 
 func (a *Auth) ShowVAT(c *gin.Context) {
@@ -53,7 +60,21 @@ func (a *Auth) ShowVAT(c *gin.Context) {
 		Input:  format.Money(summary.InputVAT),
 		Net:    format.Money(summary.NetPayable),
 		Rev:    format.Money(summary.Revenue),
+		Rates:  rateRows(summary),
 	})
+}
+
+// rateRows turns the breakdown into display strings.
+func rateRows(summary books.VATSummary) []vatRateRow {
+	out := make([]vatRateRow, 0, len(summary.Rates))
+	for _, r := range summary.Rates {
+		out = append(out, vatRateRow{
+			RateID: r.RateID,
+			Base:   format.Money(r.Base),
+			VAT:    format.Money(r.VAT),
+		})
+	}
+	return out
 }
 
 func (a *Auth) renderVAT(c *gin.Context, status int, data vatData) {
