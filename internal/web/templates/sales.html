@@ -33,7 +33,18 @@
         <div class="alert alert-danger" role="alert">{{.Error}}</div>
         {{end}}
 
-        {{if not .Partners}}
+'        {{if .MissingVAT8}}
+        <div class="alert alert-warning" role="alert">
+          <strong>Chưa cấu hình thuế suất 8%.</strong> Biểu thuế hiện có 10%, 5%, 0%, KCT và miễn thuế.
+          Nếu hóa đơn này thuộc diện giảm thuế 8%, hãy dừng lại và hỏi kế toán trưởng — ghi sổ ở mức 10% sẽ kê khai thừa thuế.
+          {{if .NeedsAck}}<label class="form-check mt-2">
+            <input class="form-check-input" type="checkbox" name="vat8_ack" value="1">
+            <span class="form-check-label">Tôi đã kiểm tra: hóa đơn không thuộc diện 8% (hoặc đã được xử lý riêng).</span>
+          </label>{{end}}
+        </div>
+        {{end}}
+
+        {{if not .Partners}}'
         <div class="alert alert-warning" role="alert">
           Chưa có khách hàng. <a href="/partners">Thêm khách hàng</a> trước khi bán hàng —
           hóa đơn phải ghi rõ ai nợ.

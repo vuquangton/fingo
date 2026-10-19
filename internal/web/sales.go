@@ -41,6 +41,8 @@ type salesData struct {
 	Description string
 	PartnerID   string
 	Posted      string
+	MissingVAT8 bool
+	NeedsAck    bool
 	Error       string
 }
 
@@ -59,6 +61,9 @@ func (a *Auth) ShowSales(c *gin.Context) {
 		return
 	}
 
+	missingVAT8, _ := b.HasVATRate(c.Request.Context(), "vat8")
+	needsAck, _ := b.UnresolvedVATWindow(c.Request.Context(), time.Now())
+
 	email, _, _ := UserFrom(c)
 	a.renderSales(c, http.StatusOK, salesData{
 		Email:    email,
@@ -70,7 +75,9 @@ func (a *Auth) ShowSales(c *gin.Context) {
 			{Quantity: "1"},
 			{Quantity: "1"},
 		},
-		Posted: c.Query("posted"),
+		Posted:      c.Query("posted"),
+		MissingVAT8: missingVAT8,
+		NeedsAck:    needsAck,
 	})
 }
 
@@ -100,6 +107,35 @@ func (a *Auth) PostSales(c *gin.Context) {
 		return
 	}
 
+	// 8% is a statutory rate this catalog cannot express yet. The operator must
+	// confirm the invoice was reviewed before it is posted at another rate; the
+	// confirmation is an audit fact, not a formality.
+	missingVAT8, err := b.HasVATRate(c.Request.Context(), "vat8")
+	if err != nil {
+		a.renderSales(c, http.StatusInternalServerError, salesData{Client: clientName, Error: err.Error()})
+		return
+	}
+	needsAck, err := b.UnresolvedVATWindow(c.Request.Context(), cmd.Date)
+	if err != nil {
+		a.renderSales(c, http.StatusInternalServerError, salesData{Client: clientName, Error: err.Error()})
+		return
+	}
+	if needsAck && c.PostForm("vat8_ack") != "1" {
+		a.renderSales(c, http.StatusUnprocessableEntity, salesData{
+			Client:      clientName,
+			Error:       "Chưa cấu hình thuế suất 8%: hãy kiểm tra hóa đơn rồi xác nhận trước khi ghi sổ.",
+			Date:        c.PostForm("date"),
+			Description: c.PostForm("description"),
+			PartnerID:   c.PostForm("partner_id"),
+			Rows:        rows,
+			MissingVAT8: missingVAT8,
+			NeedsAck:    true,
+		})
+		return
+	}
+
+	email, _, _ := UserFrom(c)
+
 	invoice, err := b.SaleWithCost(c.Request.Context(), cmd)
 	if err != nil {
 		a.renderSales(c, http.StatusUnprocessableEntity, salesData{
@@ -111,6 +147,13 @@ func (a *Auth) PostSales(c *gin.Context) {
 			Rows:        rows,
 		})
 		return
+	}
+
+	if needsAck {
+		if err := b.RecordVATAcknowledgement(c.Request.Context(), invoice.ID, email, cmd.Date); err != nil {
+			a.renderSales(c, http.StatusInternalServerError, salesData{Client: clientName, Error: err.Error()})
+			return
+		}
 	}
 
 	c.Redirect(http.StatusSeeOther, "/sales?posted="+invoice.ID)

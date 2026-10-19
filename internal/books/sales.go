@@ -6,12 +6,15 @@ import (
 	"fmt"
 	"time"
 
+	"fingo/internal/audit"
 	"fingo/internal/domain/gl"
 	"fingo/internal/ledger"
 	"fingo/internal/posting"
 	"fingo/internal/store"
 	"fingo/internal/trading"
 	"fingo/internal/vat"
+
+	"github.com/jackc/pgx/v5"
 )
 
 // Sales builds the sales flow over these books.
@@ -96,3 +99,42 @@ func (p poster) Post(ctx context.Context, posting trading.Posting) error {
 }
 
 var _ = gl.VoucherTypeGeneral
+
+// HasVATRate reports whether the catalog holds a rate id. It is how the sales
+// screen knows that a statutory rate is missing rather than merely unselected.
+func (b *Books) HasVATRate(ctx context.Context, id string) (bool, error) {
+	var exists bool
+	err := b.store.Read(ctx, b.scope, func(tx pgx.Tx) error {
+		return tx.QueryRow(ctx,
+			`SELECT EXISTS (SELECT 1 FROM vat_rates WHERE id = $1 AND active)`, id).Scan(&exists)
+	})
+	return exists, err
+}
+
+// RecordVATAcknowledgement writes the operator's confirmation that the invoice was
+// reviewed against the missing 8% rate. It is an audit fact, not a posting.
+func (b *Books) RecordVATAcknowledgement(ctx context.Context, invoiceID string, actor string, at time.Time) error {
+	return b.store.InClient(ctx, b.scope, func(tx pgx.Tx) error {
+		return audit.Record(ctx, tx, audit.Event{
+			ClientID: b.scope.ID(),
+			Actor:    actor,
+			Action:   audit.Action("VAT_RATE_ACK"),
+			Entity:   "document",
+			EntityID: invoiceID,
+			After:    []byte(`{"missing_rate":"vat8","invoice_date":"` + at.Format("2006-01-02") + `"}`),
+		})
+	})
+}
+
+// UnresolvedVATWindow reports whether a flagged statutory window covers the date.
+// While it does, a sale needs an explicit acknowledgement before it posts.
+func (b *Books) UnresolvedVATWindow(ctx context.Context, date time.Time) (bool, error) {
+	var covered bool
+	err := b.store.Read(ctx, b.scope, func(tx pgx.Tx) error {
+		return tx.QueryRow(ctx, `
+			SELECT EXISTS (
+			  SELECT 1 FROM vat_unresolved_windows
+			   WHERE active AND $1::date BETWEEN from_date AND to_date)`, date).Scan(&covered)
+	})
+	return covered, err
+}

@@ -35,3 +35,15 @@
 | R2 | Is PostgreSQL 16 present? | Yes, 16.15, service running; `psql`/`pg_dump` at `C:\Program Files\PostgreSQL\16\bin`. | `psql --version`; `pg_dump --version` |
 | R3 | Is Tabulator's licence acceptable? | MIT, version 6.5.0 current. | [Tabulator licence page](https://www.tabulator.info/docs/6.x/license/) |
 | R4 | Does the v1 tree build and pass its tests before the port? | Recorded in `docs/v2/plan-status.md` §2. | baseline run |
+
+## Q21 — the 8% reduced VAT window (blocks C3 completion)
+
+`legal-basis.md` records the Circular 48 sunset but **not** the dates or scope of the
+8% reduced rate. The mechanism is built: `vat_unresolved_windows` holds a window flagged
+for a rate, the sales screen warns while `vat8` is absent, and posting inside a confirmed
+window requires an acknowledgement recorded as `VAT_RATE_ACK`.
+
+**Needed from a practitioner:** the exact start and end dates, and which goods/services
+qualify. Then two rows: `vat_rates (id='vat8', basis_points=800, effective_from, effective_to)`
+and `vat_unresolved_windows (rate_id='vat8', from_date, to_date, note)` — or removal of the
+window once the dates are settled.
