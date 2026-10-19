@@ -62,7 +62,31 @@ func run() error {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
 	router.Use(gin.Recovery())
-	router.GET("/healthz", func(c *gin.Context) { c.String(http.StatusOK, "ok") })
+	// healthz answers 200 only when the database is reachable AND the application
+	// role can write the session table. A liveness check that says "ok" while login
+	// is broken is worse than no check: it is a green light on a dead service.
+	router.GET("/healthz", func(c *gin.Context) {
+		ctx, cancel := context.WithTimeout(c.Request.Context(), 2*time.Second)
+		defer cancel()
+
+		if err := st.Pool().Ping(ctx); err != nil {
+			c.String(http.StatusServiceUnavailable, "database: %v", err)
+			return
+		}
+
+		var canWrite bool
+		if err := st.Pool().QueryRow(ctx,
+			`SELECT has_table_privilege(current_user, 'sessions', 'INSERT')`).Scan(&canWrite); err != nil {
+			c.String(http.StatusServiceUnavailable, "sessions privilege: %v", err)
+			return
+		}
+		if !canWrite {
+			c.String(http.StatusServiceUnavailable, "the application role cannot write sessions: run the migrations")
+			return
+		}
+
+		c.String(http.StatusOK, "ok")
+	})
 	router.GET("/", auth.Home)
 	router.GET("/login", auth.ShowLogin)
 	router.POST("/login", auth.Login)
