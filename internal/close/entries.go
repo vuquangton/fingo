@@ -195,3 +195,10 @@ func opposite(side gl.EntrySide) gl.EntrySide {
 
 	return gl.SideDebit
 }
+
+// ClosingEntries exposes the closing calculation so a screen can show the operator
+// exactly what a close would post before anything is written. The calculation stays
+// here: a preview computed anywhere else could disagree with the real close.
+func ClosingEntries(balances []AccountBalance, accounts ClosingAccounts) ([]gl.VoucherLine, money.Dong, error) {
+	return closingEntries(balances, accounts)
+}

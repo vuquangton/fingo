@@ -77,6 +77,8 @@ func newHarness(t *testing.T) *harness {
 	protected.GET("/partners", a.ShowPartners)
 	protected.POST("/partners", a.RequireWriter(), a.PostPartner)
 	protected.GET("/close", a.ShowClose)
+	protected.POST("/close/preview", a.RequireRole(web.RoleAdmin), a.PreviewClose)
+	protected.POST("/close/confirm", a.RequireRole(web.RoleAdmin), a.ConfirmClose)
 	protected.POST("/close", a.RequireRole(web.RoleAdmin), a.PostClose)
 	protected.GET("/aging", a.ShowAging)
 	protected.GET("/reports/vat", a.ShowVAT)

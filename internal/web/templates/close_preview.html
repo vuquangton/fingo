@@ -1,0 +1,60 @@
+{{define "close_preview.html"}}<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <title>Xem trước khoá sổ — FinGo</title>
+  <link rel="stylesheet" href="/static/vendor/tabler.min.css">
+</head>
+<body class="antialiased">
+<div class="page">
+  <header class="navbar navbar-expand d-print-none"><div class="container-xl">
+    <span class="navbar-brand">FinGo</span>
+    <span class="navbar-text ms-3">{{.Client}}</span>
+    <nav class="ms-4">
+      <a class="btn btn-sm btn-ghost-secondary" href="/close">Khoá sổ</a>
+      <a class="btn btn-sm btn-ghost-secondary" href="/reports">Cân đối</a>
+    </nav>
+    <span class="navbar-text ms-auto">{{.Email}}</span>
+  </div></header>
+
+  <div class="page-wrapper"><div class="page-body"><div class="container-xl">
+    {{if .Error}}<div class="alert alert-danger" role="alert">{{.Error}}</div>{{end}}
+
+    <div class="alert alert-warning">
+      Đây là <strong>xem trước</strong>. Chưa có gì được ghi sổ. Sau khi xác nhận, kỳ
+      <strong>{{.PeriodLabel}}</strong> sẽ bị khoá vĩnh viễn.
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">Bút toán kết chuyển kỳ {{.PeriodLabel}}</h3></div>
+      {{if .Rows}}
+      <div class="table-responsive"><table class="table card-table">
+        <thead><tr><th>Tài khoản</th><th>Bên</th><th class="text-end">Số tiền</th></tr></thead>
+        <tbody>
+          {{range .Rows}}<tr><td>{{.Account}}</td><td>{{.Side}}</td><td class="text-end">{{.Amount}}</td></tr>{{end}}
+        </tbody>
+      </table></div>
+      {{else}}
+      <div class="card-body"><p class="text-secondary mb-0">Kỳ không có doanh thu/chi phí: không có bút toán kết chuyển.</p></div>
+      {{end}}
+      <div class="card-body"><strong>Kết quả kỳ: {{.Result}}</strong></div>
+    </div>
+
+    <form method="post" action="/close/confirm" class="card mt-3">
+      <input type="hidden" name="token" value="{{.Token}}">
+      <input type="hidden" name="period_id" value="{{.PeriodID}}">
+      <div class="card-body">
+        <label class="form-label" for="confirm">Gõ đúng kỳ <code>{{.PeriodLabel}}</code> để xác nhận khoá sổ</label>
+        <input class="form-control" id="confirm" name="confirm" autocomplete="off" required>
+        <p class="text-secondary mt-2 mb-0">Nếu số liệu thay đổi kể từ lần xem trước, hệ thống sẽ từ chối và yêu cầu xem lại.</p>
+      </div>
+      <div class="card-footer d-flex">
+        <a class="btn btn-link" href="/close">Quay lại</a>
+        <button class="btn btn-danger ms-auto" type="submit">Khoá kỳ này</button>
+      </div>
+    </form>
+  </div></div></div>
+</div>
+</body>
+</html>
+{{end}}

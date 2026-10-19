@@ -38,7 +38,7 @@ func TestCloseScreenListsThePeriod(t *testing.T) {
 
 	body := h.body(t, "/close")
 
-	for _, want := range []string{"Khoá sổ kỳ kế toán", "Đang mở", "Khoá sổ kỳ này"} {
+	for _, want := range []string{"Khoá sổ kỳ kế toán", "Đang mở", "Xem trước"} {
 		if !strings.Contains(body, want) {
 			t.Fatalf("the close screen does not contain %q\n%s", want, body)
 		}

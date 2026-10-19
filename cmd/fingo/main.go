@@ -123,6 +123,8 @@ func run() error {
 	protected.GET("/partners", auth.ShowPartners)
 	protected.POST("/partners", auth.RequireWriter(), auth.PostPartner)
 	protected.GET("/close", auth.ShowClose)
+	protected.POST("/close/preview", auth.RequireRole(web.RoleAdmin), auth.PreviewClose)
+	protected.POST("/close/confirm", auth.RequireRole(web.RoleAdmin), auth.ConfirmClose)
 	protected.POST("/close", auth.RequireRole(web.RoleAdmin), auth.PostClose)
 	protected.GET("/aging", auth.ShowAging)
 	protected.GET("/reports/vat", auth.ShowVAT)

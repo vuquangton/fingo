@@ -244,3 +244,60 @@ func (p closePorts) Get(ctx context.Context, periodID string) (close.Report, err
 }
 
 func accountTypeOf(s string) gl.AccountType { return gl.AccountType(s) }
+
+// ClosePreview is what a close would write, without writing it.
+type ClosePreview struct {
+	PeriodID      string
+	PeriodLabel   string
+	StartDate     time.Time
+	EndDate       time.Time
+	Lines         []gl.VoucherLine
+	Result        money.Dong
+	OpenDocuments int
+	DocumentTotal string
+}
+
+// PreviewClose computes the closing journal for a period.
+//
+// It posts nothing and locks nothing. The figures come from the same engine call
+// the close itself uses, so a confirmation screen cannot show a different set of
+// numbers from the ones that will be posted.
+func (b *Books) PreviewClose(ctx context.Context, periodID string) (ClosePreview, error) {
+	periods, err := b.List(ctx)
+	if err != nil {
+		return ClosePreview{}, err
+	}
+
+	var chosen *period.Period
+	for i := range periods {
+		if periods[i].ID == periodID {
+			chosen = &periods[i]
+			break
+		}
+	}
+	if chosen == nil {
+		return ClosePreview{}, fmt.Errorf("books: period %s is not in the calendar", periodID)
+	}
+
+	ports := closePorts{b: b}
+
+	balances, err := ports.Balances(ctx, *chosen)
+	if err != nil {
+		return ClosePreview{}, err
+	}
+
+	lines, result, err := close.ClosingEntries(balances, close.TT133ClosingAccounts())
+	if err != nil {
+		return ClosePreview{}, err
+	}
+
+	preview := ClosePreview{
+		PeriodID:    chosen.ID,
+		PeriodLabel: chosen.StartDate.Format("01/2006"),
+		StartDate:   chosen.StartDate,
+		EndDate:     chosen.EndDate,
+		Lines:       lines,
+		Result:      result,
+	}
+	return preview, nil
+}

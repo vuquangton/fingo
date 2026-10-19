@@ -64,9 +64,9 @@
                   <td class="text-end">{{if .HasReport}}{{.NetProfit}}{{else}}—{{end}}</td>
                   <td class="text-end">
                     {{if not .Locked}}
-                    <form method="post" action="/close" class="d-inline">
+                    <form method="post" action="/close/preview" class="d-inline">
                       <input type="hidden" name="period_id" value="{{.ID}}">
-                      <button class="btn btn-sm btn-primary" type="submit">Khoá sổ kỳ này</button>
+                      <button class="btn btn-sm btn-primary" type="submit">Xem trước &amp; khoá</button>
                     </form>
                     {{end}}
                   </td>
