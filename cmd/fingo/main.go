@@ -112,6 +112,8 @@ func run() error {
 	protected.GET("/purchase", auth.ShowPurchase)
 	protected.POST("/purchase", auth.RequireWriter(), auth.PostPurchase)
 	protected.GET("/handover", auth.ExportHandover)
+	protected.GET("/opening/stock", auth.ShowOpeningStock)
+	protected.POST("/opening/stock", auth.RequireWriter(), auth.PostOpeningStock)
 	protected.GET("/opening", auth.ShowOpening)
 	protected.POST("/opening", auth.RequireWriter(), auth.PostOpening)
 	protected.GET("/receipt", auth.ShowReceipts)

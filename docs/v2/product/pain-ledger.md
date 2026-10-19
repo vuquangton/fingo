@@ -16,7 +16,7 @@ stock guard and no idempotency key. **M1–M4 are therefore still open**, not al
 | ID | Pain | Status | Evidence / next |
 | :--- | :--- | :--- | :--- |
 | C1 | Stock receipt posts Cr 331 with no AP document; aging drifts | **FIXED-VERIFIED** | receipt now creates the `PURCHASE_BILL` (partner, period, total, 156/331 lines) in the same operation; `TestStockReceiptCreatesThePayable` failed before the fix (AP documents = 0) and passes after; aging shows `khớp` |
-| C2 | Opening stock cannot be entered | OPEN | import of item/qty/cost, reconciled to 156 |
+| C2 | Opening stock cannot be entered | **FIXED-VERIFIED** | `/opening/stock` creates items and opening receipt movements, and refuses unless the stock value equals the 156 balance to the đồng; re-import refused once the warehouse has movements. Tests: first sale costs 100 × 400.000 = 40.000.000; a 120.000.000 import against a 100.000.000 156 balance is refused 422 |
 | C3 | 8% VAT absent | OPEN → target `FIXED-NEEDS-HUMAN` | mechanism + visible warning; legal dates unset |
 | C4 | Reversal leaves the document settled | OPEN | un-apply allocations with the mirror voucher |
 | C5 | Close is a one-click irreversible action | OPEN | preview + typed confirmation + token |

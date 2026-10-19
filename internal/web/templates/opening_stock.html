@@ -1,0 +1,75 @@
+{{define "opening_stock.html"}}<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Số dư kho đầu kỳ — FinGo</title>
+  <link rel="stylesheet" href="/static/vendor/tabler.min.css">
+</head>
+<body class="antialiased">
+<div class="page">
+  <header class="navbar navbar-expand d-print-none">
+    <div class="container-xl">
+      <span class="navbar-brand">FinGo</span>
+      <span class="navbar-text ms-3">{{.Client}}</span>
+      <nav class="ms-4">
+        <a class="btn btn-sm btn-ghost-secondary" href="/opening">Số dư tài khoản</a>
+        <a class="btn btn-sm btn-ghost-secondary" href="/stock">Kho</a>
+        <a class="btn btn-sm btn-ghost-secondary" href="/reports">Cân đối</a>
+      </nav>
+      <span class="navbar-text ms-auto">{{.Email}}</span>
+    </div>
+  </header>
+
+  <div class="page-wrapper"><div class="page-body"><div class="container-xl">
+    {{if .Error}}<div class="alert alert-danger" role="alert">{{.Error}}</div>{{end}}
+
+    <form method="post" action="/opening/stock" class="card">
+      <div class="card-header">
+        <h3 class="card-title">Số dư kho đầu kỳ</h3>
+        <div class="card-subtitle ms-auto">Làm một lần, trước khi phát sinh nhập/xuất.</div>
+      </div>
+      <div class="card-body">
+        <div class="row g-3 mb-3">
+          <div class="col-md-3">
+            <label class="form-label" for="date">Ngày đầu kỳ</label>
+            <input class="form-control" id="date" name="date" type="date" value="{{.Date}}" required>
+          </div>
+        </div>
+
+        <table class="table table-sm">
+          <thead>
+            <tr><th style="width:16%">Mã hàng</th><th style="width:22%">Tên hàng</th><th style="width:10%">ĐVT</th>
+                <th style="width:12%" class="text-end">Số lượng</th><th style="width:18%" class="text-end">Đơn giá</th><th></th></tr>
+          </thead>
+          <tbody>
+            <tr><td><input class="form-control" name="sku"></td><td><input class="form-control" name="name"></td>
+                <td><input class="form-control" name="unit"></td>
+                <td><input class="form-control text-end" name="qty" inputmode="numeric"></td>
+                <td><input class="form-control text-end" name="unit_cost" inputmode="numeric" placeholder="400.000"></td><td></td></tr>
+            <tr><td><input class="form-control" name="sku"></td><td><input class="form-control" name="name"></td>
+                <td><input class="form-control" name="unit"></td>
+                <td><input class="form-control text-end" name="qty" inputmode="numeric"></td>
+                <td><input class="form-control text-end" name="unit_cost" inputmode="numeric"></td><td></td></tr>
+            <tr><td><input class="form-control" name="sku"></td><td><input class="form-control" name="name"></td>
+                <td><input class="form-control" name="unit"></td>
+                <td><input class="form-control text-end" name="qty" inputmode="numeric"></td>
+                <td><input class="form-control text-end" name="unit_cost" inputmode="numeric"></td><td></td></tr>
+          </tbody>
+        </table>
+
+        <p class="text-secondary mb-0">
+          Tổng giá trị nhập phải <strong>bằng đúng</strong> số dư Nợ TK 156 đã ghi sổ đầu kỳ; nếu lệch,
+          hệ thống từ chối và nêu số chênh lệch. Nhập kho đầu kỳ không tạo bút toán mới —
+          giá trị đã nằm trong TK 156.
+        </p>
+      </div>
+      <div class="card-footer text-end">
+        <button class="btn btn-primary" type="submit">Ghi số dư kho</button>
+      </div>
+    </form>
+  </div></div></div>
+</div>
+</body>
+</html>
+{{end}}
