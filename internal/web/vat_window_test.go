@@ -1,6 +1,7 @@
 package web_test
 
 import (
+	"context"
 	"net/http"
 	"net/url"
 	"testing"
@@ -26,6 +27,19 @@ func TestUnresolvedVATWindowNeedsAnAcknowledgement(t *testing.T) {
 		ON CONFLICT (id) DO NOTHING`); err != nil {
 		t.Fatalf("insert vat8 rate: %v", err)
 	}
+
+	// The window is practice-level state, not per-client: leaving it behind would
+	// make every later sale in this database require an acknowledgement.
+	t.Cleanup(func() {
+		for _, sql := range []string{
+			`DELETE FROM vat_unresolved_windows WHERE note = 'test window'`,
+			`DELETE FROM vat_rates WHERE id = 'vat8'`,
+		} {
+			if _, err := h.pool.Exec(context.Background(), sql); err != nil {
+				t.Logf("cleanup %q: %v", sql, err)
+			}
+		}
+	})
 
 	if _, err := h.pool.Exec(t.Context(), `
 		INSERT INTO vat_unresolved_windows (rate_id, from_date, to_date, note)
