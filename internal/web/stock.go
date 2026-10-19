@@ -15,12 +15,13 @@ import (
 )
 
 type stockData struct {
-	Email  string
-	Client string
-	Items  []books.Item
-	Date   string
-	Posted string
-	Error  string
+	Email    string
+	Client   string
+	Items    []books.Item
+	Partners []books.Partner
+	Date     string
+	Posted   string
+	Error    string
 }
 
 // ShowStock lists items with what is on hand and what it is worth.
@@ -30,19 +31,23 @@ func (a *Auth) ShowStock(c *gin.Context) {
 		return
 	}
 
-	items, err := books.Open(a.store, scope).ListItems(c.Request.Context())
+	b := books.Open(a.store, scope)
+	items, err := b.ListItems(c.Request.Context())
 	if err != nil {
 		a.renderStock(c, http.StatusInternalServerError, stockData{Client: clientName, Error: err.Error()})
 		return
 	}
 
+	partners, _ := b.ListPartners(c.Request.Context())
+
 	email, _, _ := UserFrom(c)
 	a.renderStock(c, http.StatusOK, stockData{
-		Email:  email,
-		Client: clientName,
-		Items:  items,
-		Date:   time.Now().Format("2006-01-02"),
-		Posted: c.Query("posted"),
+		Email:    email,
+		Client:   clientName,
+		Items:    items,
+		Partners: partners,
+		Date:     time.Now().Format("2006-01-02"),
+		Posted:   c.Query("posted"),
 	})
 }
 
@@ -135,10 +140,17 @@ func (a *Auth) PostStockReceipt(c *gin.Context) {
 		return
 	}
 
+	partnerID := strings.TrimSpace(c.PostForm("partner_id"))
+	if partnerID == "" {
+		a.renderStock(c, http.StatusUnprocessableEntity, stockData{Client: clientName, Error: "hãy chọn nhà cung cấp: khoản phải trả phải có người bán"})
+		return
+	}
+
 	email, _, _ := UserFrom(c)
 
 	posted, err := books.Open(a.store, scope).ReceiveStock(c.Request.Context(), books.StockReceiptCommand{
 		ItemID:      c.PostForm("item_id"),
+		PartnerID:   partnerID,
 		Qty:         qty,
 		UnitCost:    unitCost,
 		Date:        date,
@@ -156,7 +168,9 @@ func (a *Auth) PostStockReceipt(c *gin.Context) {
 func (a *Auth) renderStock(c *gin.Context, status int, data stockData) {
 	if data.Client != "" && data.Items == nil {
 		if scope, _, ok := a.requireScope(c); ok {
-			data.Items, _ = books.Open(a.store, scope).ListItems(c.Request.Context())
+			b := books.Open(a.store, scope)
+			data.Items, _ = b.ListItems(c.Request.Context())
+			data.Partners, _ = b.ListPartners(c.Request.Context())
 		}
 	}
 

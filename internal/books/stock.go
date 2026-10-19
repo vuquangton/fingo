@@ -10,6 +10,7 @@ import (
 
 	"github.com/jackc/pgx/v5"
 
+	"fingo/internal/document"
 	"fingo/internal/domain/gl"
 	"fingo/internal/inventory"
 	"fingo/internal/ledger"
@@ -113,6 +114,7 @@ func (b *Books) ListItems(ctx context.Context) ([]Item, error) {
 // ReceiptCommand books goods into stock from one supplier document.
 type StockReceiptCommand struct {
 	ItemID      string
+	PartnerID   string
 	Qty         int
 	UnitCost    money.Dong
 	Date        time.Time
@@ -177,6 +179,34 @@ func (b *Books) ReceiveStock(ctx context.Context, cmd StockReceiptCommand) (ledg
 
 	if err := b.saveMove(ctx, move); err != nil {
 		return posted, fmt.Errorf("stock receipt %s posted, but the movement was not saved: %w", posted.VoucherNo, err)
+	}
+
+	// C1: the 331 credit is a payable, so the AP subledger must know about it.
+	// Without this document the control account and the aging report disagree by
+	// the whole receipt, and every later reconciliation has to explain it.
+	period, err := b.EnsureCurrentYear(ctx, day)
+	if err != nil {
+		return posted, err
+	}
+
+	purchase := document.Document{
+		ID:        newUUID(),
+		Type:      document.TypeInvoice,
+		PartnerID: cmd.PartnerID,
+		Date:      day,
+		PeriodID:  period.ID,
+		Total:     money.New(value.Int64(), "VND"),
+		Allocated: money.New(0, "VND"),
+		Status:    document.StatusOpen,
+	}
+
+	purchaseLines := []document.Line{
+		{DocumentID: purchase.ID, AccountID: "156", Debit: money.New(value.Int64(), "VND"), BaseAmount: money.New(value.Int64(), "VND")},
+		{DocumentID: purchase.ID, AccountID: "331", Credit: money.New(value.Int64(), "VND")},
+	}
+
+	if err := b.Documents().CreateAs(ctx, "PURCHASE_BILL", purchase, purchaseLines); err != nil {
+		return posted, fmt.Errorf("stock receipt %s posted, but recording the payable failed: %w", posted.VoucherNo, err)
 	}
 
 	return posted, nil

@@ -44,8 +44,19 @@ func TestStockReceiptValuesTheItemAndPostsInventory(t *testing.T) {
 
 	itemID := h.addItem(t, client, "HH-01", "Hàng hóa 01")
 
+	supplierID := newUUID(t)
+	if err := h.storeOf(t).InClient(t.Context(), h.scopeOf(t, client), func(tx pgx.Tx) error {
+		_, err := tx.Exec(t.Context(),
+			`INSERT INTO partners (id, client_id, kind, name, tax_id) VALUES ($1, $2, 'SUPPLIER', $3, $4)`,
+			supplierID, client, "NCC test", "NCC-"+supplierID[:8])
+		return err
+	}); err != nil {
+		t.Fatalf("insert supplier: %v", err)
+	}
+
 	resp, err := h.client.PostForm(h.server.URL+"/stock/receive", url.Values{
 		"item_id":    {itemID},
+		"partner_id": {supplierID},
 		"qty":        {"10"},
 		"unit_cost":  {"100.000"},
 		"date":       {"2026-03-05"},
@@ -128,7 +139,7 @@ func TestStocktakeAdjustsToTheCountedQuantity(t *testing.T) {
 	h.pickClient(t, client)
 
 	itemID := h.addItem(t, client, "HH-03", "Hàng hóa 03")
-	h.receiveStock(t, itemID, "10", "100.000", "2026-03-05", "HĐ 0009")
+	h.receiveStock(t, client, itemID, "10", "100.000", "2026-03-05", "HĐ 0009")
 
 	resp, err := h.client.PostForm(h.server.URL+"/stock/count", url.Values{
 		"item_id": {itemID}, "counted": {"7"}, "date": {"2026-12-31"}, "source_doc": {"BB kiểm kê 31/12"},

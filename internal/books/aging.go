@@ -72,9 +72,9 @@ func (b *Books) Aging(ctx context.Context, kind string, asOf time.Time) (AgingRe
 
 	switch kind {
 	case "AR":
-		docKind, title, control, controlSide = "SALES_INVOICE", "Phải thu khách hàng", "131", "debit"
+		docKind, title, control, controlSide = "SALES_INVOICE", "Phải thu khách hàng", "131", "DEBIT"
 	case "AP":
-		docKind, title, control, controlSide = "PURCHASE_BILL", "Phải trả nhà cung cấp", "331", "credit"
+		docKind, title, control, controlSide = "PURCHASE_BILL", "Phải trả nhà cung cấp", "331", "CREDIT"
 	default:
 		return AgingReport{}, fmt.Errorf("books: aging kind %q is neither AR nor AP", kind)
 	}

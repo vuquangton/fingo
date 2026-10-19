@@ -10,11 +10,21 @@ import (
 )
 
 // receiveStock books qty units of an item at unitCost.
-func (h *harness) receiveStock(t *testing.T, itemID, qty, unitCost, date, source string) {
+func (h *harness) receiveStock(t *testing.T, clientID, itemID, qty, unitCost, date, source string) {
 	t.Helper()
 
+	supplierID := newUUID(t)
+	if err := h.storeOf(t).InClient(t.Context(), h.scopeOf(t, clientID), func(tx pgx.Tx) error {
+		_, err := tx.Exec(t.Context(),
+			`INSERT INTO partners (id, client_id, kind, name, tax_id) VALUES ($1, $2, 'SUPPLIER', $3, $4)`,
+			supplierID, clientID, "NCC "+supplierID[:8], "NCC-"+supplierID[:8])
+		return err
+	}); err != nil {
+		t.Fatalf("insert supplier: %v", err)
+	}
+
 	resp, err := h.client.PostForm(h.server.URL+"/stock/receive", url.Values{
-		"item_id": {itemID}, "qty": {qty}, "unit_cost": {unitCost},
+		"item_id": {itemID}, "partner_id": {supplierID}, "qty": {qty}, "unit_cost": {unitCost},
 		"date": {date}, "source_doc": {source},
 	})
 	if err != nil {
@@ -54,7 +64,7 @@ func TestSalePostsTheCostOfWhatItSold(t *testing.T) {
 	h.pickClient(t, client)
 
 	itemID := h.addItem(t, client, "HH-01", "Hàng hóa 01")
-	h.receiveStock(t, itemID, "10", "100.000", "2026-03-05", "HĐ 0001234")
+	h.receiveStock(t, client, itemID, "10", "100.000", "2026-03-05", "HĐ 0001234")
 
 	h.addPartner(t, "Công ty Đông Á", "")
 	partnerID := h.partnerID(t, client, "Công ty Đông Á")
@@ -108,7 +118,7 @@ func TestSaleBeyondStockIsRefusedBeforeItPosts(t *testing.T) {
 	h.pickClient(t, client)
 
 	itemID := h.addItem(t, client, "HH-02", "Hàng hóa 02")
-	h.receiveStock(t, itemID, "3", "100.000", "2026-03-05", "HĐ 0001")
+	h.receiveStock(t, client, itemID, "3", "100.000", "2026-03-05", "HĐ 0001")
 
 	h.addPartner(t, "Khách B", "")
 	partnerID := h.partnerID(t, client, "Khách B")
