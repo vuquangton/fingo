@@ -9,8 +9,11 @@ import (
 
 	"fingo/internal/inventory"
 	"fingo/internal/ledger"
+	"fingo/internal/money"
 	"fingo/internal/posting"
 	"fingo/internal/trading"
+
+	"github.com/jackc/pgx/v5"
 )
 
 // ErrOutOfStock is returned before a sale is posted when the goods are not there.
@@ -49,6 +52,7 @@ func (b *Books) SaleWithCost(ctx context.Context, cmd trading.InvoiceCommand) (t
 	type issue struct {
 		item Item
 		qty  int
+		cost money.Dong
 	}
 	var issues []issue
 
@@ -80,13 +84,24 @@ func (b *Books) SaleWithCost(ctx context.Context, cmd trading.InvoiceCommand) (t
 		return trading.Invoice{}, err
 	}
 
+	// The sale's own lines are persisted for the credit note: the ledger knows the
+	// amounts, not what was sold, and a return cannot be computed from amounts alone.
+	costs := map[string]int64{}
+	for _, is := range issues {
+		costs[is.item.SKU] = is.cost.Int64()
+	}
+	if err := b.saveSaleLines(ctx, invoice.ID, cmd.Lines, costs); err != nil {
+		return invoice, fmt.Errorf("sale %s posted, but its lines were not recorded: %w", invoice.ID, err)
+	}
+
 	if len(issues) == 0 {
 		return invoice, nil
 	}
 
 	day := time.Date(cmd.Date.Year(), cmd.Date.Month(), cmd.Date.Day(), 0, 0, 0, 0, time.UTC)
 
-	for _, is := range issues {
+	for idx := range issues {
+		is := &issues[idx]
 		move := inventory.StockMove{
 			ID:          newUUID(),
 			ItemID:      is.item.ID,
@@ -111,10 +126,44 @@ func (b *Books) SaleWithCost(ctx context.Context, cmd trading.InvoiceCommand) (t
 				invoice.ID, is.item.SKU, err)
 		}
 
+		is.cost = money.FromInt(entry.UnitCost)
 		if err := b.saveMove(ctx, move); err != nil {
 			return invoice, fmt.Errorf("cost posted, but the movement for %s was not saved: %w", is.item.SKU, err)
 		}
 	}
 
 	return invoice, nil
+}
+
+// saveSaleLines records what each invoice line sold, and at what cost.
+func (b *Books) saveSaleLines(ctx context.Context, invoiceID string, lines []trading.InvoiceLine, costs map[string]int64) error {
+	return b.store.InClient(ctx, b.scope, func(tx pgx.Tx) error {
+		var documentID string
+		if err := tx.QueryRow(ctx, `
+			SELECT id::text FROM documents
+			 WHERE kind = 'SALES_INVOICE'
+			 ORDER BY created_at DESC LIMIT 1`).Scan(&documentID); err != nil {
+			return err
+		}
+
+		for i, line := range lines {
+			itemID := ""
+			cost := int64(0)
+			if c, stocked := costs[strings.TrimSpace(line.ItemID)]; stocked {
+				itemID = strings.TrimSpace(line.ItemID)
+				cost = c
+			}
+
+			if _, err := tx.Exec(ctx, `
+				INSERT INTO sale_lines
+					(client_id, document_id, line_no, item_id, quantity, unit_price, vat_rate_id, cost_at_sale)
+				VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+				ON CONFLICT (document_id, line_no) DO NOTHING`,
+				b.scope.ID(), documentID, i+1, itemID, line.Quantity,
+				line.UnitPrice.Amount(), line.VATRateID, cost); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
 }

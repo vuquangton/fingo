@@ -72,6 +72,8 @@ func newHarness(t *testing.T) *harness {
 	protected.POST("/opening", a.RequireWriter(), a.PostOpening)
 	protected.GET("/receipt", a.ShowReceipts)
 	protected.POST("/receipt", a.RequireWriter(), a.PostReceipt)
+	protected.GET("/credit-note", a.ShowCreditNote)
+	protected.POST("/credit-note", a.RequireWriter(), a.PostCreditNote)
 	protected.GET("/sales", a.ShowSales)
 	protected.POST("/sales", a.RequireWriter(), a.PostSales)
 	protected.GET("/partners", a.ShowPartners)

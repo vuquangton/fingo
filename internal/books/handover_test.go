@@ -99,8 +99,8 @@ func TestHandoverExportContainsThisClientOnly(t *testing.T) {
 	}
 
 	accounts := files["accounts.csv"]
-	if got := dataRows(accounts); got != 123 {
-		t.Fatalf("accounts.csv has %d rows, want 123", got)
+	if got := dataRows(accounts); got != 127 {
+		t.Fatalf("accounts.csv has %d rows, want 127", got)
 	}
 
 	if strings.Contains(files["MANIFEST.json"], "Khách thứ hai") {

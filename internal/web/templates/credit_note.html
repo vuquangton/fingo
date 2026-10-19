@@ -1,0 +1,52 @@
+{{define "credit_note.html"}}<!doctype html>
+<html lang="vi">
+<head><meta charset="utf-8"><title>Trả lại hàng bán — FinGo</title>
+<link rel="stylesheet" href="/static/vendor/tabler.min.css"></head>
+<body class="antialiased"><div class="page">
+<header class="navbar navbar-expand d-print-none"><div class="container-xl">
+  <span class="navbar-brand">FinGo</span><span class="navbar-text ms-3">{{.Client}}</span>
+  <nav class="ms-4"><a class="btn btn-sm btn-ghost-secondary" href="/sales">Bán hàng</a>
+  <a class="btn btn-sm btn-ghost-secondary" href="/receipt">Thu tiền</a>
+  <a class="btn btn-sm btn-ghost-secondary" href="/aging">Tuổi nợ</a></nav>
+  <span class="navbar-text ms-auto">{{.Email}}</span></div></header>
+<div class="page-wrapper"><div class="page-body"><div class="container-xl">
+  {{if .Posted}}<div class="alert alert-success">Đã ghi sổ trả lại hàng bán: <strong>{{.Posted}}</strong>.</div>{{end}}
+  {{if .Error}}<div class="alert alert-danger" role="alert">{{.Error}}</div>{{end}}
+
+  <form method="get" action="/credit-note" class="card mb-3">
+    <div class="card-body d-flex align-items-end gap-2">
+      <div class="flex-fill">
+        <label class="form-label" for="invoice">Mã hóa đơn (document id)</label>
+        <input class="form-control" id="invoice" name="invoice" value="{{.InvoiceID}}">
+      </div>
+      <button class="btn btn-secondary" type="submit">Xem dòng hàng</button>
+    </div>
+  </form>
+
+  {{if .Lines}}
+  <form method="post" action="/credit-note" class="card">
+    <input type="hidden" name="invoice_id" value="{{.InvoiceID}}">
+    <div class="card-header"><h3 class="card-title">Hàng trả lại</h3></div>
+    <div class="table-responsive"><table class="table card-table">
+      <thead><tr><th>Dòng</th><th>Mặt hàng</th><th class="text-end">Đã bán</th>
+      <th class="text-end">Đã trả</th><th class="text-end">Đơn giá</th><th>Thuế</th>
+      <th style="width:12%" class="text-end">Trả lần này</th></tr></thead>
+      <tbody>{{range .Lines}}<tr>
+        <td>{{.LineNo}}</td><td>{{.ItemID}}</td>
+        <td class="text-end">{{.Sold}}</td><td class="text-end">{{.Returned}}</td>
+        <td class="text-end">{{.Price}}</td><td>{{.Rate}}</td>
+        <td><input class="form-control text-end" name="qty_{{.LineNo}}" inputmode="numeric" placeholder="0"></td>
+      </tr>{{end}}</tbody>
+    </table></div>
+    <div class="card-body row g-3">
+      <div class="col-md-3"><label class="form-label" for="date">Ngày trả</label>
+        <input class="form-control" id="date" name="date" type="date" value="{{.Date}}" required></div>
+      <div class="col-md-6"><label class="form-label" for="reason">Lý do</label>
+        <input class="form-control" id="reason" name="reason" placeholder="Hàng lỗi / khách đổi ý"></div>
+    </div>
+    <div class="card-footer text-end">
+      <button class="btn btn-primary" type="submit">Ghi sổ trả lại</button>
+    </div>
+  </form>
+  {{end}}
+</div></div></div></div></body></html>{{end}}

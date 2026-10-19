@@ -33,7 +33,7 @@ func TestAdminCreatesAClientAndOpensItsBooks(t *testing.T) {
 		t.Fatalf("the new client is not listed:\n%s", body)
 	}
 
-	// Its chart exists: 123 accounts, scoped to the new client.
+	// Its chart exists: 127 accounts, scoped to the new client.
 	var clientID string
 	if err := h.pool.QueryRow(t.Context(),
 		`SELECT id::text FROM clients WHERE name = 'Công ty Mới' ORDER BY created_at DESC LIMIT 1`).Scan(&clientID); err != nil {
@@ -46,8 +46,8 @@ func TestAdminCreatesAClientAndOpensItsBooks(t *testing.T) {
 	}); err != nil {
 		t.Fatalf("count accounts: %v", err)
 	}
-	if accounts != 123 {
-		t.Fatalf("the new client has %d accounts, want 123", accounts)
+	if accounts != 127 {
+		t.Fatalf("the new client has %d accounts, want 127", accounts)
 	}
 
 	// Switching to it works, and the books are empty.

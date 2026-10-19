@@ -390,7 +390,7 @@ func TestChartIsSeededForEveryClient(t *testing.T) {
 	}); err != nil {
 		t.Fatalf("count accounts: %v", err)
 	}
-	if count != 123 {
-		t.Fatalf("client %s has %d accounts, want 123", h.client[:8], count)
+	if count != 127 {
+		t.Fatalf("client %s has %d accounts, want 127", h.client[:8], count)
 	}
 }

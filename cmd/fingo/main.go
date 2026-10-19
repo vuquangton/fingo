@@ -118,6 +118,8 @@ func run() error {
 	protected.POST("/opening", auth.RequireWriter(), auth.PostOpening)
 	protected.GET("/receipt", auth.ShowReceipts)
 	protected.POST("/receipt", auth.RequireWriter(), auth.PostReceipt)
+	protected.GET("/credit-note", auth.ShowCreditNote)
+	protected.POST("/credit-note", auth.RequireWriter(), auth.PostCreditNote)
 	protected.GET("/sales", auth.ShowSales)
 	protected.POST("/sales", auth.RequireWriter(), auth.PostSales)
 	protected.GET("/partners", auth.ShowPartners)
